@@ -13,14 +13,15 @@ class UserCustomManager(BaseUserManager):
         if not email:
             raise ValueError('Users must have an email address')
         user = self.model(email=self.normalize_email(email), **extra_fields)
-        _ = CustomValidators.password_validator(password=password)
-        if not _:
-            raise ValidationError('Password must be at least 8 characters')
+        if password is not None:
+            _ = CustomValidators.password_validator(password=password)
+            if not _:
+                raise ValidationError('Password must be at least 8 characters')
         user.set_password(password)
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, email, password, **extra_fields):
+    def create_superuser(self, email, password=None, **extra_fields):
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
         extra_fields.setdefault('is_active', True)

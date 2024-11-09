@@ -146,3 +146,21 @@ CACHES = {
         }
     }
 }
+
+
+
+# config email
+
+if DEBUG:
+    EMAIL_HOST = "localhost"
+    EMAIL_PORT = 2525
+    EMAIL_HOST_USER = ""
+    EMAIL_HOST_PASSWORD = ""
+    EMAIL_USE_TLS = False
+
+else:
+    EMAIL_HOST = "smtp.c1.liara.email"
+    EMAIL_PORT = 587
+    EMAIL_HOST_USER = "stoic_bhabha_dtvh2r"
+    EMAIL_HOST_PASSWORD = "95b2fd7c-21c16eec6b7f"
+    EMAIL_USE_TLS = True
