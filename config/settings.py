@@ -74,6 +74,15 @@ TEMPLATES = [
         },
     },
 ]
+# static file
+STATIC_URL = 'storage/static/'
+STATIC_ROOT_CUSTOM = BASE_DIR / 'storage/static'
+if DEBUG:
+    STATICFILES_DIRS = [STATIC_ROOT_CUSTOM]
+else:
+    STATIC_ROOT = STATIC_ROOT_CUSTOM
+MEDIA_URL = 'storage/media/'
+MEDIA_ROOT = BASE_DIR / 'storage/media/'
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
@@ -126,7 +135,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+# database Cache
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
