@@ -2,11 +2,11 @@ from typing import Any, Callable, Type
 from django.core import mail
 from django.core import validators
 from django.conf import settings
-from django.template.loader import render_to_string,get_template
+from django.template.loader import render_to_string, get_template
 
 
 class EmailService:
-    __slots__ = ('subject', 'context', 'template_name', 'from_emil', 'to_email','html_content')
+    __slots__ = ('subject', 'context', 'template_name', 'from_emil', 'to_email', 'html_content')
 
     @staticmethod
     def _field_validation(field_type: Type,
@@ -33,10 +33,13 @@ class EmailService:
         self.to_email = self._field_validation(str, to_email, validator=lambda v: validators.EmailValidator(v) or True)
         self.subject = self.context.get('subject', subject)
         self.html_content: str = render_to_string(self.template_name, self.context)
-        mil=mail.EmailMultiAlternatives(subject=self.subject,body=self.html_content,from_email=from_emil,to=[self.to_email])
-        mil.attach_alternative(self.html_content,'text/html')
-        mil.send()
+
+    def send(self, ) -> None:
+            mil = mail.EmailMultiAlternatives(subject=self.subject, body=self.html_content, from_email=self.from_emil,
+                                              to=[self.to_email])
+            mil.attach_alternative(self.html_content, 'text/html')
+            mil.send()
+            del self
+
     def __str__(self):
         return self.subject
-
-
