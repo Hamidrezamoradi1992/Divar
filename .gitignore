@@ -162,3 +162,4 @@ cython_debug/
 .idea/
 apps/**/migrations/*.py
 !apps/**/migrations/__init__.py
+storage/media/*
