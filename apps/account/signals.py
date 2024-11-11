@@ -9,5 +9,5 @@ def create_user_profile(sender, instance, created, **kwargs):
         print(type(instance.email))
         email = EmailService(subject='welcome',
                              template_name='mail/welcome.html',
-                             to_email=instance.email)
+                             to_email=[instance.email])
         email.send()
