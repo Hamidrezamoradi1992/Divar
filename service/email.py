@@ -30,13 +30,13 @@ class EmailService:
         self.template_name = self._field_validation(str, template_name, validator=get_template)
         self.from_emil = self._field_validation(str, from_emil,
                                                 validator=lambda v: validators.EmailValidator(v) or True)
-        self.to_email = self._field_validation(str, to_email, validator=lambda v: validators.EmailValidator(v) or True)
+        self.to_email = self._field_validation(list, to_email, validator=lambda v: all(validators.EmailValidator(i) for i in v) or True)
         self.subject = self.context.get('subject', subject)
         self.html_content: str = render_to_string(self.template_name, self.context)
 
-    def send(self, ) -> None:
+    def send(self) -> None:
             mil = mail.EmailMultiAlternatives(subject=self.subject, body=self.html_content, from_email=self.from_emil,
-                                              to=[self.to_email])
+                                              to=self.to_email)
             mil.attach_alternative(self.html_content, 'text/html')
             mil.send()
             del self

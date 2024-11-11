@@ -1,6 +1,14 @@
+from apps.account.models import User
 from django.core.management.base import BaseCommand
 
-class commands_welcome_all_user(BaseCommand):
+from service.email import EmailService
+
+
+class Command(BaseCommand):
     help = 'Welcome all  email users'
     def handle(self, *args, **options):
-        email
+        mail=User.objects.all().values_list('email',flat=True)
+        email = EmailService(subject='welcome',
+                             template_name='mail/welcome.html',
+                             to_email=list(mail))
+        email.send()
