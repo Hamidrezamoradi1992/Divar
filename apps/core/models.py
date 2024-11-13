@@ -2,7 +2,7 @@ from django.db import models
 
 
 # Create your models here.
-class LogicalDelete(models.Model):
+class LogicalDeleteMixin(models.Model):
     is_deleted = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
 
@@ -10,7 +10,7 @@ class LogicalDelete(models.Model):
         abstract = True
 
 
-class TimeCreate(models.Model):
+class TimeCreateMixin(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()
 

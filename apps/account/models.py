@@ -44,7 +44,8 @@ class User(AbstractUser):
     address = models.CharField(max_length=250, null=True, blank=True)
     age = models.IntegerField(null=True, blank=True)
     gender = models.CharField(null=True, blank=True,
-                              choices=(('FEMALE', 'female'), ('MALE', 'male'), ('OTHER', 'other')), max_length=6)
+                              choices=(('FEMALE', 'female'), ('MALE', 'male'), ('OTHER', 'other')),
+                              max_length=6)
     is_kyc = models.BooleanField(default=False)
     is_web_manager=models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
@@ -52,6 +53,8 @@ class User(AbstractUser):
 
     objects = CustomUserManager()
 
+    def __str__(self):
+        return f'{self.email}-{self.get_full_name()}'
 
 # class UserCustomManager(BaseUserManager):
 #     def _create_user(self, email, password=None, **extra_fields):
