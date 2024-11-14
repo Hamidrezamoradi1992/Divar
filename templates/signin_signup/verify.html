@@ -1,0 +1,154 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>verify email</title>
+    <style>
+        html {
+            background: linear-gradient(20deg, white, #9b9b9b);
+            background-repeat: no-repeat;
+            height: 100vh;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            margin: auto;
+            margin-top: 50px;
+            width: 380px;
+            height: auto;
+            border: 1px solid #576082;
+            background-color: white;
+            border-radius: 2px;
+            box-shadow: 0 0 0 0 #667199;
+        }
+
+        .login {
+            margin: 0;
+            margin-bottom: 25px;
+            padding: 20px 0 5px 0;
+            text-align: center;
+            color: #576082;
+        }
+
+        .sign-in {
+            margin: auto;
+            width: 300px;
+            height: auto;
+        }
+
+        .sign-in input {
+            margin-bottom: 20px;
+            padding: 5px 0 5px 0;
+            width: 100%;
+            border: none;
+            border: 1px solid #576082;
+        }
+
+        .sign-up {
+            margin: auto;
+            width: 300px;
+            display: none;
+        }
+
+        .sign-up input {
+            margin-bottom: 20px;
+            padding: 5px 0 5px 0;
+            width: 100%;
+            border: none;
+            border: 1px solid #576082;
+        }
+
+        input[type="email"], [type="text"], [type="password"] {
+            text-indent: 8px;
+        }
+
+        .submit-btn {
+            margin: auto;
+            margin-bottom: 10px;
+            display: block;
+            width: 80%;
+            border: none;
+            padding: 8px 0 8px 0;
+            background-color: white;
+            box-shadow: 0 0 0 1px #667199;
+            outline: none;
+        }
+
+        .submit-btn:focus {
+            background-color: #667199;
+            color: white;
+        }
+
+        .new-account {
+            width: 100%;
+            height: 100%;
+        }
+
+        .forgot-pass {
+            text-align: right;
+            padding: 0 5px 0 0;
+            color: #576082;
+            cursor: pointer;
+            display: none;
+        }
+
+        .forgot-pass:hover {
+            text-decoration: underline;
+        }
+
+        .not-regist {
+            padding: 5px 0 5px 0;
+            text-align: center;
+            color: #576082;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .not-regist:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 id="sign-in-up" class="login">verify email</h1>
+    <form id="sendEmailSignIn" class="sign-in">
+        {% csrf_token %}
+        <input type="email" id="email" value="" name="email" placeholder="Email Address"/>
+        <input type="number" id="code" name="code" placeholder="verify code"/>
+        <input class="submit-btn" type="submit">
+    </form>
+
+
+</div>
+
+
+</body>
+<script>
+
+    {#const csrfTokens = document.querySelector('meta[name="csrf-token"]').getAttribute('content');#}
+    var domain = window.location.href.split('/');
+    var domainPort = window.location.port
+    let formEmailSignInEl = document.querySelector('#sendEmailSignIn')
+    let codeVerifySignInElss = document.querySelector('#email')
+    codeVerifySignInElss.value = `${domain[5]}`
+    formEmailSignInEl.addEventListener('submit', (ev) => {
+        ev.preventDefault()
+        const data = new FormData(ev.target)
+        fetch(`http://localhost:${domainPort}/accounts/api/verify`, {
+            method: 'POST',
+            body: data,
+        }).then(response => response.json())
+    })
+</script>
+</html>
