@@ -29,7 +29,6 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
                              related_name='user',
                              related_query_name='user')
 
-
     def clean(self):
         category = Category.objects.get(pk=self.category.pk)
         if category.parent:
@@ -84,3 +83,25 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
     def save(self, *args, **kwargs):
         self.clean()
         return super().save(*args, **kwargs)
+
+
+class State(LogicalDeleteMixin, TimeCreateMixin):
+    title = models.CharField(max_length=120,
+                             unique=True)
+    area_code = models.CharField(max_length=3,
+                                 unique=True,
+                                 null=True,
+                                 blank=True)
+    expires_at = None
+
+    def __str__(self):
+        return f'title: {self.title} / area: {self.area_code}'
+
+
+class City(LogicalDeleteMixin, TimeCreateMixin):
+    state = models.ForeignKey(State,on_delete=models.CASCADE,related_name='state',related_query_name='state')
+    title = models.CharField(max_length=120, unique=True)
+    expires_at = False
+
+    def __str__(self):
+        return f'title: {self.title}'
