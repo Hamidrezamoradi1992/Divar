@@ -23,14 +23,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
-AUTH_USER_MODEL='account.User'
+AUTH_USER_MODEL = 'account.User'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
 
 # Application definition
-MY_APPS = ['core','account','comment','advertising','image']
+MY_APPS = ['core', 'account', 'comment', 'advertising', 'image']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -41,7 +41,7 @@ INSTALLED_APPS = [
 
     # manager apps
     'rest_framework',
-
+    'rest_framework_simplejwt',
     # my_apps
     *list(map(lambda app: f'apps.{app}', MY_APPS))
 
@@ -74,6 +74,9 @@ TEMPLATES = [
         },
     },
 ]
+
+# Static files (CSS, JavaScript, Images)
+# https://docs.djangoproject.com/en/5.1/howto/static-files/
 # static file
 STATIC_URL = 'storage/static/'
 STATIC_ROOT_CUSTOM = BASE_DIR / 'storage/static'
@@ -125,11 +128,6 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
@@ -147,8 +145,6 @@ CACHES = {
     }
 }
 
-
-
 # config email
 
 if DEBUG:
@@ -164,3 +160,34 @@ else:
     EMAIL_HOST_USER = "stoic_bhabha_dtvh2r"
     EMAIL_HOST_PASSWORD = "95b2fd7c-21c16eec6b7f"
     EMAIL_USE_TLS = True
+
+from datetime import timedelta  # import this library top of the settings.py file
+
+# put on your settings.py file below INSTALLED_APPS
+REST_FRAMEWORK = {
+
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
+}
+# from apps.core.custom_token . CustomToken
+# SIMPLE_JWT = {
+# 'TOKEN_OBTAIN_SERIALIZER': 'apps.core.custom_token.CustomTokenObtainPairSerializer',
+#     # 'AUTH_TOKEN_CLASSES': (
+#     #     'apps.core.custom_token.CustomToken',
+#     # ),
+#     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+#     # 'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+#     # 'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
+#     # 'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
+#     # 'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
+# }
+
+# SIMPLE_JWT = {
+#     'TOKEN_OBTAIN_SERIALIZER': 'apps.core.custom_token.CustomTokenObtainPairSerializer',
+# }
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    'apps.account.model_backends.CustomUserBackend'
+]
