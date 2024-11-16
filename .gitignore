@@ -163,4 +163,4 @@ cython_debug/
 apps/**/migrations/*.py
 !apps/**/migrations/__init__.py
 storage/media/*
-script/tmp/*
+tmp/*
