@@ -8,11 +8,3 @@ class LogicalDeleteMixin(models.Model):
 
     class Meta:
         abstract = True
-
-
-class TimeCreateMixin(models.Model):
-    created_at = models.DateTimeField(auto_now_add=True)
-    expires_at = models.DateTimeField()
-
-    class Meta:
-        abstract = True

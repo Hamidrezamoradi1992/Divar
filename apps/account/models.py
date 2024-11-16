@@ -1,19 +1,18 @@
-from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser, UserManager,PermissionsMixin
+from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.db import models
+from apps.core.models.logicaldelete import LogicalDeleteMixin
+from apps.core.models.timelogical import TimeCreateMixin
+from apps.core.validators import CustomValidators
+from apps.core.managers import BasicLogicalDeleteManager
 
-
-# from apps.core.validators import CustomValidators
-# from rest_framework.exceptions import ValidationError
-# from django.contrib.auth.base_user import BaseUserManager
 
 # Create your models here.
 
 
 class CustomUserManager(UserManager):
     def _create_user(self, **extra_fields):
-
         user = self.model(**extra_fields)
         user.save(using=self._db)
         return user
@@ -26,12 +25,10 @@ class CustomUserManager(UserManager):
     def create_superuser(self, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
-
         if extra_fields.get("is_staff") is not True:
             raise ValueError("Superuser must have is_staff=True.")
         if extra_fields.get("is_superuser") is not True:
             raise ValueError("Superuser must have is_superuser=True.")
-
         return self._create_user(**extra_fields)
 
 
@@ -49,7 +46,9 @@ class User(AbstractUser):
                               blank=True)
     gender = models.CharField(null=True,
                               blank=True,
-                              choices=(('FEMALE', 'female'), ('MALE', 'male'), ('OTHER', 'other')),
+                              choices=(('FEMALE', 'female'),
+                                       ('MALE', 'male'),
+                                       ('OTHER', 'other')),
                               max_length=6)
     is_kyc = models.BooleanField(default=False)
     is_web_manager = models.BooleanField(default=False)
@@ -57,7 +56,6 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
-    backend = 'apps.account.model_backends.CustomUserBackend'
 
     def __str__(self):
         return f'{self.email}-{self.get_full_name()}'
@@ -65,26 +63,37 @@ class User(AbstractUser):
     class Meta:
         verbose_name = 'User'
         verbose_name_plural = 'Users'
-        indexes=[models.Index(fields=['email','phone'])]
-# class UserCustomManager(BaseUserManager):
-#     def _create_user(self, email, password=None, **extra_fields):
-#         if not email:
-#             raise ValueError('Users must have an email address')
-#         user = self.model(email=self.normalize_email(email), **extra_fields)
-#         if password is not None:
-#             _ = CustomValidators.password_validator(password=password)
-#             if not _:
-#                 raise ValidationError('Password must be at least 8 characters')
-#         user.set_password(password)
-#         user.save(using=self._db)
-#         return user
-#
-#     def create_superuser(self, email, password=None, **extra_fields):
-#         extra_fields.setdefault('is_staff', True)
-#         extra_fields.setdefault('is_superuser', True)
-#         extra_fields.setdefault('is_active', True)
-#         if extra_fields.get("is_staff") is not True:
-#             raise ValueError("Superuser must have is_staff=True.")
-#         if extra_fields.get("is_superuser") is not True:
-#             raise ValueError("Superuser must have is_superuser=True.")
-#         return self.create_user(email, password, **extra_fields)
+        indexes = [models.Index(fields=['email', 'first_name'])]
+
+
+class KycImage(LogicalDeleteMixin, TimeCreateMixin):
+    expires_at = None
+    full_name = models.CharField(max_length=100)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL,
+                             related_name='kyc_user',
+                             related_query_name='kyc_user',
+                             null=True, blank=True)
+    image_idcard = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
+                                     verbose_name='ID Card',
+                                     validators=[CustomValidators.image_validator])
+    image_Official_photo = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
+                                             verbose_name='Official photo',
+                                             validators=[CustomValidators.image_validator])
+    image_letter_of_commitment = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
+                                                   verbose_name=' letter of commitment',
+                                                   validators=[CustomValidators.image_validator])
+
+    objects = BasicLogicalDeleteManager()
+
+    def clean(self):
+        user = KycImage.objects.all().values_list('user', flat=True)
+        if self.user in user:
+            raise ValidationError('User already exists.')
+
+    def __str__(self):
+        return f"{self.user.email}/ kyc images"
+
+    class Meta:
+        verbose_name = 'kyc images'
+        verbose_name_plural = 'kyc images'
+        indexes = [models.Index(fields=['user'])]

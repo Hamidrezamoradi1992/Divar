@@ -3,9 +3,9 @@ from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
-from apps.account.models import User
-from apps.core.models import TimeCreateMixin, LogicalDeleteMixin
-from apps.image.validations import validate_image_size
+from apps.core.models.logicaldelete import LogicalDeleteMixin
+from apps.core.models.timelogical import TimeCreateMixin
+from apps.core.validators import CustomValidators
 
 
 # Create your models here.
@@ -17,7 +17,7 @@ class Image(LogicalDeleteMixin, TimeCreateMixin):
     content_type = models.ForeignKey(ContentType,
                                      on_delete=models.CASCADE)
     image = models.ImageField(upload_to=f'{content_type}product_images/',
-                              validators=[validate_image_size])
+                              validators=[CustomValidators.image_validator])
     order_id = models.PositiveSmallIntegerField()
     alt = models.TextField(blank=True,
                            null=True)
@@ -39,36 +39,14 @@ class Image(LogicalDeleteMixin, TimeCreateMixin):
             validate_image_on_ripit = Image.objects.filter(content_type=self.content_type,
                                                            order_id=self.order_id).exists()
             if validate_image_on_ripit:
-                raise ValidationError('Each no user can only have one cover image. .')
+                raise ValidationError('Each no user can only have one cover image.')
 
     def save(self, *args, **kwargs):
+        self.clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name}-{self.content_type.model} - {self.alt}"
+        return f"{self.name}-{self.content_type.model}-{self.alt}"
 
-
-class KycImage(LogicalDeleteMixin, TimeCreateMixin):
-    expires_at = None
-    full_name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL,
-                             related_name='kyc_user',
-                             related_query_name='kyc_user',
-                             null=True, blank=True)
-    image_idcard = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
-                                     verbose_name='ID Card',
-                                     validators=[validate_image_size])
-    image_Official_photo = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
-                                             verbose_name='Official photo',
-                                             validators=[validate_image_size])
-    image_letter_of_commitment = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
-                                                   verbose_name=' letter of commitment',
-                                                   validators=[validate_image_size])
-
-    def clean(self):
-        user=KycImage.objects.all().values_list('user', flat=True)
-        if self.user in user:
-            raise ValidationError('User already exists.')
-
-    def __str__(self):
-        return f"{self.user.email}/ kyc images"
+    class Meta:
+        pass

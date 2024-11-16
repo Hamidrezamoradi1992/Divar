@@ -1,15 +1,22 @@
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ValidationError
-
-from apps import advertising
-from apps.core.models import TimeCreateMixin, LogicalDeleteMixin
+from apps.core.models.logicaldelete import LogicalDeleteMixin
+from apps.core.models.timelogical import TimeCreateMixin
 from apps.core.managers import BasicLogicalDeleteManager
 
 
 # Create your models here.
 
-class AdvertisingLogical(BasicLogicalDeleteManager):
+class AdvertisingManager(BasicLogicalDeleteManager):
+    def is_diffusion(self):
+        super().get_queryset().filter(diffusion=True)
+
+    def is_ladder(self):
+        super().get_queryset().filter(ladder=True)
+
+
+class CategoryManager(BasicLogicalDeleteManager):
     pass
 
 
@@ -19,15 +26,17 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
     price = models.FloatField(default=0)
     diffusion = models.BooleanField(default=False)
     ladder = models.BooleanField(default=False)
-    category = models.ForeignKey('advertising.Category',
-                                 related_name='advertisings',
+    category = models.ForeignKey('Category',
+                                 related_name='advertising',
                                  related_query_name='advertising',
                                  on_delete=models.SET_NULL,
-                                 null=True, blank=True)
+                                 null=True,
+                                 blank=True)
     user = models.ForeignKey(settings.AUTH_USER_MODEL,
                              on_delete=models.CASCADE,
                              related_name='user',
                              related_query_name='user')
+    objects = AdvertisingManager()
 
     def clean(self):
         category = Category.objects.get(pk=self.category.pk)
@@ -35,6 +44,10 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
             raise ValidationError('Categories can not be a parent')
         if not Category.fields:
             raise ValidationError('Categories cannot be empty fields')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Advertising'
@@ -59,6 +72,8 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                null=True,
                                blank=True)
 
+    object = CategoryManager()
+
     def clean(self):
         if self.fields:
             if self.parent:
@@ -71,10 +86,16 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         self.clean()
         super().save(*args, **kwargs)
 
+    class Meta:
+        verbose_name = 'Category'
+        verbose_name_plural = 'Categories'
+        indexes = [models.Index(fields=['title'])]
+
 
 class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
     expires_at = None
     title = models.CharField(max_length=120, unique=True)
+    object = BasicLogicalDeleteManager()
 
     def clean(self):
         if self.title in ['price', 'title', 'description']:
@@ -83,6 +104,11 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
     def save(self, *args, **kwargs):
         self.clean()
         return super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name = 'FieldCategory'
+        verbose_name_plural = 'FieldCategories'
+        indexes = [models.Index(fields=['title'])]
 
 
 class State(LogicalDeleteMixin, TimeCreateMixin):
@@ -93,15 +119,27 @@ class State(LogicalDeleteMixin, TimeCreateMixin):
                                  null=True,
                                  blank=True)
     expires_at = None
+    object = BasicLogicalDeleteManager()
 
     def __str__(self):
         return f'title: {self.title} / area: {self.area_code}'
 
+    class Meta:
+        verbose_name = 'State'
+        verbose_name_plural = 'States'
+        indexes = [models.Index(fields=['title', 'area_code'])]
+
 
 class City(LogicalDeleteMixin, TimeCreateMixin):
-    state = models.ForeignKey(State,on_delete=models.CASCADE,related_name='state',related_query_name='state')
+    state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='state', related_query_name='state')
     title = models.CharField(max_length=120, unique=True)
     expires_at = False
+    object = BasicLogicalDeleteManager()
 
     def __str__(self):
         return f'title: {self.title}'
+
+    class Meta:
+        verbose_name = 'City'
+        verbose_name_plural = 'Cities'
+        indexes = [models.Index(fields=['title'])]
