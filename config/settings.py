@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
-MY_APPS = ['core', 'account', 'comment', 'advertising', 'image']
+MY_APPS = ['core', 'account', 'comment', 'advertising']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
