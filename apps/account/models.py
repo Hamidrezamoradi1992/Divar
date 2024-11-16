@@ -1,8 +1,9 @@
-
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import EmailValidator
 from django.db import models
+
+
 # from apps.core.validators import CustomValidators
 # from rest_framework.exceptions import ValidationError
 # from django.contrib.auth.base_user import BaseUserManager
@@ -13,9 +14,7 @@ from django.db import models
 class CustomUserManager(UserManager):
     def _create_user(self, **extra_fields):
 
-        password = extra_fields.pop("password")
         user = self.model(**extra_fields)
-        user.password = make_password(password)
         user.save(using=self._db)
         return user
 
@@ -38,24 +37,35 @@ class CustomUserManager(UserManager):
 
 class User(AbstractUser):
     username = None
-    email = models.EmailField(unique=True, null=False, validators=[EmailValidator])
-    password = models.CharField(max_length=128, null=True)
-    phone = models.CharField(max_length=11, null=True, blank=True)
-    address = models.CharField(max_length=250, null=True, blank=True)
-    age = models.IntegerField(null=True, blank=True)
-    gender = models.CharField(null=True, blank=True,
+    email = models.EmailField(unique=True, null=False,
+                              validators=[EmailValidator])
+    phone = models.CharField(max_length=11,
+                             null=True,
+                             blank=True)
+    address = models.CharField(max_length=250,
+                               null=True,
+                               blank=True)
+    age = models.IntegerField(null=True,
+                              blank=True)
+    gender = models.CharField(null=True,
+                              blank=True,
                               choices=(('FEMALE', 'female'), ('MALE', 'male'), ('OTHER', 'other')),
                               max_length=6)
     is_kyc = models.BooleanField(default=False)
-    is_web_manager=models.BooleanField(default=False)
+    is_web_manager = models.BooleanField(default=False)
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
     objects = CustomUserManager()
+    backend = 'apps.account.model_backends.CustomUserBackend'
 
     def __str__(self):
         return f'{self.email}-{self.get_full_name()}'
 
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+        indexes=[models.Index(fields=['email','phone'])]
 # class UserCustomManager(BaseUserManager):
 #     def _create_user(self, email, password=None, **extra_fields):
 #         if not email:
@@ -78,4 +88,3 @@ class User(AbstractUser):
 #         if extra_fields.get("is_superuser") is not True:
 #             raise ValueError("Superuser must have is_superuser=True.")
 #         return self.create_user(email, password, **extra_fields)
-

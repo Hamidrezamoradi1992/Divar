@@ -28,7 +28,7 @@ class Image(LogicalDeleteMixin, TimeCreateMixin):
 
     def clean(self):
         if not (self.content_type.model in ('category', 'advertising', 'user')):
-            raise ValidationError('clas not valid')
+            raise ValidationError('class not valid')
         if self.is_cover:
             if self.content_type == 'advertising':
                 cover_images = Image.objects.filter(content_type=self.content_type,

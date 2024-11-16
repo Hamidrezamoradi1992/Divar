@@ -1,0 +1,29 @@
+{% extends '_base.html' %}
+{% block content %}
+    <h1 id="hamid"></h1>
+{% endblock %}
+{% block extra_body %}
+    <script>var domainPort = window.location.port;</script>
+    <script>
+        function getCookie(name) {
+            const value = `; ${document.cookie}`;
+            const parts = value.split(`; ${name}=`);
+            if (parts.length === 2) {
+                return parts.pop().split(';').shift();
+            }
+            return null; // or handle the case where the cookie is not found
+        }
+
+        const token = getCookie('access');
+        fetch(`http://localhost:${domainPort}/accounts/api/test`, {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Response:', data);
+            })
+    </script>
+{% endblock %}

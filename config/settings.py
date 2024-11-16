@@ -165,29 +165,24 @@ from datetime import timedelta  # import this library top of the settings.py fil
 
 # put on your settings.py file below INSTALLED_APPS
 REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
 
 }
-# from apps.core.custom_token . CustomToken
-# SIMPLE_JWT = {
-# 'TOKEN_OBTAIN_SERIALIZER': 'apps.core.custom_token.CustomTokenObtainPairSerializer',
-#     # 'AUTH_TOKEN_CLASSES': (
-#     #     'apps.core.custom_token.CustomToken',
-#     # ),
-#     # 'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
-#     # 'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-#     # 'SLIDING_TOKEN_LIFETIME': timedelta(days=30),
-#     # 'SLIDING_TOKEN_REFRESH_LIFETIME_LATE_USER': timedelta(days=1),
-#     # 'SLIDING_TOKEN_LIFETIME_LATE_USER': timedelta(days=30),
-# }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
+    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=10),
+}
 
 # SIMPLE_JWT = {
 #     'TOKEN_OBTAIN_SERIALIZER': 'apps.core.custom_token.CustomTokenObtainPairSerializer',
 # }
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    'apps.account.model_backends.CustomUserBackend'
-]
+# AUTHENTICATION_BACKENDS = [
+#     "django.contrib.auth.backends.ModelBackend",
+#     'apps.account.model_backends.CustomUserBackend'
+# ]

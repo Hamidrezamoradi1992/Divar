@@ -134,21 +134,71 @@
 
 
 </body>
+<script>var domainPort = window.location.port;</script>
 <script>
-
-    {#const csrfTokens = document.querySelector('meta[name="csrf-token"]').getAttribute('content');#}
     var domain = window.location.href.split('/');
-    var domainPort = window.location.port
-    let formEmailSignInEl = document.querySelector('#sendEmailSignIn')
-    let codeVerifySignInElss = document.querySelector('#email')
-    codeVerifySignInElss.value = `${domain[5]}`
+
+    let formEmailSignInEl = document.querySelector('#sendEmailSignIn');
+    let codeVerifySignInElss = document.querySelector('#email');
+    codeVerifySignInElss.value = `${domain[5]}`;
+
     formEmailSignInEl.addEventListener('submit', (ev) => {
-        ev.preventDefault()
-        const data = new FormData(ev.target)
+        ev.preventDefault();
+        const data = new FormData(ev.target);
         fetch(`http://localhost:${domainPort}/accounts/api/verify`, {
             method: 'POST',
             body: data,
-        }).then(response => response.json())
-    })
+        })
+            .then(response => {
+                if (response.status === 200) {
+                    alert('درخواست با موفقیت انجام شد!');
+                } else {
+                    alert('مشکلی در درخواست وجود دارد.');
+                }
+                return response.json();
+            })
+            .then(response => {
+                console.log(response.statusCode())
+                if (response.statusCode() === 200) {
+                    alert('درخواست با موفقیت انجام شد!');
+                    console.log(response)
+                    location.replace(`http://localhost:${domainPort}/accounts/api/test`)
+                } else {
+                    alert('مشکلی در درخواست وجود دارد.');
+                }
+
+            })
+            .catch(error => {
+                console.error('خطایی رخ داده است:', error);
+                alert('یک خطا در ارسال درخواست وجود دارد.');
+            });
+    });
 </script>
+{#<script>#}
+{#    #}
+{##}
+{#const csrfTokens = document.querySelector('meta[name="csrf-token"]').getAttribute('content');#}
+{#    var domain = window.location.href.split('/');#}
+{#    var domainPort = window.location.port#}
+{#    let formEmailSignInEl = document.querySelector('#sendEmailSignIn')#}
+{#    let codeVerifySignInElss = document.querySelector('#email')#}
+{#    codeVerifySignInElss.value = `${domain[5]}`#}
+{#    formEmailSignInEl.addEventListener('submit', (ev) => {#}
+{#        ev.preventDefault()#}
+{#        const data = new FormData(ev.target)#}
+{#        fetch(`http://localhost:${domainPort}/accounts/api/verify`, {#}
+{#            method: 'POST',#}
+{#            body: data,#}
+{#        }).then(response => response.json())#}
+{#            .then(response => console.log(response))#}
+{#    const token = response.headers.get('Authorization');#}
+{#    if (token) {#}
+{#        // ذخیره توکن در localStorage (می‌توانید از sessionStorage یا کوکی نیز استفاده کنید)#}
+{#        localStorage.setItem('jwtToken', token);#}
+{#    }#}
+{#    }#}
+{#)#}
+{##}
+{#    })#}
+{#</script>#}
 </html>
