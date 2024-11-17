@@ -72,7 +72,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                related_query_name='fields',
                                null=True,
                                blank=True)
-
+    price = models.FloatField(default=0)
     object = CategoryManager()
 
     def clean(self):
@@ -82,6 +82,12 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
             father = Category.objects.filter(parent_id=self.id).exists()
             if father:
                 raise ValidationError('no category is parend and fields')
+        if self.free:
+            if self.price > 0:
+                raise ValidationError('price cannot be greater than 0')
+        else:
+            if self.price <= 0:
+                raise ValidationError('price cannot be less than 0')
 
     def save(self, *args, **kwargs):
         self.clean()
