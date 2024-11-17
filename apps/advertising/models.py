@@ -63,6 +63,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                null=True,
                                blank=True,
                                related_name='children',
+                               related_query_name='children',
                                on_delete=models.SET_NULL)
     free = models.BooleanField(default=True)
     fields = models.ForeignKey('FieldCategory',
@@ -85,6 +86,63 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
+
+    @staticmethod
+    def calculate_max_depth(root_category):
+
+        """
+        Recursively calculates the maximum depth of the category tree starting from a given root category.
+        """
+
+        if not root_category.children.exists():
+            return 0
+        else:
+            return 1 + max(Category.calculate_max_depth(sub) for sub in root_category.children.all())
+
+    def get_descendants(self, include_self=False, levels=None):
+
+        """
+        Fetch all descendants of the current category using dynamically determined levels of prefetching.
+        If 'levels' is not provided, calculate it based on the maximum depth of the category tree.
+        """
+
+        if levels is None:
+            levels = Category.calculate_max_depth(self)
+
+        result = [self] if include_self else []
+        queryset = Category.objects.all()
+
+        for _ in range(levels):
+            queryset = queryset.prefetch_related('subcategories')
+
+        categories = queryset.filter(id=self.id)
+
+        # noinspection PyShadowingNames
+        def collect_categories(category, current_level):
+
+            if current_level > 0:
+                for subcategory in category.subcategories.all():
+                    result.append(subcategory)
+                    collect_categories(subcategory, current_level - 1)
+
+        for category in categories:
+            collect_categories(category, levels)
+
+        return result
+
+    def get_parents(self, includes_self=False, levels=None) -> list:
+        '''if level back parent category '''
+        level = Category.objects.count() if levels is None else levels
+        category_list = [self] if includes_self else []
+        parent = self.parent
+        for _ in range(level):
+            if parent is not None:
+                category_list.append(c := parent)
+                parent = c.parent
+            else:
+                break
+        category_list.reverse()
+        return category_list
 
     class Meta:
         verbose_name = 'Category'
