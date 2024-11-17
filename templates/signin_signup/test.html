@@ -5,25 +5,89 @@
 {% block extra_body %}
     <script>var domainPort = window.location.port;</script>
     <script>
+        let token = getCookie('access');
+
+        if (!token) {
+            const tokenRefresh = getCookie('refresh');
+            if (tokenRefresh) {
+                get_in_refresh_token(tokenRefresh)
+                    .then(newToken => {
+                        if (newToken) {
+                            return fetchDataWithToken(newToken);
+                        }
+                    })
+                    .catch(error => console.error('Error during token refresh:', error));
+            } else {
+                location.replace(`http://localhost:${domainPort}/accounts/signup/`);
+            }
+        } else {
+            fetchDataWithToken(token);
+        }
+
+        function get_in_refresh_token(reToken) {
+            console.log(`get_in_refresh_token ${reToken}`);
+            console.log(`http://localhost:${domainPort}/api/token/refresh/`);
+
+            return fetch(`http://localhost:${domainPort}/api/token/refresh/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({"refresh": reToken})
+            })
+                .then(ress => {
+                    if (!ress.ok) {
+                        throw new Error('Failed to refresh token');
+                    }
+                    return ress.json();
+                })
+                .then(response => {
+                    if (response.access) {
+                        setCookie('access', response.access);
+                        console.log(`Access token set: ${response.access}`);
+                        return response.access;
+                    } else {
+                        throw new Error('No access token in response');
+                    }
+                });
+        }
+
+        function fetchDataWithToken(token) {
+            return fetch(`http://localhost:${domainPort}/accounts/api/test`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch data');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Response:', data);
+                })
+                .catch(error => console.error('Error during fetch:', error));
+        }
+
+        function setCookie(name, value) {
+            let expires = "";
+            const date = new Date();
+            date.setTime(date.getTime() + (120 * 60 * 1000)); // اعتبار 2 ساعت
+            expires = "; expires=" + date.toUTCString();
+            document.cookie = name + "=" + (value || "") + expires + "; path=/";
+        }
+
         function getCookie(name) {
-            const value = `; ${document.cookie}`;
+            const value = document.cookie;
             const parts = value.split(`; ${name}=`);
             if (parts.length === 2) {
                 return parts.pop().split(';').shift();
             }
-            return null; // or handle the case where the cookie is not found
+            return null; // بازگشت مقدار null در صورت نبود کوکی
         }
 
-        const token = getCookie('access');
-        fetch(`http://localhost:${domainPort}/accounts/api/test`, {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`
-            }
-        })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response:', data);
-            })
+
     </script>
 {% endblock %}
