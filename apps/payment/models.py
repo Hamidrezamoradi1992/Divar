@@ -16,7 +16,7 @@ class Order(LogicalDeleteMixin, TimeCreateMixin):
                              blank=True,
                              choices=(('CATEGORY', 'category'),
                                       ('LADDER', 'ladder')),
-                             max_length=6)
+                             max_length=10)
     price = models.FloatField(default=0)
 
     def __str__(self):
