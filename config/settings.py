@@ -30,7 +30,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # Application definition
-MY_APPS = ['core', 'account', 'comment', 'advertising','favorite','payment']
+MY_APPS = ['core', 'account', 'comment', 'advertising', 'favorite', 'payment']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     # manager apps
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_spectacular',
     # my_apps
     *list(map(lambda app: f'apps.{app}', MY_APPS))
 
@@ -165,6 +166,7 @@ from datetime import timedelta  # import this library top of the settings.py fil
 
 # put on your settings.py file below INSTALLED_APPS
 REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', #swager
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
@@ -174,6 +176,15 @@ REST_FRAMEWORK = {
     ),
 
 }
+#swager
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'DIVAR',
+    'DESCRIPTION': ' it is divar project',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    # OTHER SETTINGS
+}
+#swager
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=10),
