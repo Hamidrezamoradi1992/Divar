@@ -220,3 +220,51 @@ class City(LogicalDeleteMixin, TimeCreateMixin):
         indexes = [models.Index(fields=['title'])]
 
 
+class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
+    expires_at = None
+    advertising = models.ForeignKey(Advertising, on_delete=models.CASCADE, related_name='values_advertise',
+                                    related_query_name='value_advertise')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='values_category',
+                                 related_query_name='values_category')
+    field = models.ForeignKey(FieldCategory, on_delete=models.CASCADE, related_name='values_field',
+                              related_query_name='values_field')
+    value = models.CharField(max_length=255)
+
+    object=BasicLogicalDeleteManager()
+    def clean(self):
+        if self.field in self.category.fields.all():
+            filed_type = self.field.type_field
+            self.value = self.value.strip()
+        else:
+            raise ValidationError('Field no match of category')
+
+        validation_methods = {
+            'int': self._validate_int,
+            'str': self._validate_str,
+            'float': self._validate_float,
+            'bool': self._validate_bool
+        }
+
+        if filed_type in validation_methods:
+            validation_methods[filed_type]()
+        else:
+            raise ValidationError(f'Unsupported field type: {filed_type}')
+
+    def _validate_int(self):
+        if not self.value.isdigit():
+            raise ValidationError('Value must be an integer without any letters or special characters.')
+    def _validate_str(self):
+        if self.value.isdigit():
+            raise ValidationError('Value must be a string and not consist solely of digits.')
+
+    def _validate_float(self):
+        if not self.value.replace('.', '', 1).isdigit():
+            raise ValidationError('Value must be a valid float number.')
+        self.value=float(self.value)
+
+    def _validate_bool(self):
+        if self.value.lower() not in ['1', '0']:
+            raise ValidationError("Value must be a boolean represented as  '1', or '0'.")
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
