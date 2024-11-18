@@ -37,9 +37,10 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
                              related_name='user',
                              related_query_name='user')
     objects = AdvertisingManager()
-
+    def __str__(self):
+        return f'title: {self.title}/category: {self.category}'
     def clean(self):
-        category = Category.objects.get(pk=self.category.pk)
+        category = Category.objects.get(id=self.category.pk)
         if category.parent:
             raise ValidationError('Categories can not be a parent')
         if not Category.fields:
@@ -66,31 +67,31 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                related_query_name='children',
                                on_delete=models.SET_NULL)
     free = models.BooleanField(default=True)
-    fields = models.ForeignKey('FieldCategory',
-                               on_delete=models.SET_NULL,
-                               related_name='fields',
-                               related_query_name='fields',
-                               null=True,
-                               blank=True)
+    fields = models.ManyToManyField(
+        'FieldCategory',
+        related_name='categories',
+        related_query_name='categories',
+        blank=True
+    )
     price = models.FloatField(default=0)
-    object = CategoryManager()
-
+    def __str__(self):
+        return f'title: {self.title}/free: {self.free}'
     def clean(self):
-        if self.fields:
-            if self.parent:
-                raise ValidationError('no category is parend and fields')
-            father = Category.objects.filter(parent_id=self.id).exists()
-            if father:
-                raise ValidationError('no category is parend and fields')
-        if self.free:
-            if self.price > 0:
-                raise ValidationError('price cannot be greater than 0')
-        else:
-            if self.price <= 0:
-                raise ValidationError('price cannot be less than 0')
+        if not self.parent and self.pk and self.fields.exists():
+            has_children = Category.objects.filter(parent_id=self.id).exists()
+            print('has_children')
+            if has_children and self.fields.exists():
+                raise ValidationError('Category with children cannot have fields.')
+        if self.free and self.price > 0:
+            raise ValidationError('Price cannot be greater than 0 for free categories.')
+        elif not self.free and self.price <= 0:
+            raise ValidationError('Price must be greater than 0 for non-free categories.')
 
     def save(self, *args, **kwargs):
-        self.clean()
+        if not self.pk:  # Check if it's a new object
+            print('if not self.id')
+            super().save(*args, **kwargs)  # Save to get an ID
+        self.clean()  # Call clean after saving for validations involving many-to-many
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -159,6 +160,12 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
 class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
     expires_at = None
     title = models.CharField(max_length=120, unique=True)
+    type_field = models.CharField(max_length=6,
+                                  choices=(('int', 'Int'),
+                                           ('str', 'STRING'),
+                                           ('float', 'FLOAT'),
+                                           ('bool', 'BOOL'),))
+    Mandatory = models.BooleanField(default=False)
     object = BasicLogicalDeleteManager()
 
     def clean(self):
@@ -167,12 +174,16 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
 
     def save(self, *args, **kwargs):
         self.clean()
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-    class Meta:
-        verbose_name = 'FieldCategory'
-        verbose_name_plural = 'FieldCategories'
-        indexes = [models.Index(fields=['title'])]
+    def __str__(self):
+        return f'title: {self.title} /type: {self.type_field} /mandatory: {self.Mandatory}'
+
+
+class Meta:
+    verbose_name = 'FieldCategory'
+    verbose_name_plural = 'FieldCategories'
+    indexes = [models.Index(fields=['title'])]
 
 
 class State(LogicalDeleteMixin, TimeCreateMixin):
@@ -207,3 +218,5 @@ class City(LogicalDeleteMixin, TimeCreateMixin):
         verbose_name = 'City'
         verbose_name_plural = 'Cities'
         indexes = [models.Index(fields=['title'])]
+
+
