@@ -1,3 +1,4 @@
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser, UserManager,PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
@@ -13,7 +14,12 @@ from apps.core.managers import BasicLogicalDeleteManager
 
 class CustomUserManager(UserManager):
     def _create_user(self, **extra_fields):
+        """
+        Create and save a user with the given email, and password.
+        """
+        password = extra_fields.pop("password")
         user = self.model(**extra_fields)
+        user.password = make_password(password)
         user.save(using=self._db)
         return user
 
