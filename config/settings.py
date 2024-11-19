@@ -184,7 +184,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
-#swager
+#end swager
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=10),
