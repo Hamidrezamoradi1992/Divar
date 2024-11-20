@@ -40,6 +40,7 @@ class CustomUserManager(UserManager):
 
 class User(AbstractUser):
     username = None
+    password = models.CharField(max_length=128, blank=True,null=True)
     email = models.EmailField(unique=True, null=False,
                               validators=[EmailValidator])
     phone = models.CharField(max_length=11,
