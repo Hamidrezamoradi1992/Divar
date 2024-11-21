@@ -42,6 +42,7 @@ class ValidateLadderAdvertising:
     def get_ladder_advertising(categories_id:list=None):
         if ValidateLadderAdvertising._LADDER_INSTANCE:
             random_items = ValidateLadderAdvertising._random_item()
+            print('get_ladder_advertising', categories_id)
             if categories_id:
                 random_items = [i for i in random_items if i.category_id in categories_id]
             for item in random_items:
@@ -54,7 +55,8 @@ class ValidateLadderAdvertising:
                     ValidateLadderAdvertising._LADDER_ADVERTISING_MODEL.pop(item.queryset.id)
             if len(random_items) < 3:
                 if len(ValidateLadderAdvertising._LADDER_INSTANCE) >= 3:
-                    return ValidateLadderAdvertising.get_ladder_advertising()
+                    print('ValidateLadderAdvertising._LADDER_INSTANCE',ValidateLadderAdvertising._LADDER_INSTANCE)
+                    random_items= ValidateLadderAdvertising.get_ladder_advertising()
 
             for item in random_items:
                 item.ladder_count += 1
