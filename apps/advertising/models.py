@@ -51,8 +51,8 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
 
     def clean(self):
         category = Category.objects.get(id=self.category.pk)
-        if category.parent:
-            raise ValidationError('Categories can not be a parent')
+        # if category.parent:
+        #     raise ValidationError('Categories can not be a parent')
         if not Category.fields:
             raise ValidationError('Categories cannot be empty fields')
 
@@ -101,7 +101,6 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
 
     def save(self, *args, **kwargs):
         if not self.pk:  # Check if it's a new object
-            print('if not self.id')
             super().save(*args, **kwargs)  # Save to get an ID
         self.clean()  # Call clean after saving for validations involving many-to-many
         super().save(*args, **kwargs)
@@ -132,7 +131,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         queryset = Category.objects.all()
 
         for _ in range(levels):
-            queryset = queryset.prefetch_related('subcategories')
+            queryset = queryset.prefetch_related('children')
 
         categories = queryset.filter(id=self.id)
 
@@ -140,7 +139,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         def collect_categories(category, current_level):
 
             if current_level > 0:
-                for subcategory in category.subcategories.all():
+                for subcategory in category.children.all():
                     result.append(subcategory)
                     collect_categories(subcategory, current_level - 1)
 
@@ -192,10 +191,10 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
         return f'title: {self.title} /type: {self.type_field} /mandatory: {self.mandatory}'
 
 
-class Meta:
-    verbose_name = 'FieldCategory'
-    verbose_name_plural = 'FieldCategories'
-    indexes = [models.Index(fields=['title'])]
+    class Meta:
+        verbose_name = 'FieldCategory'
+        verbose_name_plural = 'FieldCategories'
+        indexes = [models.Index(fields=['title'])]
 
 
 class State(LogicalDeleteMixin, TimeCreateMixin):
