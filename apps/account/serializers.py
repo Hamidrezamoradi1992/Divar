@@ -48,3 +48,4 @@ class UpdateImageUserSerializer(MainImageSerializer):
         print(instance)
         instance.save()
         return instance
+
