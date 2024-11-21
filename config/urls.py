@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
+from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
@@ -34,6 +35,10 @@ urlpatterns = [
     # Optional UI:
     path('api/swagger/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+
+    #test
+    path('test2/', TemplateView.as_view(template_name='signin_signup/test2.html'), name='verify'),
+    path('', TemplateView.as_view(template_name='signin_signup/../templates/home.html'), name='home'),
 ]
 if settings.DEBUG:
     urlpatterns += (static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +
