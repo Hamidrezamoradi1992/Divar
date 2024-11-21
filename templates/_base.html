@@ -1,24 +1,33 @@
-{% load static %}
-<!doctype html >
-<html lang="en" data-theme="light" >
+<!doctype html>
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-{#    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css" />#}
-{#    <script src="https://cdn.tailwindcss.com"></script>#}
     <title>{% block title %}{% endblock %}</title>
-    {% block extra_head %}{% endblock %}
-</head>
-<body >
-<header>{% block header %}{% endblock %}</header>
-<main>    {% block content %}{% endblock %}</main>
-<footer>{% block footer %}{% endblock %}</footer>
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.2.3/dist/cdn.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link href="https://cdn.tailwindcss.com" rel="stylesheet">
 
+
+
+    {% block extra-head %}{% endblock %}
+</head>
+<body>
+{% include 'components/header.html' %}
+<main class="max-w-[1920px] mt-16 py-5 mx-auto min-h-[80vh]" style="direction: ltr">
+
+
+    {% block content %}{% endblock %}
+
+</main>
+{% include  'components/footer.html' %}
+{% block extera-footer %}{% endblock %}
 </body>
 
-{% block extra_body %}
-	
-{% endblock %}
+{% block script %}{% endblock %}
+
 </html>
