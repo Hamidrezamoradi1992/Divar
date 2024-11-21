@@ -189,7 +189,7 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f'title: {self.title} /type: {self.type_field} /mandatory: {self.Mandatory}'
+        return f'title: {self.title} /type: {self.type_field} /mandatory: {self.mandatory}'
 
 
 class Meta:
@@ -206,7 +206,7 @@ class State(LogicalDeleteMixin, TimeCreateMixin):
                                  null=True,
                                  blank=True)
     expires_at = None
-    object = BasicLogicalDeleteManager()
+    objects = BasicLogicalDeleteManager()
 
     def __str__(self):
         return f'title: {self.title} / area: {self.area_code}'
@@ -221,7 +221,7 @@ class City(LogicalDeleteMixin, TimeCreateMixin):
     state = models.ForeignKey(State, on_delete=models.CASCADE, related_name='state', related_query_name='state')
     title = models.CharField(max_length=120, unique=True)
     expires_at = False
-    object = BasicLogicalDeleteManager()
+    objects = BasicLogicalDeleteManager()
 
     def __str__(self):
         return f'title: {self.title}'
@@ -245,7 +245,7 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
                               related_query_name='values_field')
     value = models.CharField(max_length=255)
 
-    object = BasicLogicalDeleteManager()
+    objects = BasicLogicalDeleteManager()
 
     def clean(self):
         if self.field in self.category.fields.all():
