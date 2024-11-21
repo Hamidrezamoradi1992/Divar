@@ -49,6 +49,7 @@ class MainCitySerializer(serializers.ModelSerializer):
 
 class MainCategorySerializer(serializers.ModelSerializer):
     fields=MainFieldCategorySerializer(many=True)
+    parent=serializers.SerializerMethodField(read_only=True)
     class Meta:
         model = Category
         fields = ('title',
@@ -56,6 +57,9 @@ class MainCategorySerializer(serializers.ModelSerializer):
                   'free',
                   'fields',
                   'price')
+
+    def get_parent(self, obj):
+        return MainCategorySerializer(obj.parent).data
 
 
 class MainSaveValueFieldSerializer(serializers.ModelSerializer):
@@ -72,6 +76,8 @@ class MainSaveValueFieldSerializer(serializers.ModelSerializer):
 
 
 # end main serializers
+
+# view serializers
 class ViewFieldCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = FieldCategory
@@ -138,7 +144,6 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
                   'description',
                   'price',
                   'image',
-                  'diffusion',
                   'category',
                   'state',
                   'city',
@@ -153,13 +158,14 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
 
     def get_vlue_field(self, obj):
         field = SaveValueField.objects.filter(advertising=obj.id)
-        print(field)
         return ViewSaveValueFieldSerializer(field, many=True).data
 
     def get_address(self, obj):
-        print(self.context['request'].user.is_authenticated)
         if self.context['request'].user.is_authenticated:
             user=User.objects.filter(pk=self.context['request'].user.id)
             return AdresViewSerializer(user, many=True).data
         return {'massage': 'is_user_not_authentication'}
+# end view serializers
+
+# add advertise in database
 
