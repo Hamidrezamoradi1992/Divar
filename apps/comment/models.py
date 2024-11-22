@@ -15,7 +15,7 @@ class comment(TimeCreateMixin, LogicalDeleteMixin):
     advertised = models.ForeignKey(Advertising, on_delete=models.CASCADE)
     expires_at = None
 
-    object = BasicLogicalDeleteManager()
+    objects = BasicLogicalDeleteManager()
 
     def __str__(self):
         return f'{self.user} to {self.to_user}'

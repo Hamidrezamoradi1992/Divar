@@ -9,4 +9,4 @@ def set_instance_ladder(sender, instance, created, **kwargs):
     if not created:
         print('set_instance_ladder',instance.ladder)
         if instance.ladder:
-            ValidateLadderAdvertising(instance)
+            ValidateLadderAdvertising(instance,category=instance.category)

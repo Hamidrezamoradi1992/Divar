@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Category Tree</title>
+    <style>
+        ul {
+            list-style-type: none;
+            padding-left: 20px;
+        }
+        li {
+            cursor: pointer;
+        }
+        li.collapsed > ul {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Category Tree</h1>
+    <div id="category-tree"></div>
+
+    <script>
+        const apiUrl = "http://localhost:8000//advertising/api/add/advertise/all_category";
+
+        // ساخت لیست دسته‌بندی‌ها به صورت بازگشتی
+        function createCategoryTree(categories, parentTitle = "") {
+            const ul = document.createElement("ul");
+
+            categories
+                .filter(category => category.parent.title === parentTitle)
+                .forEach(category => {
+                    const li = document.createElement("li");
+                    li.textContent = category.title;
+
+                    // جستجو برای زیرمجموعه‌ها
+                    const children = createCategoryTree(categories, category.title);
+
+                    if (children.childElementCount > 0) {
+                        li.appendChild(children);
+                        li.classList.add("collapsed");
+
+                        // اضافه کردن قابلیت کلیک برای باز/بسته کردن زیرمجموعه‌ها
+                        li.addEventListener("click", (event) => {
+                            event.stopPropagation(); // جلوگیری از تأثیر روی والد
+                            li.classList.toggle("collapsed");
+                        });
+                    }
+
+                    ul.appendChild(li);
+                });
+
+            return ul;
+        }
+
+        // دریافت داده‌ها از API و نمایش آنها
+        fetch(apiUrl)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error fetching data: " + response.statusText);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const categoryTree = document.getElementById("category-tree");
+                const tree = createCategoryTree(data);
+                categoryTree.appendChild(tree);
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+                document.getElementById("category-tree").textContent = "Failed to load data.";
+            });
+    </script>
+</body>
+</html>
