@@ -1,4 +1,6 @@
 from django.shortcuts import render
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from itertools import chain
@@ -10,7 +12,10 @@ from apps.advertising.serializers import AllAdvertisingViewSerializer, MainField
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 
 
+
 # Create your views here.
+
+# swagger
 class AllAdvertisingView(ListAPIView):
     """
       - view all advertising
@@ -131,6 +136,7 @@ class AllAdvertisingView(ListAPIView):
     permission_classes = []
 
 
+# swagger
 class ViewAdvertisingForCategory(APIView):
     """
       - view all advertising
@@ -256,13 +262,10 @@ class ViewAdvertisingForCategory(APIView):
                 categories = category.get_descendants(include_self=True)
                 advertising = Advertising.objects.filter(category__in=categories).order_by('-created_at')
                 ladder = ValidateLadderAdvertising.get_ladder_advertising(categories)
-                print('ladder', ladder)
                 if ladder is not None:
                     advertising2 = list(chain(ladder, advertising))
-                    print(advertising2)
                 else:
                     advertising2 = advertising
-                    print(advertising2)
                 serializer = self.serializer_class(advertising2, many=True)
                 serializer.context['request'] = request
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -273,28 +276,116 @@ class AddAdvertiseView(APIView):
     serializer_class = AllAdvertisingViewSerializer
     permission_classes = []
 
-    def get(self,request,category_id=None):
+    def get(self, request, category_id=None):
         if category_id is not None:
             category = Category.objects.filter(pk=category_id)
             if category.exists():
                 category = Category.objects.get(pk=category_id).fields.all()
                 if category:
-                    serializers=MainFieldCategorySerializer(category, many=True)
+                    serializers = MainFieldCategorySerializer(category, many=True)
                     return Response(serializers.data, status=status.HTTP_200_OK)
                 return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_404_NOT_FOUND)
-    def post(self, request):
-        image=request.data['image']
-        value=request.data['value']
-        advertise=request.data['advertise']
-        category=request.data['category']
-        print(image)
-        print(value)
-        print(advertise)
-        print(category)
-        pass
+    def post(self,request):
+        print(request.data)
+        return Response(status=status.HTTP_200_OK)
 
-class ViewAllCategory(ListAPIView):
+@method_decorator(cache_page(60*60*24), name='dispatch')
+class AllCategoryView(APIView):
     serializer_class = MainCategorySerializer
+
+    queryset = Category.objects.all()
+
+    def get(self, request, category_id=None):
+        if category_id is not None:
+            if Category.objects.filter(pk=category_id).exists():
+                print('category_id', category_id)
+                category = Category.objects.get(pk=category_id)
+                categories = category.get_descendants(include_self=False)
+                print('categories', categories)
+                serializers = self.serializer_class(categories, many=True)
+                return Response(serializers.data, status=status.HTTP_200_OK)
+
+        else:
+            category = Category.objects.filter(parent=None)
+            category_id_parent = Category.objects.all().values_list('parent',
+                                                                    flat=True)
+            categories = [i for i in category if i.id in category_id_parent]
+            serializers = self.serializer_class(categories, many=True)
+            return Response(serializers.data,
+                            status=status.HTTP_200_OK)
+        return Response({'massage': 'dont category'},
+                        status=status.HTTP_404_NOT_FOUND)
+
+
+from .serializers import MainStateSerializer, MainCitySerializer
+
+
+# swagger
+@method_decorator(cache_page(60*60*24), name='dispatch')
+class AllStateView(ListAPIView):
+    """
+    - all state in db
+
+        - method GET
+
+        [
+
+            {
+
+                "id": 1,
+                "title": "tehran",
+                "area_code": "021"
+            },
+
+            {
+
+                "id": 2,
+                "title": "karaj",
+                "area_code": "068"
+
+            }
+
+        ]
+
+    """
+    serializer_class = MainStateSerializer
+    queryset = State.objects.all()
+
+
+# swagger
+@method_decorator(cache_page(60*60*24), name='dispatch')
+class AllCityView(APIView):
+    """
+    - all state in db
+
+        - method GET
+
+        [
+
+            {
+
+                "id": 2,
+                "state": 2,
+                "title": "karaj"
+
+            }
+
+        ]
+
+    """
+    serializer_class = MainCitySerializer
     permission_classes = []
-    queryset=Category.objects.all()
+
+    def get(self, request, state_id=None):
+        if state_id is not None:
+            stata=State.objects.filter(pk=state_id).values_list('id', flat=True)
+            if stata.exists():
+                print(stata)
+                city = City.objects.filter(state__in=stata)
+                print(City)
+                serializers = self.serializer_class(city, many=True)
+                return Response(serializers.data,
+                                status=status.HTTP_200_OK)
+        return Response({'massage': "NOT FOUND"},
+                        status=status.HTTP_404_NOT_FOUND)
