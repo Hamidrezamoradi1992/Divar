@@ -97,11 +97,16 @@ class VerifyEmailView(APIView):  # swagger
             return Response({'message': 'email not valid'},
                             status=status.HTTP_400_BAD_REQUEST)
         if code == codes:
-            user, _ = User.objects.get_or_create(email=email, password=None)
+
+            # user, _ = User.objects.get_or_create(email=email, password=None)
+            user = User.objects.filter(email=email).first()
+            if user is None:
+                user = User.objects.create(email=email, password=None)
             refresh = RefreshToken.for_user(user=user)
             response = Response({'message': 'email already verified'},
                                 status=status.HTTP_200_OK)
-            response.set_cookie(key='access', value=refresh.access_token, expires=7200)
+            response.set_cookie(key='access', value=refresh.access_token,
+                                expires=7200)
             response.set_cookie(key='refresh', value=refresh, expires=864000)
 
             return response
