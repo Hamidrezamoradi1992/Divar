@@ -7,6 +7,7 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>verify email</title>
+
     <style>
         html {
             background: linear-gradient(20deg, white, #9b9b9b);
@@ -124,7 +125,7 @@
     <h1 id="sign-in-up" class="login">verify email</h1>
     <form id="sendEmailSignIn" class="sign-in">
         {% csrf_token %}
-        <input type="email" id="email" value="" name="email" placeholder="Email Address"/>
+        <input type="email" id="email" value="" name="email" hidden="hidden" placeholder="Email Address"/>
         <input type="number" id="code" name="code" placeholder="verify code"/>
         <input class="submit-btn" type="submit">
     </form>
@@ -151,9 +152,7 @@
         })
             .then(response => {
                 if (response.status === 200) {
-                    alert('درخواست با موفقیت انجام شد!');
-                } else {
-                    alert('مشکلی در درخواست وجود دارد.');
+                    location.replace(`http://localhost:${domainPort}`)
                 }
                 return response.json();
             })
@@ -170,7 +169,6 @@
             })
             .catch(error => {
                 console.error('خطایی رخ داده است:', error);
-                alert('یک خطا در ارسال درخواست وجود دارد.');
             });
     });
 </script>
