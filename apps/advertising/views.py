@@ -300,7 +300,7 @@ class AllCategoryView(APIView):
         print('dasdasdasdasd')
         if category_id is not None:
             if Category.objects.filter(pk=category_id).exists():
-                category = Category.objects.filter(parent_id=category_id)g
+                category = Category.objects.filter(parent_id=category_id)
                 serializers = self.serializer_class(category, many=True)
                 return Response(serializers.data, status=status.HTTP_200_OK)
 
