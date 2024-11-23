@@ -1,9 +1,13 @@
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.core.exceptions import ValidationError
 from apps.core.models.logicaldelete import LogicalDeleteMixin
 from apps.core.models.timelogical import TimeCreateMixin
 from apps.core.managers import BasicLogicalDeleteManager
+from apps.core.validators import CustomValidators
+from django.core.cache import cache
 
 
 # Create your models here.
@@ -41,9 +45,9 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
                              related_name='city_advertising',
                              related_query_name='city_advertising')
     state = models.ForeignKey('State',
-                             on_delete=models.CASCADE,
-                             related_name='city_advertising',
-                             related_query_name='city_advertising')
+                              on_delete=models.CASCADE,
+                              related_name='city_advertising',
+                              related_query_name='city_advertising')
     objects = AdvertisingManager()
 
     def __str__(self):
@@ -51,10 +55,10 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
 
     def clean(self):
         category = Category.objects.get(id=self.category.pk)
-        # if category.parent:
-        #     raise ValidationError('Categories can not be a parent')
-        if not Category.fields:
+        if not category.fields:
             raise ValidationError('Categories cannot be empty fields')
+        if self.city.state == self.state:
+            raise ValidationError('city is not in state')
 
     def save(self, *args, **kwargs):
         self.clean()
@@ -81,28 +85,33 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         'FieldCategory',
         related_name='categories',
         related_query_name='categories',
-        blank=True
-    )
+        blank=True)
+    image = models.ImageField(upload_to=f'kyc/_kyc_images/',
+                              verbose_name='ID Card',
+                              validators=[CustomValidators.file_validator],
+                              null=True, blank=True)
     price = models.FloatField(default=0)
 
     def __str__(self):
         return f'title: {self.title}/free: {self.free}'
 
     def clean(self):
-        if not self.parent and self.pk and self.fields.exists():
-            has_children = Category.objects.filter(parent_id=self.id).exists()
-            print('has_children')
-            if has_children and self.fields.exists():
-                raise ValidationError('Category with children cannot have fields.')
+        if self.fields:
+            if self.parent_id:
+                has_children = Category.objects.filter(parent_id=self.pk).exists()
+                if has_children:
+                    raise ValidationError('Category with children cannot have fields.')
+            if not self.parent_id:
+                has_children = Category.objects.filter(parent_id=self.pk).exists()
+                if has_children:
+                    raise ValidationError('Category with children cannot have fields.')
+
         if self.free and self.price > 0:
             raise ValidationError('Price cannot be greater than 0 for free categories.')
         elif not self.free and self.price <= 0:
             raise ValidationError('Price must be greater than 0 for non-free categories.')
 
     def save(self, *args, **kwargs):
-        if not self.pk:  # Check if it's a new object
-            super().save(*args, **kwargs)  # Save to get an ID
-        self.clean()  # Call clean after saving for validations involving many-to-many
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -179,17 +188,12 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
     mandatory = models.BooleanField(default=False)
     object = BasicLogicalDeleteManager()
 
-    def clean(self):
-        if self.title in ['price', 'title', 'description']:
-            raise ValidationError('title already exists')
-
     def save(self, *args, **kwargs):
         self.clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
         return f'title: {self.title} /type: {self.type_field} /mandatory: {self.mandatory}'
-
 
     class Meta:
         verbose_name = 'FieldCategory'
@@ -284,3 +288,38 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
+
+
+class Image(LogicalDeleteMixin, TimeCreateMixin):
+    expires_at = None
+    name = models.CharField(max_length=100)
+    content_type = models.ForeignKey(ContentType,
+                                     on_delete=models.CASCADE)
+
+    file = models.FileField(upload_to=f'file_field/',
+                            validators=[CustomValidators.file_validator],
+                            null=True,
+                            blank=True)
+    instance_id = models.PositiveSmallIntegerField()
+    alt = models.TextField(blank=True,
+                           null=True)
+    is_cover = models.BooleanField(default=False)
+
+    generics = GenericForeignKey('content_type',
+                                 'instance_id')
+
+    def clean(self, **kwargs):
+        if self.is_cover and self.instance_id:
+            cover_images = (Image.objects.filter(instance_id=self.instance_id, is_cover=True))
+            if cover_images:
+                raise ValidationError('Each product can only have one cover image.')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name}-{self.content_type.model}-{self.alt}"
+
+    class Meta:
+        pass

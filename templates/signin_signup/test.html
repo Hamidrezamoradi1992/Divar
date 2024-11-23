@@ -74,7 +74,7 @@
         function setCookie(name, value) {
             let expires = "";
             const date = new Date();
-            date.setTime(date.getTime() + (120 * 60 * 1000)); // اعتبار 2 ساعت
+            date.setTime(date.getTime() + (120 * 60 * 1000)); 
             expires = "; expires=" + date.toUTCString();
             document.cookie = name + "=" + (value || "") + expires + "; path=/";
         }
@@ -85,7 +85,7 @@
             if (parts.length === 2) {
                 return parts.pop().split(';').shift();
             }
-            return null; // بازگشت مقدار null در صورت نبود کوکی
+            return null;
         }
 
 

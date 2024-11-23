@@ -2,13 +2,10 @@ from dataclasses import Field
 
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
-from .models import State, Category, FieldCategory, Advertising, City, SaveValueField
-# from django.contrib.auth import get_user_model
-# User = get_user_model()
+from .models import State, Category, FieldCategory, Advertising, City, SaveValueField,Image
 from apps.account.models import User
 from apps.account.serializers import MainUserSerializer
-from apps.core.serializers import MainImageSerializer
-from apps.core.models.images import Image
+
 
 
 class MainStateSerializer(serializers.ModelSerializer):
@@ -58,7 +55,8 @@ class MainCategorySerializer(serializers.ModelSerializer):
                   'parent',
                   'free',
                   'fields',
-                  'price')
+                  'price',
+                  'image')
 
     def get_parent(self, obj):
         return MainCategorySerializer(obj.parent).data
@@ -96,7 +94,8 @@ class ViewCategorySerializer(MainCategorySerializer):
                   'parent',
                   'free',
                   'fields',
-                  'price')
+                  'price',
+                  'image')
 
     def get_parent(self, obj):
         pass
@@ -119,7 +118,7 @@ class ViewSaveValueFieldSerializer(MainSaveValueFieldSerializer):
         return name_field.title
 
 
-class AdresViewSerializer(MainUserSerializer):
+class AddressViewSerializer(MainUserSerializer):
     class Meta:
         model = User
         fields = ('id',
@@ -151,10 +150,6 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
                   'vlue_field',
                   'address',)
 
-    def get_image(self, obj):
-        content_type = ContentType.objects.get(model='advertising')
-        image = Image.objects.filter(content_type=content_type, instance_id=obj.id)
-        return MainImageSerializer(image, many=True).data
 
     def get_vlue_field(self, obj):
         field = SaveValueField.objects.filter(advertising=obj.id)
@@ -163,7 +158,7 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
     def get_address(self, obj):
         if self.context['request'].user.is_authenticated:
             user = User.objects.filter(pk=self.context['request'].user.id)
-            return AdresViewSerializer(user, many=True).data
+            return AddressViewSerializer(user, many=True).data
         return {'massage': 'is_user_not_authentication'}
 # end view serializers
 

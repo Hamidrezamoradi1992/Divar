@@ -1,10 +1,5 @@
 from rest_framework import serializers
-
-from apps.core.serializers import MainImageSerializer
-from apps.core.models.images import Image
-from django.contrib.auth import get_user_model
-
-User = get_user_model()
+from apps.account.models import User
 
 
 class MainUserSerializer(serializers.ModelSerializer):
@@ -19,33 +14,42 @@ class MainUserSerializer(serializers.ModelSerializer):
                   'is_kyc',
                   'gender',
                   'address',
-                  'age')
+                  'age',
+                  'image_idcard',
+                  'image_Official_photo',
+                  'image_letter_of_commitment')
 
 
 class UpdateUserSerializer(MainUserSerializer):
     class Meta:
         model = User
 
-        fields = ['id',
+        fields = ('id',
                   'email',
                   'first_name',
                   'last_name',
                   'phone',
+                  'is_kyc',
                   'gender',
                   'address',
-                  'age']
+                  'age',
+                  'image_idcard',
+                  'image_Official_photo',
+                  'image_letter_of_commitment')
         extra_kwargs = {
             'email': {'read_only': True},
+            'is_kyc': {'read_only': True},
         }
 
-
-class UpdateImageUserSerializer(MainImageSerializer):
-    class Meta:
-        model = Image
-        fields = ('id', 'name', 'content_type', 'image', 'instance_id', 'alt', 'is_cover')
-
     def update(self, instance, validated_data):
-        print(instance)
+        fields_to_update = ('first_name', 'last_name', 'phone', 'gender', 'address', 'age', 'image_idcard',
+                            'image_Official_photo', 'image_letter_of_commitment')
+        for field in fields_to_update:
+            if field in validated_data and validated_data[field] not in [None,""]:
+                setattr(instance, field, validated_data[field])
+            else:
+                instance_none=User.objects.filter(pk=instance.pk).values_list(field, flat=True)
+                setattr(instance, field, instance_none.first())
+
         instance.save()
         return instance
-

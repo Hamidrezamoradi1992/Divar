@@ -5,21 +5,23 @@
 {% endblock %}
 
 {% block content %}
-    <div     class="" id="category_key"></div>
-    <div     class="" id="forms"></div>
+
+    <div class="" id="category_key"></div>
+    <div class="max-w-[60vw] m-auto" id="forms_iddd"></div>
 {% endblock %}
 
 {% block script %}
     <script>
         var domainPort = window.location.port;
-        var categoryKey=document.querySelector("#category_key")
-        var formView=document.querySelector("#form")
-        let categoryId=0
-        let stateId=0
-        let cityId=0
-        let advertiseId=0
-        
-    
+        var categoryKey = document.querySelector("#category_key")
+        let formView = document.querySelector("#forms_iddd")
+        let categoryId = 0
+        let stateId = 0
+        let cityId = 0
+        let advertiseId = 0
+
+
+
     </script>
 
     <script src="{% static 'js/SetToken.js' %}"></script>
@@ -27,7 +29,7 @@
     <script src="{% static 'js/AddAdvertise/advertiing.js' %}"></script>
     <script src="{% static 'js/AddAdvertise/formAdvertise.js' %}"></script>
     <script>
-        document.addEventListener('DOMContentLoaded',(ev)=>{
+        document.addEventListener('DOMContentLoaded', (ev) => {
             ev.preventDefault()
             getCategory()
         })

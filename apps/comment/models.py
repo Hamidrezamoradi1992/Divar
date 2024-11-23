@@ -4,8 +4,7 @@ from apps.core.models.timelogical import TimeCreateMixin
 
 from apps.advertising.models import Advertising
 from apps.core.managers import BasicLogicalDeleteManager
-from django.contrib.auth import get_user_model
-User = get_user_model()
+from apps.account.models import User
 # Create your models here.
 
 class comment(TimeCreateMixin, LogicalDeleteMixin):

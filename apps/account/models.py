@@ -59,6 +59,20 @@ class User(AbstractUser):
                               max_length=6)
     is_kyc = models.BooleanField(default=False)
     is_web_manager = models.BooleanField(default=False)
+
+    image_idcard = models.ImageField(upload_to=f'kyc/_kyc_images/',
+                                     verbose_name='ID Card',
+                                     validators=[CustomValidators.file_validator],
+                                     null=True, blank=True)
+    image_Official_photo = models.ImageField(upload_to=f'kyc/_kyc_images/',
+                                             verbose_name='Official photo',
+                                             validators=[CustomValidators.file_validator],
+                                             null=True, blank=True)
+    image_letter_of_commitment = models.ImageField(upload_to=f'kyc/_kyc_images/',
+                                                   verbose_name=' letter of commitment',
+                                                   validators=[CustomValidators.file_validator],
+                                                   null=True, blank=True)
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
@@ -72,35 +86,3 @@ class User(AbstractUser):
         verbose_name_plural = 'Users'
         indexes = [models.Index(fields=['email', 'first_name'])]
 
-
-class KycImage(LogicalDeleteMixin, TimeCreateMixin):
-    expires_at = None
-    full_name = models.CharField(max_length=100)
-    user = models.ForeignKey(User, on_delete=models.SET_NULL,
-                             related_name='kyc_user',
-                             related_query_name='kyc_user',
-                             null=True, blank=True)
-    image_idcard = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
-                                     verbose_name='ID Card',
-                                     validators=[CustomValidators.image_validator])
-    image_Official_photo = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
-                                             verbose_name='Official photo',
-                                             validators=[CustomValidators.image_validator])
-    image_letter_of_commitment = models.ImageField(upload_to=f'kyc/{full_name}_kyc_images/',
-                                                   verbose_name=' letter of commitment',
-                                                   validators=[CustomValidators.image_validator])
-
-    objects = BasicLogicalDeleteManager()
-
-    def clean(self):
-        user = KycImage.objects.all().values_list('user', flat=True)
-        if self.user in user:
-            raise ValidationError('User already exists.')
-
-    def __str__(self):
-        return f"{self.user.email}/ kyc images"
-
-    class Meta:
-        verbose_name = 'kyc images'
-        verbose_name_plural = 'kyc images'
-        indexes = [models.Index(fields=['user'])]

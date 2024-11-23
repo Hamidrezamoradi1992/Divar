@@ -1,7 +1,6 @@
 
 
 async function fetchWithAuth(url, options = {}) {
-    console.log('hamid')
     try {
 
         const token = await ensureToken();
