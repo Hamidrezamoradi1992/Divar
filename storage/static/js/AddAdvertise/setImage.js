@@ -49,4 +49,25 @@ function send_image() {
         body: data,
 
     })
+
+    advertise_iamge_send.then(response => {
+
+        swal({
+            title: "Accepted",
+            text: response.massage,
+            icon: "accepted",
+            button: "accept",
+        });
+        addFieldAdvertising()
+
+
+    }).catch(error => {
+        console.error('Error:', error);
+        swal({
+            title: "Error!",
+            text: "error",
+            icon: "warning",
+            button: "accept",
+        });
+    });
 }
