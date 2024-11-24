@@ -1,3 +1,6 @@
+from datetime import timedelta
+from django.utils import timezone
+
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
@@ -48,6 +51,7 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
                               on_delete=models.CASCADE,
                               related_name='city_advertising',
                               related_query_name='city_advertising')
+
     objects = AdvertisingManager()
 
     def __str__(self):
@@ -57,10 +61,14 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
         category = Category.objects.get(id=self.category.pk)
         if not category.fields:
             raise ValidationError('Categories cannot be empty fields')
-        if self.city.state == self.state:
+        if self.city.state != self.state:
             raise ValidationError('city is not in state')
-
+        if not self.expires_at:
+            self.expires_at = timezone.now() + timedelta(days=2)
+        if self.expires_at and self.diffusion:
+            self.expires_at = timezone.now() + timedelta(days=30)
     def save(self, *args, **kwargs):
+
         self.clean()
         super().save(*args, **kwargs)
 

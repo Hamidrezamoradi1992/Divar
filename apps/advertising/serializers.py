@@ -163,3 +163,7 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
 # end view serializers
 
 # add advertise in database
+class AddAdvertisingSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Advertising
+            fields = ['id', 'title', 'description', 'price', 'category', 'state', 'city', 'user']

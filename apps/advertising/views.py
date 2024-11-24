@@ -6,11 +6,10 @@ from rest_framework.views import APIView
 from itertools import chain
 from rest_framework.generics import ListAPIView
 from rest_framework import status
-from apps.advertising.models import Advertising,  Category,  City, State
+from apps.advertising.models import Advertising, Category, City, State
 from apps.advertising.serializers import AllAdvertisingViewSerializer, MainFieldCategorySerializer, \
-    MainCategorySerializer
+    MainCategorySerializer, AddAdvertisingSerializer
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
-
 
 
 # Create your views here.
@@ -286,9 +285,16 @@ class AddAdvertiseView(APIView):
                     return Response(serializers.data, status=status.HTTP_200_OK)
                 return Response(status=status.HTTP_404_NOT_FOUND)
         return Response(status=status.HTTP_404_NOT_FOUND)
-    def post(self,request):
-        print(request.data)
-        return Response(status=status.HTTP_200_OK)
+
+    def post(self, request):
+
+        serializer = AddAdvertisingSerializer(data=request.data)
+        if serializer.is_valid():
+            advertise=serializer.save()
+            return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
+        print(serializer.errors)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 # @method_decorator(cache_page(60*60*24), name='dispatch')
 class AllCategoryView(APIView):
@@ -297,7 +303,6 @@ class AllCategoryView(APIView):
     permission_classes = []
 
     def get(self, request, category_id=None):
-        print('dasdasdasdasd')
         if category_id is not None:
             if Category.objects.filter(pk=category_id).exists():
                 category = Category.objects.filter(parent_id=category_id)
@@ -309,7 +314,6 @@ class AllCategoryView(APIView):
             category_id_parent = Category.objects.all().values_list('parent_id',
                                                                     flat=True)
             categories = [i for i in category if i.id in category_id_parent]
-            print('categories',categories)
             serializers = self.serializer_class(categories, many=True)
             return Response(serializers.data,
                             status=status.HTTP_200_OK)
@@ -321,7 +325,7 @@ from .serializers import MainStateSerializer, MainCitySerializer
 
 
 # swagger
-@method_decorator(cache_page(60*60*24), name='dispatch')
+@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
 class AllStateView(ListAPIView):
     """
     - all state in db
@@ -353,7 +357,7 @@ class AllStateView(ListAPIView):
 
 
 # swagger
-@method_decorator(cache_page(60*60*24), name='dispatch')
+@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
 class AllCityView(APIView):
     """
     - all state in db
@@ -378,7 +382,7 @@ class AllCityView(APIView):
 
     def get(self, request, state_id=None):
         if state_id is not None:
-            stata=State.objects.filter(pk=state_id).values_list('id', flat=True)
+            stata = State.objects.filter(pk=state_id).values_list('id', flat=True)
             if stata.exists():
                 city = City.objects.filter(state__in=stata)
                 serializers = self.serializer_class(city, many=True)
