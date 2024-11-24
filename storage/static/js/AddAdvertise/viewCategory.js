@@ -11,11 +11,11 @@ function getCategory(id_category = null) {
             categoryKey.innerHTML = ""
             let el = '';
             dats.forEach(category => {
-                el += `<button class="btn btn-outline mx-3 btn-secondary" onclick="getCategory(${category.id})">${category.title}</button>`;
+                el += `<button class="btn btn-accent mx-3" onclick="getCategory(${category.id})">${category.title}</button>`;
             });
 
             if (id_category) {
-                el += `<button class="btn btn-outline mx-3 btn-secondary" onclick="getCategory()">back</button>`;
+                el += `<button class="btn btn-outline btn-error mx-3" onclick="getCategory()">back</button>`;
             }
             console.log(dats.length)
             if (dats.length === 0) {
@@ -38,7 +38,7 @@ function getCategory(id_category = null) {
             let el = '';
             dats.forEach(category => {
                 console.log(category);
-                el += `<button class="btn btn-outline mx-3 btn-secondary" onclick="getCategory(${category.id})">${category.title}</button>`;
+                el += `<button class="btn btn-accent mx-3" onclick="getCategory(${category.id})">${category.title}</button>`;
             });
 
             categoryKey.innerHTML = el;

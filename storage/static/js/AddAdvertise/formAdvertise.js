@@ -1,7 +1,7 @@
 function formAdvertise(city_id) {
     cityId = city_id
     formView.innerHTML = ''
-    categoryKey.innerHTML = `<button class="btn btn-outline mx-3 btn-secondary" onclick="getCategory()">back</button>`;
+    categoryKey.innerHTML = `<button class="btn btn-outline btn-error mx-3" onclick="getCategory()">back</button>`;
     formView.innerHTML = `
         <form action="" id="form_input" class="flex flex-col gap-4">
             <div class="flex gap-4">
@@ -33,7 +33,12 @@ function send_form() {
         },
         body:data,
 
-
     })
+
+    advertise_send.then( response=>{
+        advertiseId=response.advertise
+    }).catch(error => {
+            console.error('Error:', error);
+        });
 
 }
