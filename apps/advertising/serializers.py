@@ -167,3 +167,7 @@ class AddAdvertisingSerializer(serializers.ModelSerializer):
         class Meta:
             model = Advertising
             fields = ['id', 'title', 'description', 'price', 'category', 'state', 'city', 'user']
+class AddAdvertisingImageSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Image
+            fields = ['id', 'content_type','instance_id','file']

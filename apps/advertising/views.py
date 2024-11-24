@@ -1,6 +1,8 @@
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
+from rest_framework.parsers import MultiPartParser, FormParser,JSONParser,FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from itertools import chain
@@ -8,7 +10,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework import status
 from apps.advertising.models import Advertising, Category, City, State
 from apps.advertising.serializers import AllAdvertisingViewSerializer, MainFieldCategorySerializer, \
-    MainCategorySerializer, AddAdvertisingSerializer
+    MainCategorySerializer, AddAdvertisingSerializer, AddAdvertisingImageSerializer
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 
 
@@ -287,16 +289,35 @@ class AddAdvertiseView(APIView):
         return Response(status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
-
         serializer = AddAdvertisingSerializer(data=request.data)
         if serializer.is_valid():
             advertise=serializer.save()
             return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
-        print(serializer.errors)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+class UploadAdvertiseImageView(APIView):
+    permission_classes = []
+    parser_classes = [MultiPartParser,FileUploadParser]
+    serializer_class = AddAdvertisingImageSerializer
+    def post(self, request):
+        content_type = ContentType.objects.get( model='advertising')
+        for image in request.FILES.getlist('image'):
+            data_type={
+                'file':image,
+                'content_type':content_type.id,
+                'instance_id':request.data['advertising']}
+            serializer = AddAdvertisingImageSerializer(data=data_type,partial=True)
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                print(serializer.errors)
+                return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_200_OK)
 
-# @method_decorator(cache_page(60*60*24), name='dispatch')
+
+
+
+@method_decorator(cache_page(60*60*24), name='dispatch')
 class AllCategoryView(APIView):
     serializer_class = MainCategorySerializer
     queryset = Category.objects.all()

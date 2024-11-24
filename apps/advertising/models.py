@@ -67,6 +67,7 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
             self.expires_at = timezone.now() + timedelta(days=2)
         if self.expires_at and self.diffusion:
             self.expires_at = timezone.now() + timedelta(days=30)
+
     def save(self, *args, **kwargs):
 
         self.clean()
@@ -300,30 +301,22 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
 
 class Image(LogicalDeleteMixin, TimeCreateMixin):
     expires_at = None
-    name = models.CharField(max_length=100)
     content_type = models.ForeignKey(ContentType,
                                      on_delete=models.CASCADE)
 
-    file = models.FileField(upload_to=f'file_field/',
+    file = models.FileField(upload_to='file_field/',
                             validators=[CustomValidators.file_validator],
                             null=True,
                             blank=True)
     instance_id = models.PositiveSmallIntegerField()
     alt = models.TextField(blank=True,
-                           null=True)
-    is_cover = models.BooleanField(default=False)
+                           null=True,
+                           default='advertising_image')
 
     generics = GenericForeignKey('content_type',
                                  'instance_id')
 
-    def clean(self, **kwargs):
-        if self.is_cover and self.instance_id:
-            cover_images = (Image.objects.filter(instance_id=self.instance_id, is_cover=True))
-            if cover_images:
-                raise ValidationError('Each product can only have one cover image.')
-
     def save(self, *args, **kwargs):
-        self.clean()
         super().save(*args, **kwargs)
 
     def __str__(self):
