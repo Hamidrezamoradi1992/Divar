@@ -31,14 +31,20 @@ function send_form() {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': csrfTokens
         },
-        body:data,
+        body: data,
 
     })
 
-    advertise_send.then( response=>{
-        advertiseId=response.advertise
+    advertise_send.then(response => {
+        console.log('re', response)
+        console.log(response.status)
+
+        advertiseId = response.advertise
+        setImage(response.advertise)
+
+
     }).catch(error => {
-            console.error('Error:', error);
-        });
+        console.error('Error:', error);
+    });
 
 }
