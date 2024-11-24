@@ -17,13 +17,22 @@ function formAdvertise(city_id) {
 
 function send_form() {
     const form_advertise = document.querySelector('#form_input')
-    let data=FormData()
+    let data = new FormData(form_advertise)
+    data.append('category', parseInt(categoryId))
+    data.append('state', parseInt(stateId))
+    data.append('city', parseInt(cityId))
+    data.append('user', parseInt(userId))
+    const csrfTokens = getCookie('csrftoken')
+
+
     const advertise_send = fetchWithAuth(`http://localhost:${domainPort}/advertising/api/add/advertise/`, {
         method: 'POST',
-            headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRFToken': csrfTokens
-                },
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'X-CSRFToken': csrfTokens
+        },
+        body:data,
+
 
     })
 
