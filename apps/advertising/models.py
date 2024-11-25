@@ -323,7 +323,7 @@ class Image(LogicalDeleteMixin, TimeCreateMixin):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name}-{self.content_type.model}-{self.alt}"
+        return f"{self.content_type.model}-{self.alt}"
 
     class Meta:
         pass

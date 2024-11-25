@@ -16,7 +16,7 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           AddAdvertisingImageSerializer,
                                           MainSaveValueFieldSerializer,
                                           MainStateSerializer,
-                                          MainCitySerializer)
+                                          MainCitySerializer, AdminAdvertisingViewSerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 
 
@@ -591,3 +591,21 @@ class AllCityView(APIView):
                                 status=status.HTTP_200_OK)
         return Response({'massage': "NOT FOUND"},
                         status=status.HTTP_404_NOT_FOUND)
+
+
+""" start admin panel advertising"""
+
+
+class AdvertisingPublishedView(APIView):
+    serializer_class = AdminAdvertisingViewSerializer
+    def get(self, request):
+        userid=request.user.id
+        if userid:
+            queryset=Advertising.objects.filter(user=userid,diffusion=True)
+            serializer = self.serializer_class(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'massage':'user not define'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+""""end admin panel advertising"""

@@ -25,4 +25,7 @@ urlpatterns = [
 
     path('api/add/advertise/all_category/<int:category_id>', views.AllCategoryView.as_view()),
     path('api/add/advertise/all_category/', views.AllCategoryView.as_view(), name='my_view_default'),
+
+    #admin panel
+    path('api/adminpanel/advertising',views.AdvertisingPublishedView.as_view())
 ]

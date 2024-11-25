@@ -2,10 +2,9 @@ from dataclasses import Field
 
 from django.contrib.contenttypes.models import ContentType
 from rest_framework import serializers
-from .models import State, Category, FieldCategory, Advertising, City, SaveValueField,Image
+from .models import State, Category, FieldCategory, Advertising, City, SaveValueField, Image
 from apps.account.models import User
 from apps.account.serializers import MainUserSerializer
-
 
 
 class MainStateSerializer(serializers.ModelSerializer):
@@ -70,6 +69,12 @@ class MainSaveValueFieldSerializer(serializers.ModelSerializer):
                   'category',
                   'field',
                   'value',)
+
+
+class AddAdvertisingImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ['id', 'alt','content_type', 'instance_id', 'file']
 
 
 # end main serializers
@@ -150,7 +155,6 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
                   'vlue_field',
                   'address',)
 
-
     def get_vlue_field(self, obj):
         field = SaveValueField.objects.filter(advertising=obj.id)
         return ViewSaveValueFieldSerializer(field, many=True).data
@@ -160,14 +164,39 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
             user = User.objects.filter(pk=self.context['request'].user.id)
             return AddressViewSerializer(user, many=True).data
         return {'massage': 'is_user_not_authentication'}
+
+    def get_image(self, obj):
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id)
+        return AddAdvertisingImageSerializer(image, many=True).data
+
+
 # end view serializers
 
 # add advertise in database
 class AddAdvertisingSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Advertising
-            fields = ['id', 'title', 'description', 'price', 'category', 'state', 'city', 'user']
-class AddAdvertisingImageSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Image
-            fields = ['id', 'content_type','instance_id','file']
+    class Meta:
+        model = Advertising
+        fields = ['id', 'title', 'description', 'price', 'category', 'state', 'city', 'user']
+
+
+class AdminAdvertisingViewSerializer(AllAdvertisingViewSerializer):
+    image=serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Advertising
+        fields = ('id',
+                  'title',
+                  'description',
+                  'image',
+                  'category',
+                  'is_active',
+                  'is_deleted',
+                  'diffusion',
+                  'expires_at'
+
+                  )
+
+    def get_image(self, obj):
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
+                                     instance_id=obj.id).first()
+
+        return AddAdvertisingImageSerializer(image).data
