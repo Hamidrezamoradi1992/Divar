@@ -1,5 +1,4 @@
 function setImage(advertising) {
-    console.log(advertising)
     formView.innerHTML = ""
     categoryKey.innerHTML = `
                 <button class="btn btn-outline btn-error mx-3" onclick="getCategory()">back</button>
@@ -11,6 +10,7 @@ function setImage(advertising) {
             <input type="file" name="image" class="file-input file-input-bordered file-input-info w-full max-w-xs m-5" />
           </div>
           <button class="btn btn-ghost" type="button" onclick="send_image()">accept</button>
+          </form>
     `
 }
 
@@ -58,7 +58,7 @@ function send_image() {
             icon: "accepted",
             button: "accept",
         });
-        addFieldAdvertising()
+        getFieldAdvertising()
 
 
     }).catch(error => {
