@@ -22,7 +22,7 @@
         </div>
 
     </div>
-    <div class="min-h-[600px]" id="contex_admin_panel">
+    <div class="min-h-[600px]" id="contexAdminPanel">
         <h1>kjasdfhsag</h1>
     </div>
 
@@ -31,8 +31,11 @@
 {% block script %}
     <script src="{% static 'js/SetToken.js' %}"></script>
     <script src="{% static 'js/adminpanel/UserAdminPanel/GetContextUser.js' %}"></script>
+    <script src="{% static 'js/adminpanel/UserAdminPanel/advertising/getAdvertising.js' %}"></script>
 
     <script>
+        let formContextEl = document.querySelector('#contextDateUser')
+        let contexAdminPanelEL = document.querySelector('#contexAdminPanel')
         var domainPort = window.location.port;
         const userId =    {% if request.user.is_authenticated  %}
             {{ request.user.id }}
@@ -43,6 +46,7 @@
         if (!userId) {
             location.replace(`http://localhost:${domainPort}/accounts/signup/`)
         }
+
         document.addEventListener("DOMContentLoaded", (ev) => {
             ev.preventDefault()
             get_user(userId)
