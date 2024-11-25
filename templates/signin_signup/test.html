@@ -75,7 +75,7 @@
             let expires = "";
             const date = new Date();
             date.setTime(date.getTime() + (120 * 60 * 1000)); 
-            expires = "; expires=" + date.toUTCString();
+            expires = "; expires=" + date.toLocaleDateString();
             document.cookie = name + "=" + (value || "") + expires + "; path=/";
         }
 

@@ -1,0 +1,53 @@
+{% extends '_base.html' %}
+{% load static %}
+
+{% block title %}admin panel{% endblock %}
+
+{% block extra-head %}
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+{% endblock %}
+
+{% block content %}
+    <div id="contextDateUser"
+         class="min-w-[90vw] max-w-[90vw] min-h-[30vh] rounded-md bg-red-50 mx-auto flex gap-12 py-3 px-2">
+
+    </div>
+
+    <div class="max-w-[90vw] m-auto my-12">
+        <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto">
+            <button class="tab btn" onclick="getAdvertising()">Advertising</button>
+            <button class=" w-auto tab btn btn-ghost">Update Profile</button>
+            <button class=" tab btn">Favorite</button>
+        </div>
+
+    </div>
+    <div class="min-h-[600px]" id="contex_admin_panel">
+        <h1>kjasdfhsag</h1>
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'js/SetToken.js' %}"></script>
+    <script src="{% static 'js/adminpanel/UserAdminPanel/GetContextUser.js' %}"></script>
+
+    <script>
+        var domainPort = window.location.port;
+        const userId =    {% if request.user.is_authenticated  %}
+            {{ request.user.id }}
+        {% else %}
+            NaN
+        {% endif %}
+        console.log(userId)
+        if (!userId) {
+            location.replace(`http://localhost:${domainPort}/accounts/signup/`)
+        }
+        document.addEventListener("DOMContentLoaded", (ev) => {
+            ev.preventDefault()
+            get_user(userId)
+
+        })
+    </script>
+
+{% endblock %}
