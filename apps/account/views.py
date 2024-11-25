@@ -1,7 +1,7 @@
 from django.core.exceptions import ValidationError
 
 from rest_framework.response import Response
-from rest_framework.views import APIView, View
+from rest_framework.views import APIView
 from rest_framework import status
 from rest_framework_simplejwt.tokens import RefreshToken
 from validate_email import validate_email
@@ -11,6 +11,7 @@ from django.contrib.auth import login
 from apps.account.serializers import UpdateUserSerializer, MainUserSerializer
 from apps.account.utils.utils import Utils
 from service.email import EmailService
+
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from django.contrib.contenttypes.models import ContentType
@@ -176,6 +177,19 @@ class UpdateUserView(UpdateAPIView):
     permission_classes = []
     serializer_class = UpdateUserSerializer
     queryset = User.objects.all()
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # swagger
