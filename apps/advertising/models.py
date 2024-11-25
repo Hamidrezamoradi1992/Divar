@@ -266,6 +266,7 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
         else:
             raise ValidationError('Field no match of category')
 
+
         validation_methods = {
             'int': self._validate_int,
             'str': self._validate_str,
@@ -292,10 +293,12 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
         self.value = float(self.value)
 
     def _validate_bool(self):
-        if self.value.lower() not in ['1', '0']:
+        if self.value.lower() not in ['on','off']:
             raise ValidationError("Value must be a boolean represented as  '1', or '0'.")
+        self.value = 1 if self.value.lower()=='on' else 0
 
     def save(self, *args, **kwargs):
+        self.clean()
         super().save(*args, **kwargs)
 
 
