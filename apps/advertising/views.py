@@ -1,16 +1,22 @@
 from django.contrib.contenttypes.models import ContentType
-from django.shortcuts import render
+
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from rest_framework.parsers import MultiPartParser, FormParser,JSONParser,FileUploadParser
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from itertools import chain
 from rest_framework.generics import ListAPIView
 from rest_framework import status
 from apps.advertising.models import Advertising, Category, City, State
-from apps.advertising.serializers import AllAdvertisingViewSerializer, MainFieldCategorySerializer, \
-    MainCategorySerializer, AddAdvertisingSerializer, AddAdvertisingImageSerializer
+from apps.advertising.serializers import (AllAdvertisingViewSerializer,
+                                          MainFieldCategorySerializer,
+                                          MainCategorySerializer,
+                                          AddAdvertisingSerializer,
+                                          AddAdvertisingImageSerializer,
+                                          MainSaveValueFieldSerializer,
+                                          MainStateSerializer,
+                                          MainCitySerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 
 
@@ -273,10 +279,199 @@ class ViewAdvertisingForCategory(APIView):
             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
+# swagger
+
+@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
 class AddAdvertiseView(APIView):
-    serializer_class = AllAdvertisingViewSerializer
+    """
+        - create new advertising
+            - input
+
+            {
+
+                'title': ['asdasd'],
+                'price': '96555',
+                'description': 'sdasda',
+                'category': '5',
+                'state': '1',
+                'city': '1',
+                'user': '2'
+
+             }
+
+
+            - accepted
+
+                {
+
+                    'advertise': '25'
+
+                }
+
+            - reject
+
+                {
+
+                    'error': {--------------------------}
+
+                }
+
+
+    """
     permission_classes = []
 
+    # add new advertising
+    def post(self, request):
+        serializer = AddAdvertisingSerializer(data=request.data)
+        if serializer.is_valid():
+            advertise = serializer.save()
+            return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
+        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# swagger
+class UploadAdvertiseImageView(APIView):
+    """
+        - upload image
+            -input
+
+                {
+
+                    'advertising': ['89'],
+                    'image':
+                        [
+                            <InMemoryUploadedFile: 2.jpg (image/jpeg)>,
+                            <InMemoryUploadedFile: 2.jpg (image/jpeg)>,
+                            <InMemoryUploadedFile: 2.jpg (image/jpeg)>,
+                            <InMemoryUploadedFile: 2.jpg (image/jpeg)>,
+                            <InMemoryUploadedFile: 2.jpg (image/jpeg)>,
+                            <InMemoryUploadedFile: 2.jpg (image/jpeg)>
+                        ]
+                }
+
+            - out put add image
+
+                - accepted
+
+                        {
+
+                            'massage':'compliant add image'
+
+                        }
+
+
+                - reject
+
+                     {
+                        'error': 'advertising error'
+                     }
+
+                    {
+
+                    'error': {--------------------------}
+
+                    }
+    """
+
+    permission_classes = []
+    parser_classes = [MultiPartParser, FileUploadParser]
+    serializer_class = AddAdvertisingImageSerializer
+
+    def post(self, request):
+        content_type = ContentType.objects.get(model='advertising')
+        advertising = Advertising.objects.filter(pk=request.data['advertising']).exists()
+        if advertising:
+            for image in request.FILES.getlist('image'):
+                data_type = {
+                    'file': image,
+                    'content_type': content_type.id,
+                    'instance_id': request.data['advertising']}
+                serializer = self.serializer_class(data=data_type, partial=True)
+                if serializer.is_valid():
+                    serializer.save()
+                else:
+                    print(serializer.errors)
+                    return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'massage': 'compliant add image'}, status=status.HTTP_200_OK)
+        return Response({'error': 'advertising error'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# swagger
+class AddFieldAdvertiseView(APIView):
+    """
+        - add field advertising and get field category advertising
+            - method GET
+
+            [
+
+                {
+                    'id': 1,
+                    'title':
+                    'field 1 int',
+                    'type_field': 'int',
+                    'mandatory': True
+                }
+                .
+                .
+                .
+                .
+                {
+                }
+
+            ]
+
+            - reject
+
+                {
+
+                    'massage':'category not found'
+                }
+
+
+                {
+
+                    'massage':'BAD REQUEST'
+
+                }
+
+
+            - method POST
+
+                {
+
+                    'field 1 int': '415',
+                    'field 2 str': 'hamid',
+                    'field 3 float': '12.3',
+                    'field 4 bool': 'on',
+                    'category': '4',
+                    'advertising': '91'
+
+                }
+
+    - reject
+
+                {
+
+                    'error':[---------------------]
+
+                }
+
+
+        - accepted
+
+                {
+
+                    'massage': 'compliant add field'
+
+                }
+
+
+    """
+
+    permission_classes = []
+    parser_classes = [MultiPartParser, FormParser]
+
+    # get field catefory
     def get(self, request, category_id=None):
         if category_id is not None:
             category = Category.objects.filter(pk=category_id)
@@ -285,39 +480,27 @@ class AddAdvertiseView(APIView):
                 if category:
                     serializers = MainFieldCategorySerializer(category, many=True)
                     return Response(serializers.data, status=status.HTTP_200_OK)
-                return Response(status=status.HTTP_404_NOT_FOUND)
-        return Response(status=status.HTTP_404_NOT_FOUND)
+                return Response({'massage': 'category not found'}, status=status.HTTP_404_NOT_FOUND)
+        return Response({'massage': 'BAD REQUEST'}, status=status.HTTP_400_BAD_REQUEST)
 
     def post(self, request):
-        serializer = AddAdvertisingSerializer(data=request.data)
-        if serializer.is_valid():
-            advertise=serializer.save()
-            return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
-        return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
-class UploadAdvertiseImageView(APIView):
-    permission_classes = []
-    parser_classes = [MultiPartParser,FileUploadParser]
-    serializer_class = AddAdvertisingImageSerializer
-    def post(self, request):
-        content_type = ContentType.objects.get( model='advertising')
-        for image in request.FILES.getlist('image'):
-            data_type={
-                'file':image,
-                'content_type':content_type.id,
-                'instance_id':request.data['advertising']}
-            serializer = AddAdvertisingImageSerializer(data=data_type,partial=True)
+        category = Category.objects.get(pk=request.data['category']).fields.all().values_list('title', 'id')
+        for field in category:
+            dict_query = {
+                'advertising': request.data['advertising'],
+                'category': request.data['category'],
+                'field': field[1],
+                'value': request.data[field[0]],
+            }
+            serializer = MainSaveValueFieldSerializer(data=dict_query, partial=True)
             if serializer.is_valid():
                 serializer.save()
             else:
-                print(serializer.errors)
-                return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        return Response(status=status.HTTP_200_OK)
+                return Response({'error': serializer.errors}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+        return Response({'massage': 'compliant add field'}, status=status.HTTP_200_OK)
 
 
-
-
-@method_decorator(cache_page(60*60*24), name='dispatch')
+@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
 class AllCategoryView(APIView):
     serializer_class = MainCategorySerializer
     queryset = Category.objects.all()
@@ -340,9 +523,6 @@ class AllCategoryView(APIView):
                             status=status.HTTP_200_OK)
         return Response({'massage': 'dont category'},
                         status=status.HTTP_404_NOT_FOUND)
-
-
-from .serializers import MainStateSerializer, MainCitySerializer
 
 
 # swagger

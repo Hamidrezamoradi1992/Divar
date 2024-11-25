@@ -15,10 +15,12 @@ urlpatterns = [
     path('api/add/advertise/city/<int:state_id>', views.AllCityView.as_view()),
 
 
-    path('api/add/advertise/<int:category_id>', views.AddAdvertiseView.as_view()),
     path('api/add/advertise/', views.AddAdvertiseView.as_view()),
     #add image advertising
     path('api/add/image/', views.UploadAdvertiseImageView.as_view()),
+    # add field advertising
+    path('api/add/field/<int:category_id>', views.AddFieldAdvertiseView.as_view()),
+    path('api/add/field/', views.AddFieldAdvertiseView.as_view()),
 
 
     path('api/add/advertise/all_category/<int:category_id>', views.AllCategoryView.as_view()),
