@@ -39,7 +39,7 @@ urlpatterns = [
     #test
     path('test2/', TemplateView.as_view(template_name='signin_signup/test2.html'), name='verify'),
     path('test3/', TemplateView.as_view(template_name='admin_panel/mainAdminPanel.html'), name='verify'),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('', TemplateView.as_view(template_name='advertising/allAdvertising.html'), name='home'),
 ]
 if settings.DEBUG:
     urlpatterns += (static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +
