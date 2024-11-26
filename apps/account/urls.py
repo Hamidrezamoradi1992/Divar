@@ -20,4 +20,7 @@ urlpatterns = [
     # path('api/test/<int:pk>', UpdateUserView.as_view()),
     path('test/', TemplateView.as_view(template_name='signin_signup/test.html'), name='test'),
 
+    #view
+    path('adminuser/', TemplateView.as_view(template_name='admin_panel/mainAdminPanel.html'), name='adminuser'),
+
 ]

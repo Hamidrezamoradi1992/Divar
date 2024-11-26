@@ -154,12 +154,9 @@ class UpdateUserView(UpdateAPIView):
         {
 
             "id": 1,
-            "email": "1@gmail.com",
             "first_name": "----,
             "last_name": "------,
-            "is_active": false,
             "phone": "09197----",
-            "is_kyc": false,
             "gender": "FEMALE",
             "address": "----------- ",
             "age": null,

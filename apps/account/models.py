@@ -1,5 +1,5 @@
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import AbstractUser, UserManager,PermissionsMixin
+from django.contrib.auth.models import AbstractUser, UserManager, PermissionsMixin
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
 from django.db import models
@@ -40,7 +40,7 @@ class CustomUserManager(UserManager):
 
 class User(AbstractUser):
     username = None
-    password = models.CharField(max_length=128, blank=True,null=True,unique=False)
+    password = models.CharField(max_length=128, blank=True, null=True, unique=False)
     email = models.EmailField(unique=True, null=False,
                               validators=[EmailValidator])
     phone = models.CharField(max_length=11,
@@ -78,6 +78,15 @@ class User(AbstractUser):
 
     objects = CustomUserManager()
 
+    def clean(self):
+        if self.age:
+            if self.age > 90 or self.age<18:
+                raise ValidationError('Age must be between 18 and 90.')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f'{self.email}-{self.get_full_name()}'
 
@@ -85,4 +94,3 @@ class User(AbstractUser):
         verbose_name = 'User'
         verbose_name_plural = 'Users'
         indexes = [models.Index(fields=['email', 'first_name'])]
-
