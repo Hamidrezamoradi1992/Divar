@@ -1,10 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}All Advertise{% endblock %}
+{% block extra-head %}
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+ 
+{% endblock %}
 
-</body>
-</html>
+
+{#main#}
+{% block content %}
+    <div class="max-w-[98vw] flex bg-gray-50 flex-row gap-6 my-22 pt-12">{#    maine view#}
+
+        <div class="min-w-[80vw] grid grid-cols-3 gap-3" id="maineView">
+
+        </div>
+        {#side bare view#}
+        <div class="min-w-[15vw] bg-gray-50 " id="sideBaer"> asdfghjk</div>
+    </div>
+{% endblock %}
+{#end main#}
+
+
+{% block script %}
+
+    <script src="{% static 'js/AddAdvertise/ViewAdvertising/allAdvertise/allAdvertising.js' %}"></script>
+
+    <script>
+        var domainPort = window.location.port;
+        let maineViewEl = document.querySelector('#maineView')
+        let sidebarViewEl = document.querySelector('#sideBaer')
+        document.addEventListener("DOMContentLoaded", (ev) => {
+            ev.preventDefault()
+            AllAdvertising()
+        })
+
+    </script>
+{% endblock %}
