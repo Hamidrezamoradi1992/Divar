@@ -74,7 +74,7 @@ class MainSaveValueFieldSerializer(serializers.ModelSerializer):
 class AddAdvertisingImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ['id', 'alt','content_type', 'instance_id', 'file']
+        fields = ['id', 'alt', 'content_type', 'instance_id', 'file']
 
 
 # end main serializers
@@ -180,7 +180,8 @@ class AddAdvertisingSerializer(serializers.ModelSerializer):
 
 
 class AdminAdvertisingViewSerializer(AllAdvertisingViewSerializer):
-    image=serializers.SerializerMethodField(read_only=True)
+    image = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = Advertising
         fields = ('id',
@@ -199,4 +200,21 @@ class AdminAdvertisingViewSerializer(AllAdvertisingViewSerializer):
         image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
                                      instance_id=obj.id).first()
 
+        return AddAdvertisingImageSerializer(image).data
+
+
+class AllAdvertiseViewSerializer(MainAdvertisingSerializer):
+    image = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = Advertising
+        fields = ('id',
+                  'title',
+                  'price',
+                  'image',
+                  )
+
+    def get_image(self, obj):
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
+                                     instance_id=obj.id).order_by('created_at').first()
         return AddAdvertisingImageSerializer(image).data

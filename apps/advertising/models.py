@@ -326,4 +326,4 @@ class Image(LogicalDeleteMixin, TimeCreateMixin):
         return f"{self.content_type.model}-{self.alt}"
 
     class Meta:
-        pass
+        ordering = ['created_at']

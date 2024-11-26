@@ -16,7 +16,8 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           AddAdvertisingImageSerializer,
                                           MainSaveValueFieldSerializer,
                                           MainStateSerializer,
-                                          MainCitySerializer, AdminAdvertisingViewSerializer)
+                                          MainCitySerializer, AdminAdvertisingViewSerializer,
+                                          AllAdvertiseViewSerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 
 
@@ -139,7 +140,7 @@ class AllAdvertisingView(ListAPIView):
 
     """
     queryset = Advertising.objects.all().order_by('-created_at')
-    serializer_class = AllAdvertisingViewSerializer
+    serializer_class = AllAdvertiseViewSerializer
     permission_classes = []
 
 
