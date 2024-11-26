@@ -1,11 +1,11 @@
 function getAdvertising() {
     console.log('getAdvertising')
     contexAdminPanelEL.innerHTML = `
-        <div class="max-w-[90vw] m-auto my-12">
+        <div class="max-w-[100vw] m-auto my-12">
             <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto">
                 <button class="w-auto tab btn btn-ghost" onclick="getPublishedAdvertising()">Published</button>
-                <button class=" tab btn" onclick="">Ready for payment</button>
-                <button class=" w-auto tab btn btn-ghost" onclick="getExpAdvertising()">Expired</button>
+                <button class=" tab btn " onclick="">payment</button>
+                <button class=" w-auto tab btn btn-ghost" onclick="getExpAdvertising()">All Advertising</button>
             </div>
 
         </div>

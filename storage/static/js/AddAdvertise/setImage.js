@@ -1,7 +1,7 @@
 function setImage(advertising) {
     formView.innerHTML = ""
     categoryKey.innerHTML = `
-                <button class="btn btn-outline btn-error mx-3" onclick="getCategory()">back</button>
+                <button class="btn btn-outline btn-error mx-3" onclick="getCategory()">exit</button>
                 <button class="btn btn-active btn-neutral" onclick="addFieldImageInput()">add image field</button>
             `;
     formView.innerHTML = `
