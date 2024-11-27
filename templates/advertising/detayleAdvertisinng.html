@@ -2,17 +2,83 @@
 {% load static %}
 {% block title %}All Advertise{% endblock %}
 {% block extra-head %}
-	
+
 {% endblock %}
 
 
 {#main#}
 {% block content %}
-	
+    <div class="min-h-[450px] max-w-[85vw] flex justify-aline m-auto  gap-5">
+        {#    slider image#}
+        <div class="w-[30vw]  h-[375px] rounded-xl ">
+            <div class="carousel w-full h-full">
+                <div id="item1" class="carousel-item w-full">
+                    <img
+                            src="https://img.daisyui.com/images/stock/photo-1625726411847-8cbb60cc71e6.webp"
+                            class="w-full"/>
+                </div>
+                <div id="item2" class="carousel-item w-full">
+                    <img
+                            src="https://img.daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.webp"
+                            class="w-full"/>
+                </div>
+                <div id="item3" class="carousel-item w-full">
+                    <img
+                            src="https://img.daisyui.com/images/stock/photo-1414694762283-acccc27bca85.webp"
+                            class="w-full"/>
+                </div>
+                <div id="item4" class="carousel-item w-full">
+                    <img
+                            src="https://img.daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.webp"
+                            class="w-full"/>
+                </div>
+            </div>
+            <div class="flex w-full justify-center gap-2 py-2">
+                <a href="#item1" class="btn btn-xs">1</a>
+                <a href="#item2" class="btn btn-xs">2</a>
+                <a href="#item3" class="btn btn-xs">3</a>
+                <a href="#item4" class="btn btn-xs">4</a>
+            </div>
+
+
+        </div>
+        {#    end slider image#}
+        <div class="artboard artboard-horizontal phone-2 bg-gray-200 rounded-xl">
+            <div class="product-content p-5">
+                {#                 title   1#}
+                <h2 class=" font-serif my-2 text-3xl" id="product_title">sdfsadfsdfsdafsdf</h2>
+                {#            category        2#}
+                <div id="category" class="my-1">
+                    <i class="fa-solid fa-play capitalize font-bold ">category</i> <a
+                        href="" class="product-link "></a>
+                </div>
+
+
+                <div class="product-price">
+                    {#                        4#}
+                    <p class="new-price font-bold ">Price: <span id="price_product"></span>$ 6+2322</p>
+                </div>
+
+                <div class="product-detail">
+                    <h1 class="capitalize font-sans font-bold">More specifications</h1>
+     
+                    <ul id="ingredients_title" class="grid grid-cols-2">
+                        <li class="flex gap-2"><h2 class="font-bold capitalize ">hamid</h2> : <p1>hamid</p1></li>
+                    </ul>
+                </div>
+                <p id="description_short " class="capitalize font-bold">description_short</p>
+                <di><p id="safety_buffer" class="text-base capitalize">description_short</p></di>
+                <div class="purchase-info flex">
+                </div>
+            </div>
+
+
+        </div>
+    </div>
 {% endblock %}
 {#end main#}
 
 
 {% block script %}
-	
+    
 {% endblock %}

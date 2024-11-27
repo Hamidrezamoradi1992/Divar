@@ -26,6 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('apps.account.urls')),
     path('advertising/', include('apps.advertising.urls')),
+    path('favorite/', include('apps.favorite.urls')),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -38,7 +39,7 @@ urlpatterns = [
 
     #test
     path('test2/', TemplateView.as_view(template_name='signin_signup/test2.html'), name='verify'),
-    path('test3/', TemplateView.as_view(template_name='admin_panel/mainAdminPanel.html'), name='verify'),
+    path('test3/', TemplateView.as_view(template_name='advertising/detayleAdvertisinng.html'), name='verify'),
     path('', TemplateView.as_view(template_name='advertising/allAdvertising.html'), name='home'),
 ]
 if settings.DEBUG:
