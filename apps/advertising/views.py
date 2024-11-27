@@ -5,8 +5,9 @@ from django.views.decorators.cache import cache_page
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
 from itertools import chain
-from rest_framework.generics import ListAPIView
+from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework import status
 from apps.advertising.models import Advertising, Category, City, State
 from apps.advertising.serializers import (AllAdvertisingViewSerializer,
@@ -16,12 +17,135 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           AddAdvertisingImageSerializer,
                                           MainSaveValueFieldSerializer,
                                           MainStateSerializer,
-                                          MainCitySerializer, AdminAdvertisingViewSerializer,
-                                          AllAdvertiseViewSerializer)
+                                          MainCitySerializer,
+                                          AdminAdvertisingViewSerializer,
+                                          AllAdvertiseViewSerializer,
+                                          AllRetrieveAdvertisingViewSerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 
-
 # Create your views here.
+"""all advertising"""
+
+
+class DetailAdvertiseView(RetrieveAPIView):
+    """
+      - view all advertising
+
+
+        {
+
+
+             {
+
+                      "id": 1,
+                      "title": "advertise1",
+                      "description": ";lkjhgfdgvbjhnkm",
+                      "price": 25000.0,
+                      "image": [],
+                      "diffusion": true,
+                      "category": {
+                          "title": "hamid1",
+                          "parent": null,
+                          "free": true,
+                          "fields":
+
+                          [
+
+                              {
+
+                                  "id": 6,
+                                  "title": "value1",
+                                  "type_field": "int",
+                                  "mandatory": true
+
+                              },
+
+                              {
+
+                                  "id": 7,
+                                  "title": "value2",
+                                  "type_field": "int",
+                                  "mandatory": true
+
+                              },
+
+                              {
+
+                                  "id": 8,
+                                  "title": "value3",
+                                  "type_field": "int",
+                                  "mandatory": true
+
+                              }
+
+                          ],
+
+                          "price": 0.0
+
+                      },
+
+                      "state":
+
+                      {
+                          "id": 1,
+                          "title": "tehran",
+                          "area_code": "021"
+
+                      },
+
+                      "city":
+
+                      {
+
+                          "id": 1,
+                          "state": 1,
+                          "title": "tehran"
+
+                      },
+
+                      "vlue_field":
+
+                      [
+
+                          {
+
+                              "id": 4,
+                              "advertising": 1,
+                              "category": 11,
+                              "field": 8,
+                              "value": "123",
+                              "name_field": "value3"
+
+                          }
+
+                      ],
+
+
+                      "address":
+                      [
+
+                          {
+
+                              "id": 4,
+                              "email": "11@gmail.com",
+                              "phone": null,
+                              "is_kyc": false,
+                              "address": null
+
+                          }
+
+                      ]
+
+             }
+
+        }
+
+
+    """
+    queryset = Advertising.objects.all()
+    serializer_class = AllRetrieveAdvertisingViewSerializer
+    permission_classes = []
+
 
 # swagger
 class AllAdvertisingView(ListAPIView):
@@ -278,6 +402,9 @@ class ViewAdvertisingForCategory(APIView):
                 serializer.context['request'] = request
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(status=status.HTTP_404_NOT_FOUND)
+
+
+"""all advertising"""
 
 
 # swagger
@@ -599,14 +726,14 @@ class AllCityView(APIView):
 
 class AdvertisingPublishedView(APIView):
     serializer_class = AdminAdvertisingViewSerializer
+
     def get(self, request):
-        userid=request.user.id
+        userid = request.user.id
         if userid:
-            queryset=Advertising.objects.filter(user=userid,diffusion=True)
+            queryset = Advertising.objects.filter(user=userid, diffusion=True)
             serializer = self.serializer_class(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response({'massage':'user not define'}, status=status.HTTP_400_BAD_REQUEST)
-
+        return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 """"end admin panel advertising"""

@@ -14,6 +14,11 @@ urlpatterns = [
     path('api/add/advertise/state', views.AllStateView.as_view()),
     path('api/add/advertise/city/<int:state_id>', views.AllCityView.as_view()),
 
+    # view detail
+    path('view/add/advertise/<int:pk>', TemplateView.as_view(template_name='advertising/detayleAdvertisinng.html'), name='home'),
+
+    path('api/detail/advertise/<int:pk>', views.DetailAdvertiseView.as_view()),
+
 
     path('api/add/advertise/', views.AddAdvertiseView.as_view()),
     #add image advertising

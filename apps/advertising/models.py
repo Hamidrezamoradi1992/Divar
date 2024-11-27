@@ -17,7 +17,7 @@ from django.core.cache import cache
 
 class AdvertisingManager(BasicLogicalDeleteManager):
     def is_diffusion(self):
-        super().get_queryset().filter(diffusion=True)
+        super().get_queryset().filter(is_active=True, diffusion=True)
 
     def is_ladder(self):
         super().get_queryset().filter(ladder=True)
