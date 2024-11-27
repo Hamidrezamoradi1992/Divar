@@ -33,7 +33,12 @@
                         {% else %}
                             <div class="avatar offline">
                                 <div class="w-10 rounded-full">
-                                    <img src="{{ request.user.image_Official_photo.url }}"/>
+                                    <img src="{% if request.user.image_Official_photo.url  %}
+                                    	{{ request.user.image_Official_photo.url }}
+                                    {% else %}
+                                    	https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp
+                                    {% endif %} 
+                                    "/>
                                 </div>
                             </div>
                         {% endif %}
@@ -53,7 +58,12 @@
                             </a>
                         </li>
                         <li><a>Settings</a></li>
-                        <li><a href="http://localhost:8000/advertising/view/add/advertise">add advertise</a></li>
+                        {% if request.user.address and  request.user.email and request.user.phone%}
+                        	<li><a href="http://localhost:8000/advertising/view/add/advertise">add advertise</a></li>
+                        {% else %}
+                        	<li>Please set address in profile</li>
+                        {% endif %} 
+                        
                         <li><a>Logout</a></li>
                     </ul>
                 </div>
