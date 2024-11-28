@@ -19,7 +19,7 @@ from django.urls import path, include
 from django.conf import settings
 from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from django.conf.urls.static import static
+
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 import apps
 urlpatterns = [
@@ -43,5 +43,7 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='advertising/allAdvertising.html'), name='home'),
 ]
 if settings.DEBUG:
-    urlpatterns += (static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +
-                    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT_CUSTOM))
+    from django.conf.urls.static import static
+
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

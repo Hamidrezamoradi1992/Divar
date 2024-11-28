@@ -11,26 +11,32 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+from datetime import timedelta
+from decouple import config
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('SECRET_KEY')
+USE_TZ = True
+USE_I18N = True
+TIME_ZONE = config("TIME_ZONE", default="Asia/Tehran")
+LANGUAGE_CODE = 'en-us'
+ROOT_URLCONF = 'config.urls'
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+DEBUG = config("DEBUG", cast=bool, default=True)
+WSGI_APPLICATION = 'config.wsgi.application'
+SECRET_KEY = config("SECRET_KEY", default="&(dj-hamidreza-secret_key%%django^^:):(//)$")
+# media
+MEDIA_URL = 'storage/media/'
+STATIC_URL = 'storage/static/'
+MEDIA_ROOT = BASE_DIR / 'storage/media'
+STATIC_ROOT_PATH = BASE_DIR / "storage/static"
+# media
+ALLOWED_HOSTS = ["*"] if DEBUG else config("ALLOWED_HOSTS", cast=lambda hosts: hosts.split(','))
 AUTH_USER_MODEL = 'account.User'
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = []
 
 # Application definition
-MY_APPS = ['core', 'comment','account', 'advertising', 'favorite', 'payment']
+MY_APPS = ['core', 'comment', 'account', 'advertising', 'favorite', 'payment']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -48,6 +54,8 @@ INSTALLED_APPS = [
 
 ]
 
+# cash verify
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -57,8 +65,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
-ROOT_URLCONF = 'config.urls'
 
 TEMPLATES = [
     {
@@ -76,32 +82,93 @@ TEMPLATES = [
     },
 ]
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/5.1/howto/static-files/
-# static file
-STATIC_URL = 'storage/static/'
-STATIC_ROOT_CUSTOM = BASE_DIR / 'storage/static'
 if DEBUG:
-    STATICFILES_DIRS = [STATIC_ROOT_CUSTOM]
-else:
-    STATIC_ROOT = STATIC_ROOT_CUSTOM
-MEDIA_URL = 'storage/media/'
-MEDIA_ROOT = BASE_DIR / 'storage/media/'
+    # Static
+    STATICFILES_DIRS = [
+        STATIC_ROOT_PATH,
+    ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
+    # Email
+    EMAIL_HOST = "localhost"
+    EMAIL_PORT = 2525
+    EMAIL_HOST_USER = ""
+    EMAIL_HOST_PASSWORD = ""
+    EMAIL_USE_TLS = False
 
-# Database
-# https://docs.djangoproject.com/en/5.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    # Database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
 
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
+    # Cache
+    CACHES = {
+        'default': {
+            'BACKEND': 'django_redis.cache.RedisCache',
+            'LOCATION': 'redis://0.0.0.0:5555/1',
+            'KEY_PREFIX': 'REDIS1',
+            'OPTIONS': {
+                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+            }
+        }
+    }
+
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    # Statics
+    STATIC_ROOT = STATIC_ROOT_PATH
+
+    # Email
+    EMAIL_HOST = config("EMAIL_HOST")
+    EMAIL_PORT = config("EMAIL_PORT", cast=int)
+    EMAIL_HOST_USER = config("EMAIL_HOST_USER")
+    EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
+    EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
+
+    # Database
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config("DB_NAME"),
+            'USER': config("DB_USER"),
+            'PASSWORD': config("DB_PASSWORD"),
+            'PORT': config("DB_PORT"),
+            'HOST': config("DB_HOST"),
+        }
+    }
+
+    # Cache
+    REDIS_URL = config("REDIS_URL")
+    CACHES = {
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
+        }
+    }
+
+    # Security params:
+    SECURE_HSTS_SECONDS = 12 * 30 * 24 * 60 * 60
+    SECURE_HSTS_PRELOAD = True
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_SSL_REDIRECT = True
+    SECURE_PROXY_SSL_HEADER = "HTTP_X_FORWARDED_PROTO", "https"
+    USE_X_FORWARDED_HOST = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_REFERRER_POLICY = "strict-origin"
+    X_FRAME_OPTIONS = "SAMEORIGIN"
+    SESSION_COOKIE_AGE = 3 * 60 * 60
+    SESSION_TIMEOUT = 24 * 60 * 60
+
+    # CORS params
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = config(
+        "ALLOWED_HOSTS",
+        cast=lambda hosts: hosts.split(','),
+        default="http://0.0.0.0:8000, http://localhost:8000"
+    )
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -118,55 +185,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# Internationalization
-# https://docs.djangoproject.com/en/5.1/topics/i18n/
-
-LANGUAGE_CODE = 'en-us'
-
-TIME_ZONE = 'UTC'
-
-USE_I18N = True
-
-USE_TZ = True
-
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
-
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-# database Cache
-CACHES = {
-    'default': {
-        'BACKEND': 'django_redis.cache.RedisCache',
-        'LOCATION': os.getenv('REDIS_URL'),
-        'KEY_PREFIX': 'REDIS1',
-        'OPTIONS': {
-            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-        }
-    }
-}
-
-# config email
-
-if DEBUG:
-    EMAIL_HOST = "localhost"
-    EMAIL_PORT = 2525
-    EMAIL_HOST_USER = ""
-    EMAIL_HOST_PASSWORD = ""
-    EMAIL_USE_TLS = False
-
-else:
-    EMAIL_HOST = "smtp.c1.liara.email"
-    EMAIL_PORT = 587
-    EMAIL_HOST_USER = "stoic_bhabha_dtvh2r"
-    EMAIL_HOST_PASSWORD = "95b2fd7c-21c16eec6b7f"
-    EMAIL_USE_TLS = True
-
-from datetime import timedelta  # import this library top of the settings.py file
-
 # put on your settings.py file below INSTALLED_APPS
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', #swager
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # swager
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
@@ -176,7 +197,7 @@ REST_FRAMEWORK = {
     ),
 
 }
-#swager
+# swager
 SPECTACULAR_SETTINGS = {
     'TITLE': 'DIVAR',
     'DESCRIPTION': ' it is divar project',
@@ -184,7 +205,7 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     # OTHER SETTINGS
 }
-#end swager
+# end swager
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=10),
