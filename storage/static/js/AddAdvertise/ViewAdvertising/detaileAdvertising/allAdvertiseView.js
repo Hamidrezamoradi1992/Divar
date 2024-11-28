@@ -42,29 +42,35 @@ function AllAdvertisingView(id_advertising) {
                 specifications.innerHTML = El
                 let count = 0
                 El = ''
-                data.image.forEach(image => {
-                    count++
-                    const el = `<div id="item${count}" class="carousel-item w-full">
+                console.log('data.image',data.image)
+                if (data.image.length>0) {
+                    data.image.forEach(image => {
+                        count++
+                        const el = `<div id="item${count}" class="carousel-item w-full">
                     <img
                             src="${image.file}"
                             alt="${image.alt}"
                             class="w-full"/>
                 </div>`
-                    El += el
+                        El += el
 
-                })
+                    })
 
-                ImageFile.innerHTML = ''
-                ImageFile.innerHTML = El
-                El = ''
-                count = 0
-                data.image.forEach(image => {
-                    count++
-                    const el = `<a href="#item${count}" class="btn btn-xs">${count}</a>`
-                    El += el
-                })
-                keyImage.innerHTML = ''
-                keyImage.innerHTML = El
+                    ImageFile.innerHTML = ''
+                    ImageFile.innerHTML = El
+                    El = ''
+                    count = 0
+                    data.image.forEach(image => {
+                        count++
+                        const el = `<a type="button" href="#item${count}" class="btn btn-xs">${count}</a>`
+                        El += el
+                    })
+                    keyImage.innerHTML = ''
+                    keyImage.innerHTML = El
+                } else {
+                    ImageFile.innerHTML = `<div class="skeleton h-full w-full"></div>`
+
+                }
 
                 El = ''
 
@@ -100,30 +106,35 @@ function AllAdvertisingView(id_advertising) {
                 specifications.innerHTML = El
                 let count = 0
                 El = ''
-                data.image.forEach(image => {
-                    count++
-                    const el = `<div id="item${count}" class="carousel-item w-full">
+
+                if (data.image.length>0) {
+                    data.image.forEach(image => {
+                        count++
+                        const el = `<div id="item${count}" class="carousel-item w-full">
                     <img
                             src="${image.file}"
                             alt="${image.alt}"
                             class="w-full"/>
                 </div>`
-                    El += el
+                        El += el
 
-                })
+                    })
 
-                ImageFile.innerHTML = ''
-                ImageFile.innerHTML = El
-                El = ''
-                count = 0
-                data.image.forEach(image => {
-                    count++
-                    const el = `<a href="#item${count}" class="btn btn-xs">${count}</a>`
-                    El += el
-                })
-                keyImage.innerHTML = ''
-                keyImage.innerHTML = El
+                    ImageFile.innerHTML = ''
+                    ImageFile.innerHTML = El
+                    El = ''
+                    count = 0
+                    data.image.forEach(image => {
+                        count++
+                        const el = `<a type="button" href="#item${count}" class="btn btn-xs">${count}</a>`
+                        El += el
+                    })
+                    keyImage.innerHTML = ''
+                    keyImage.innerHTML = El
+                } else {
+                    ImageFile.innerHTML = `<div class="skeleton h-full w-full"></div>`
 
+                }
                 El = ''
 
             }).catch()

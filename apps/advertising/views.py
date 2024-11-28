@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from itertools import chain
 from rest_framework.generics import ListAPIView,RetrieveAPIView
 from rest_framework import status
-from apps.advertising.models import Advertising, Category, City, State
+from apps.advertising.models import Advertising, Category, City, State, Image, SaveValueField
 from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           MainFieldCategorySerializer,
                                           MainCategorySerializer,
@@ -737,3 +737,24 @@ class AdvertisingPublishedView(APIView):
 
 
 """"end admin panel advertising"""
+"""remove Advertising"""
+class DestroyAdvertising(APIView):
+
+    def post(self,request):
+        advertising=int(request.data['advertising'])
+        print(advertising)
+        advertise=Advertising.objects.filter(pk=advertising)
+        if advertise.exists():
+            image=Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),instance_id=advertising)
+            save_field=SaveValueField.objects.filter(advertising_id=advertising)
+            if save_field.exists():
+                save_field.delete()
+                image.delete()
+                advertise.delete()
+            if image.exists():
+                image.delete()
+                advertise.delete()
+
+            advertise.delete()
+            return Response({}, status=status.HTTP_204_NO_CONTENT)
+        return Response({'massage': 'delete advertising failed'}, status=status.HTTP_400_BAD_REQUEST)

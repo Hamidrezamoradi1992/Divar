@@ -1,15 +1,15 @@
-<div class="navbar bg-base-100">
+<div class="navbar bg-red-600">
     <div class="navbar-start">
         {#        search#}
 
         <div class="join">
-           
+
         </div>
 
         {#        search#}
     </div>
     <div class="navbar-center">
-        <a class="btn btn-ghost text-xl" href="http://localhost:8000">WALL</a>
+        <a class="btn btn-ghost text-xl " href="http://localhost:8000">WALL</a>
     </div>
     <div class="navbar-end">
         <div class="flex gap-3">
@@ -33,7 +33,7 @@
                         {% else %}
                             <div class="avatar offline">
                                 <div class="w-10 rounded-full">
-                                    <img src="{% if request.user.image_Official_photo.url  %}
+                                    <img src="{% if request.user.image_Official_photo.url %}
                                     	{{ request.user.image_Official_photo.url }}
                                     {% else %}
                                     	https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp
@@ -58,15 +58,17 @@
                             </a>
                         </li>
                         <li><a>Settings</a></li>
-                        {% if request.user.address and  request.user.email and request.user.phone%}
-                        	<li><a href="http://localhost:8000/advertising/view/add/advertise">add advertise</a></li>
+                        {% if request.user.address and  request.user.email and request.user.phone %}
+                            <li><a href="http://localhost:8000/advertising/view/add/advertise">add advertise</a></li>
                         {% else %}
-                        	<li>Please set address in profile</li>
-                        {% endif %} 
-                        
+                            <li>Please set address in profile</li>
+                        {% endif %}
+
                         <li><a>Logout</a></li>
                     </ul>
                 </div>
+            {% else %}
+                <a class="btn btn-ghost text-xl" href="http://localhost:8000/accounts/signup/">SIGNIN/SIGNUP</a>
             {% endif %}
         </div>
     </div>

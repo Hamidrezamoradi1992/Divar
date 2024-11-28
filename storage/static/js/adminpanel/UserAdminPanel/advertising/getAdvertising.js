@@ -99,7 +99,7 @@ function getPublishedAdvertising() {
         </td>
         <td>${result}</td>
         <th>
-          <button class="btn btn-ghost btn-xs">details</button>
+          <button type="submit" class="btn btn-ghost btn-xs" onclick="ExitAdvertising(${advertisingPublisher.id})">details</button>
         </th>
       </tr>
 `

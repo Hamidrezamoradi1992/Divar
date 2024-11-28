@@ -2,7 +2,7 @@ let fieldsEl = ""
 
 function getFieldAdvertising() {
     categoryKey.innerHTML = `
-                <button class="btn btn-outline btn-error mx-3" onclick="getCategory()">exit</button>`;
+                <button class="btn btn-outline btn-error mx-3" onclick="ExitAdvertising(advertiseId)">exit</button>`;
     formView.innerHTML = ''
     formView.innerHTML = `
          <form action="" id="form_input_fields" class="flex flex-col items-center justify-center m-8"></form>`;

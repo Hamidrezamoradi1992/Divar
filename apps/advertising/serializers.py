@@ -5,6 +5,7 @@ from rest_framework import serializers
 from .models import State, Category, FieldCategory, Advertising, City, SaveValueField, Image
 from apps.account.models import User
 from apps.account.serializers import MainUserSerializer
+from ..favorite.models import Favorite
 
 
 class MainStateSerializer(serializers.ModelSerializer):
@@ -225,6 +226,7 @@ class AdminAdvertisingViewSerializer(AllAdvertisingViewSerializer):
 
 class AllAdvertiseViewSerializer(MainAdvertisingSerializer):
     image = serializers.SerializerMethodField(read_only=True)
+    favorite = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Advertising
@@ -232,13 +234,18 @@ class AllAdvertiseViewSerializer(MainAdvertisingSerializer):
                   'title',
                   'price',
                   'image',
+                  'favorite'
                   )
 
     def get_image(self, obj):
         image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
                                      instance_id=obj.id).order_by('created_at').first()
         return AddAdvertisingImageSerializer(image).data
-
+    def get_favorite(self, obj):
+        print(self.context['request'].user.is_authenticated)
+        if self.context['request'].user.is_authenticated:
+            return Favorite.objects.filter(user_id=self.context['request'].user, advertising_id=obj.id).exists()
+        return False
 
 """retrieve advertising"""
 

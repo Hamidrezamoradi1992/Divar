@@ -19,7 +19,8 @@ function AllAdvertising() {
                             alt="${data.image.alt}" />  
                     </figure>  
                     <div class="card-body">  
-                        ${userId ? `  
+                        ${userId ? ` 
+                             
                             <label class="swap">  
                                 <input type="checkbox" /> 
                             ${data.favorite === true ? `
@@ -31,14 +32,14 @@ function AllAdvertising() {
                         <h2 class="card-title">${data.title}</h2>  
                         <p>${data.price}</p>  
                         <div class="card-actions justify-end">  
-                            <button class="btn btn-primary">Watch</button>  
+                        <a href="http://localhost:8000/advertising/view/add/advertise/${data.id}"><button type="button" class="btn btn-primary">Watch</button>  </a>
+
                         </div>  
                     </div>  
                 </div>`;
                 El += el;
             });
 
-            console.log(El);
             maineViewEl.innerHTML = El;
         }).catch(error => {
             console.error('Error fetching advertising data:', error);
@@ -73,8 +74,8 @@ function AllAdvertising() {
                             <label class="swap">  
                                 <input type="checkbox" /> 
                                         ${data.favorite === true ? `
-                                            <div class="swap-on" onclick="favoriteAddAndRemove(${data.id})">😍</div> ` : 
-                                            ` <div class="swap-off" onclick="favoriteAddAndRemove(${data.id})">🤍</div> `} 
+                                            <div class="swap-on" onclick="favoriteAddAndRemove(${data.id})">😍</div> ` :
+                        ` <div class="swap-off" onclick="favoriteAddAndRemove(${data.id})">🤍</div> `} 
                                  
                                 
                             </label>  
@@ -82,7 +83,8 @@ function AllAdvertising() {
                         <h2 class="card-title">${data.title}</h2>  
                         <p>${data.price}</p>  
                         <div class="card-actions justify-end">  
-                            <button class="btn btn-primary">Watch</button>  
+                           <a href="http://localhost:8000/advertising/view/add/advertise/${data.id}"><button type="button" class="btn btn-primary">Watch</button>  </a>
+
                         </div>  
                     </div>  
                 </div>`;
