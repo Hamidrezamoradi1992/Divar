@@ -93,8 +93,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
     fields = models.ManyToManyField(
         'FieldCategory',
         related_name='categories',
-        related_query_name='categories',
-        blank=True,null=True)
+        related_query_name='categories')
     image = models.ImageField(upload_to=f'kyc/_kyc_images/',
                               verbose_name='ID Card',
                               validators=[CustomValidators.file_validator],
