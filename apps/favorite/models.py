@@ -10,10 +10,10 @@ User = get_user_model()
 
 class Favorite(LogicalDeleteMixin):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_query_name="user_favorites", related_name='user_favorites')
-    products = models.ForeignKey(Advertising, on_delete=models.CASCADE, related_query_name="advertising_favorites",
+    advertising = models.ForeignKey(Advertising, on_delete=models.CASCADE, related_query_name="advertising_favorites",
                                  related_name='advertising_favorites')
 
     objects = BasicLogicalDeleteManager()
 
     def __str__(self):
-        return f"{self.user} -> {self.products}"
+        return f"{self.user} -> {self.advertising}"

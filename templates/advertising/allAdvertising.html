@@ -1,0 +1,78 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}All Advertise{% endblock %}
+{% block extra-head %}
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+{% endblock %}
+
+
+{#main#}
+{% block content %}
+    <div class="flex justify-center my-5">
+        <form action="" class="join">
+            <div>
+                <div>
+                    <input class="input input-bordered join-item" placeholder="Search"/>
+                </div>
+            </div>
+            <select class="select select-bordered join-item">
+                <option disabled selected>Filter</option>
+                <option>Sci-fi</option>
+                <option>Drama</option>
+                <option>Action</option>
+            </select>
+            <select class="select select-bordered join-item">
+                <option disabled selected>Filter</option>
+                <option>Sci-fi</option>
+                <option>Drama</option>
+                <option>Action</option>
+            </select>
+            <select class="select select-bordered join-item">
+                <option disabled selected>Filter</option>
+                <option>Sci-fi</option>
+                <option>Drama</option>
+                <option>Action</option>
+            </select>
+            <div class="indicator">
+
+                <button class="btn join-item">Search</button>
+            </div>
+        </form>
+    </div>
+
+    {#    maine view#}
+
+        <div class="max-w-[80vw] m-auto  grid grid-cols-3 gap-3 " id="maineView">
+
+       
+        {#side bare view#}
+
+    </div>
+{% endblock %}
+{#end main#}
+
+
+{% block script %}
+    <script src="{% static 'js/SetToken.js' %}"></script>
+    <script src="{% static 'js/AddAdvertise/ViewAdvertising/allAdvertise/allAdvertising.js' %}"></script>
+    <script src="{% static 'js/AddAdvertise/ViewAdvertising/favorite/FavoriteAddAndRemove.js' %}"></script>
+
+    <script>
+        const userId =    {% if request.user.is_authenticated  %}
+            {{ request.user.id }}
+        {% else %}
+            NaN
+        {% endif %}
+        var domainPort = window.location.port;
+        let maineViewEl = document.querySelector('#maineView')
+        let sidebarViewEl = document.querySelector('#sideBaer')
+        document.addEventListener("DOMContentLoaded", (ev) => {
+            ev.preventDefault()
+            AllAdvertising()
+        })
+
+    </script>
+{% endblock %}

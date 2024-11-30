@@ -1,4 +1,7 @@
 from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
+
+
 from apps.account.models import User
 
 
@@ -40,7 +43,16 @@ class UpdateUserSerializer(MainUserSerializer):
             'email': {'read_only': True},
             'is_kyc': {'read_only': True},
         }
-
+    def validate(self, attrs):
+        age = attrs.get('age')
+        if age is not None:
+            if age>90 or age<18:
+                raise serializers.ValidationError('age must be between 18 and 90')
+        phone = attrs.get('phone')
+        if phone is not None:
+            if len(phone)>11:
+                raise serializers.ValidationError('phone must be 11 digits')
+        return attrs
     def update(self, instance, validated_data):
         fields_to_update = ('first_name', 'last_name', 'phone', 'gender', 'address', 'age', 'image_idcard',
                             'image_Official_photo', 'image_letter_of_commitment')
@@ -52,4 +64,5 @@ class UpdateUserSerializer(MainUserSerializer):
                 setattr(instance, field, instance_none.first())
 
         instance.save()
+
         return instance

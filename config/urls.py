@@ -19,13 +19,14 @@ from django.urls import path, include
 from django.conf import settings
 from django.views.generic import TemplateView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
-from django.conf.urls.static import static
+
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 import apps
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('apps.account.urls')),
     path('advertising/', include('apps.advertising.urls')),
+    path('favorite/', include('apps.favorite.urls')),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
@@ -38,8 +39,11 @@ urlpatterns = [
 
     #test
     path('test2/', TemplateView.as_view(template_name='signin_signup/test2.html'), name='verify'),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('test3/', TemplateView.as_view(template_name='advertising/detayleAdvertisinng.html'), name='verify'),
+    path('', TemplateView.as_view(template_name='advertising/allAdvertising.html'), name='home'),
 ]
 if settings.DEBUG:
-    urlpatterns += (static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) +
-                    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT_CUSTOM))
+    from django.conf.urls.static import static
+
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

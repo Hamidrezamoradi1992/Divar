@@ -1,0 +1,12 @@
+Django
+django-redis
+djangorestframework
+djangorestframework-simplejwt
+mixer
+pillow
+PyJWT
+python-dateutil
+redis
+referencing
+uritemplate
+validate_email
