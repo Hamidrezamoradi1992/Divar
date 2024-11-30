@@ -263,7 +263,7 @@ class AllAdvertisingView(ListAPIView):
 
 
     """
-    queryset = Advertising.objects.all().order_by('-created_at')
+    queryset = Advertising.objects.filter(is_active=True,diffusion=True)
     serializer_class = AllAdvertiseViewSerializer
     permission_classes = []
 

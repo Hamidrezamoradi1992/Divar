@@ -94,7 +94,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         'FieldCategory',
         related_name='categories',
         related_query_name='categories',
-        blank=True)
+        blank=True,null=True)
     image = models.ImageField(upload_to=f'kyc/_kyc_images/',
                               verbose_name='ID Card',
                               validators=[CustomValidators.file_validator],
@@ -105,7 +105,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         return f'title: {self.title}/free: {self.free}'
 
     def clean(self):
-        if self.fields:
+        if self.pk and self.fields:
             if self.parent_id:
                 has_children = Category.objects.filter(parent_id=self.pk).exists()
                 if has_children:
@@ -121,6 +121,9 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
             raise ValidationError('Price must be greater than 0 for non-free categories.')
 
     def save(self, *args, **kwargs):
+        if self.pk is None:
+            super().save(*args, **kwargs)
+        self.clean()
         super().save(*args, **kwargs)
 
     @staticmethod

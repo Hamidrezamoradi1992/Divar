@@ -38,7 +38,8 @@
     <script src="{% static 'js/AddAdvertise/exitAddAdvertising.js' %}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', (ev) => {
-            ev.preventDefault()
+            {#ev.preventDefault()#}
+            console.log('hamid')
             getCategory()
         })
     </script>

@@ -182,7 +182,8 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
 
     def get_address(self, obj):
         if self.context['request'].user.is_authenticated:
-            user = User.objects.filter(pk=self.context['request'].user.id)
+            userObject=obj.user
+            user = User.objects.filter(pk=userObject.id)
             return AddressViewSerializer(user, many=True).data
         return {'massage': 'is_user_not_authentication'}
 
@@ -242,7 +243,6 @@ class AllAdvertiseViewSerializer(MainAdvertisingSerializer):
                                      instance_id=obj.id).order_by('created_at').first()
         return AddAdvertisingImageSerializer(image).data
     def get_favorite(self, obj):
-        print(self.context['request'].user.is_authenticated)
         if self.context['request'].user.is_authenticated:
             return Favorite.objects.filter(user_id=self.context['request'].user, advertising_id=obj.id).exists()
         return False

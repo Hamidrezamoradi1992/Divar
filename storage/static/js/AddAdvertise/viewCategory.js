@@ -1,4 +1,5 @@
 function getCategory(id_category = null) {
+    console.log('hamid22')
     formView.innerHTML=''
     if (id_category) {
         const data = fetchWithAuth(`http://localhost:${domainPort}/advertising/api/add/advertise/all_category/${id_category}`, {
