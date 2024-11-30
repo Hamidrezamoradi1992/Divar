@@ -1,7 +1,7 @@
 
 from django.urls import path
 from django.views.generic.base import TemplateView
-from apps.account.views import SignUpView, VerifyEmailView, UpdateUserView, UserProfileView
+from apps.account.views import SignUpView, VerifyEmailView, UpdateUserView, UserProfileView, LogoutView
 from django.contrib.auth import authenticate, login, logout
 
 urlpatterns = [
@@ -10,6 +10,7 @@ urlpatterns = [
     path('signup/api/signin', SignUpView.as_view()),
     path('verify/<str:email>', TemplateView.as_view(template_name='signin_signup/verify.html'), name='verify'),
     path('api/verify', VerifyEmailView.as_view()),
+    path('api/logout', LogoutView.as_view()),
 
     #profile
     path('api/user/<int:pk>', UserProfileView.as_view()),

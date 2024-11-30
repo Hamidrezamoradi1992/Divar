@@ -7,11 +7,10 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from validate_email import validate_email
 from .models import User
 from django.core.cache import cache
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from apps.account.serializers import UpdateUserSerializer, MainUserSerializer
 from apps.account.utils.utils import Utils
 from service.email import EmailService
-
 
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from django.contrib.contenttypes.models import ContentType
@@ -98,7 +97,6 @@ class VerifyEmailView(APIView):  # swagger
             return Response({'message': 'email not valid'},
                             status=status.HTTP_400_BAD_REQUEST)
         if code == codes:
-
             user, _ = User.objects.get_or_create(email=email, password=None)
             refresh = RefreshToken.for_user(user=user)
             login(request, user)
@@ -107,7 +105,6 @@ class VerifyEmailView(APIView):  # swagger
             response.set_cookie(key='access', value=refresh.access_token,
                                 expires=7200)
             response.set_cookie(key='refresh', value=refresh, expires=864000)
-
 
             return response
         return Response({'message': 'email not valid'},
@@ -176,18 +173,10 @@ class UpdateUserView(UpdateAPIView):
     queryset = User.objects.all()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+class LogoutView(APIView):
+    def get(self, request):
+        logout(request)
+        return Response({'message': 'logged out'})
 
 # swagger
 # class UserImageView(APIView):
