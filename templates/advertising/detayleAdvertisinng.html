@@ -12,10 +12,10 @@
         {#    slider image#}
         <div class="w-[30vw]  h-[375px] rounded-xl ">
             <div class="carousel w-full h-full" id="ImageFile">
-                
+
             </div>
             <div class="flex w-full justify-center gap-2 py-2" id="keyImage">
-                
+
             </div>
 
 
@@ -41,7 +41,7 @@
                     <h1 class="capitalize font-sans font-bold">More specifications</h1>
 
                     <ul id="specifications" class="grid grid-cols-2">
-                     
+
                     </ul>
                 </div>
                 <p id="description_short " class="capitalize font-bold">description short</p>
@@ -56,6 +56,19 @@
         </div>
     </div>
     
+    <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto mt-10" id="buttonDetail">
+
+        </div>
+    
+    <div id="massage" class="!hidden w-full m-auto">
+        <form action="" id="massageForm" class="m-auto">
+            {% csrf_token %}
+            <input type="text" name="massage" placeholder="Type here" class="input input-bordered w-full max-w-xs"/>
+            <button type='button' onclick="sendMassage()" class="btn">send</button>
+        </form>
+
+    </div>
+
 {% endblock %}
 {#end main#}
 
@@ -63,18 +76,23 @@
 {% block script %}
     <script src="{% static 'js/SetToken.js' %}"></script>
     <script src="{% static 'js/AddAdvertise/ViewAdvertising/detaileAdvertising/allAdvertiseView.js' %}"></script>
+    <script src="{% static 'js/comment/commentSendDetailAdvertising.js' %}"></script>
     <script>
         var idAdvertising = window.location.href.split('/');
+        let viewMassageEl = document.querySelector('#massage')
+        let buttonDetailEl = document.querySelector('#buttonDetail')
+        let idUserAdvertising=0
         const userId =    {% if request.user.is_authenticated  %}
             {{ request.user.id }}
         {% else %}
             NaN
         {% endif %}
         var domainPort = window.location.port;
+        let IdAdvertising=parseInt(idAdvertising[idAdvertising.length - 1])
         document.addEventListener("DOMContentLoaded", (ev) => {
             ev.preventDefault()
             console.log(idAdvertising[idAdvertising.length - 1])
-            AllAdvertisingView(parseInt(idAdvertising[idAdvertising.length - 1]))
+            AllAdvertisingView(IdAdvertising)
         })
 
     </script>

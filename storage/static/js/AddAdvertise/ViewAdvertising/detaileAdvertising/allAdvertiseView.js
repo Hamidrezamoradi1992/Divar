@@ -91,6 +91,8 @@ function AllAdvertisingView(id_advertising) {
                 price_product.innerHTML = `${data.price}`
                 description_short.innerHTML = `${data.description}`
                 addressEl.innerHTML = `${data.address[0].address}`
+                idUserAdvertising = `${data.address[0].id}`
+
 
                 let El = ''
                 data.vlue_field.forEach(field => {
@@ -136,6 +138,10 @@ function AllAdvertisingView(id_advertising) {
 
                 }
                 El = ''
+                buttonDetailEl.innerHTML=`        
+                <button class="tab btn" onclick="viewMassage()">massage</button>
+                <button class=" w-auto tab btn btn-ghost" onclick="">Update Profile</button>
+                <button class=" tab btn">Favorite</button>`
 
             }).catch()
 
