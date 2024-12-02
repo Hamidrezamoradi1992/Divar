@@ -4,6 +4,19 @@ from django.db.models import Q
 
 from ..advertising.models import Advertising
 from ..account.models import User
+from ..advertising.serializers import AdminAdvertisingViewSerializer
+
+
+class AdvertisingCommentsSerializer(AdminAdvertisingViewSerializer):
+    class Meta:
+        model = Advertising
+        fields = ('id',
+                  'title',
+                  'description',
+                  'image',
+                  'is_active',
+                  'diffusion',
+                  )
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -44,10 +57,46 @@ class CommentSerializer(serializers.ModelSerializer):
                                           discussion_forum=discussion_forum.discussion_forum)
         to_user = User.objects.filter(pk=to_user.id).first()
         discussion_forums = Comment.objects.all().values('discussion_forum')
-        discussion = discussion_forums.last() if discussion_forums.exists() else {'discussion_forum':0}
+        discussion = discussion_forums.last() if discussion_forums.exists() else {'discussion_forum': 0}
         return Comment.objects.create(user=user_id,
                                       to_user=to_user,
                                       massage=comment,
                                       advertised=advertised_id,
                                       parent=None,
                                       discussion_forum=discussion['discussion_forum'] + 1)
+
+
+class CommentListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('id',
+                  'user',
+                  'to_user',
+                  'massage',
+                  'discussion_forum',
+                  'parent')
+
+
+class ReplayCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comment
+        fields = ('massage',
+                  'discussion_forum')
+
+    def create(self, validated_data):
+        discussion_forum = validated_data['discussion_forum']
+        comment = Comment.objects.filter(discussion_forum=discussion_forum).last()
+        if comment is None:
+            raise serializers.ValidationError('discussion forum can not none')
+
+        to_users = Comment.objects.filter(user=self.context['request'].user, discussion_forum=discussion_forum)
+        if to_users.exists():
+            validated_data['to_user'] = to_users.first().to_user
+        else:
+            to_users = Comment.objects.filter(to_user=self.context['request'].user,
+                                           discussion_forum=discussion_forum)
+            validated_data['to_user'] = to_users.first().user
+        validated_data['parent'] = comment
+        validated_data['user'] = self.context['request'].user
+        validated_data['advertised'] = comment.advertised
+        return Comment.objects.create(**validated_data)

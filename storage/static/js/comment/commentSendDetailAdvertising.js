@@ -1,5 +1,5 @@
 function viewMassage() {
-    viewMassageEl.classList.remove('!hidden')
+    viewMassageEl.classList.toggle('!hidden')
 }
 
 function sendMassage() {
@@ -14,5 +14,21 @@ function sendMassage() {
         method: 'POST',
         body: data
     })
-
+    send.then(response => {
+            swal({
+                title: "Accepted",
+                text: response.massage,
+                icon: "success",
+                button: "accept",
+            });
+            viewMassage()
+        }
+    ).catch(error => {
+        swal({
+            title: "Accepted",
+            text: error.error,
+            icon: "error",
+            button: "again",
+        });
+    })
 }
