@@ -105,6 +105,7 @@ function sendUserProfile(user_id) {
 
     const data = fetchWithAuth(`http://localhost:${domainPort}/accounts/api/update/user/${user_id}`, {
         method: 'PUT',
+
         headers: {
             'X-Requested-With': 'XMLHttpRequest',
             'X-CSRFToken': csrfTokens
@@ -130,4 +131,5 @@ function sendUserProfile(user_id) {
         });
 
     })
+    location.reload()
 }

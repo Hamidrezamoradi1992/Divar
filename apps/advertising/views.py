@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from itertools import chain
-from rest_framework.generics import ListAPIView,RetrieveAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework import status
 from apps.advertising.models import Advertising, Category, City, State, Image, SaveValueField
 from apps.advertising.serializers import (AllAdvertisingViewSerializer,
@@ -263,7 +263,7 @@ class AllAdvertisingView(ListAPIView):
 
 
     """
-    queryset = Advertising.objects.filter(is_active=True,diffusion=True)
+    queryset = Advertising.objects.filter(is_active=True, diffusion=True)
     serializer_class = AllAdvertiseViewSerializer
     permission_classes = []
 
@@ -622,7 +622,12 @@ class AddFieldAdvertiseView(APIView):
             }
             serializer = MainSaveValueFieldSerializer(data=dict_query, partial=True)
             if serializer.is_valid():
-                serializer.save()
+                try:
+                    serializer.save()
+                except Exception:
+                    field = SaveValueField.objects.filter(advertising=dict_query['advertising'],
+                                                          category=dict_query['category'], ).delete()
+                    return Response({'error': serializer.errors}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
             else:
                 return Response({'error': serializer.errors}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
         return Response({'massage': 'compliant add field'}, status=status.HTTP_200_OK)
@@ -738,15 +743,18 @@ class AdvertisingPublishedView(APIView):
 
 """"end admin panel advertising"""
 """remove Advertising"""
+
+
 class DestroyAdvertising(APIView):
 
-    def post(self,request):
-        advertising=int(request.data['advertising'])
+    def post(self, request):
+        advertising = int(request.data['advertising'])
         print(advertising)
-        advertise=Advertising.objects.filter(pk=advertising)
+        advertise = Advertising.objects.filter(pk=advertising)
         if advertise.exists():
-            image=Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),instance_id=advertising)
-            save_field=SaveValueField.objects.filter(advertising_id=advertising)
+            image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
+                                         instance_id=advertising)
+            save_field = SaveValueField.objects.filter(advertising_id=advertising)
             if save_field.exists():
                 save_field.delete()
                 image.delete()

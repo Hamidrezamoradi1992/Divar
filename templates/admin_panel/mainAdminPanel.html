@@ -20,12 +20,16 @@
         <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto">
             <button class="tab btn" onclick="getAdvertising()">Advertising</button>
             <button class=" w-auto tab btn btn-ghost" onclick="FormUserProfile()">Update Profile</button>
+
             <button class=" tab btn">Favorite</button>
+            <button class=" w-auto tab btn btn-ghost" onclick="viewMassageAdmin()">Massage</button>
         </div>
 
     </div>
-    <div class="m-auto min-h-[600px] w-[100vw]" id="contexAdminPanel">
-
+    <div class="m-auto min-h-[100px] w-[100vw]" id="contexAdminPanel">
+    </div>
+    <div class="m-auto min-h-[300px] w-[30vw] !hidden  " id="cntextComments">
+        
     </div>
 
 {% endblock %}
@@ -37,6 +41,9 @@
     <script src="{% static 'js/adminpanel/UserAdminPanel/GetContextUser.js' %}"></script>
     <script src="{% static 'js/adminpanel/UserAdminPanel/advertising/getAdvertising.js' %}"></script>
     <script src="{% static 'js/adminpanel/UserAdminPanel/updateUserProfile.js' %}"></script>
+    <script src="{% static 'js/comment/viewMassageInAdmin.js' %}"></script>
+    <script src="{% static 'js/comment/SendMassageAdmin.js' %}"></script>
+    
 
     <script>
         let formContextEl = document.querySelector('#contextDateUser')

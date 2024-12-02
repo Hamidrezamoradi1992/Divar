@@ -1,5 +1,6 @@
 function getAdvertising() {
     console.log('getAdvertising')
+    contexAdminPanelEL.innerHTML=''
     contexAdminPanelEL.innerHTML = `
         <div class="max-w-[100vw] m-auto my-12">
             <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto">
@@ -81,9 +82,11 @@ function getPublishedAdvertising() {
           <div class="flex items-center gap-3">
             <div class="avatar">
               <div class="skeleton mask mask-squircle h-12 w-12">
+              <a href="http://localhost:8000/advertising/view/add/advertise/${advertisingPublisher.id}">
                 <img
                   src="${advertisingPublisher.image.file}"
                   alt="${advertisingPublisher.image.alt}" />
+                  </a>
               </div>
             </div>
             <div>
