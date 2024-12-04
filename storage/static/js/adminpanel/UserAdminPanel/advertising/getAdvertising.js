@@ -1,11 +1,11 @@
 function getAdvertising() {
-    console.log('getAdvertising')
+    cntextCommentsEL.innerHTML=``
     contexAdminPanelEL.innerHTML=''
     contexAdminPanelEL.innerHTML = `
         <div class="max-w-[100vw] m-auto my-12">
-            <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto">
+            <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[40vw] m-auto">
                 <button class="w-auto tab btn btn-ghost" onclick="getPublishedAdvertising()">Published</button>
-                <button class=" tab btn " onclick="">payment</button>
+                <button class=" tab btn " onclick="getReadyToPayment()">Ready for payment</button>
                 <button class=" w-auto tab btn btn-ghost" onclick="getExpAdvertising()">All Advertising</button>
             </div>
 
@@ -21,9 +21,9 @@ function getAdvertising() {
             <input type="checkbox" class="checkbox" />
           </label>
         </th>
-        <th>Name</th>
-        <th>Job</th>
-        <th>Favorite Color</th>
+        <th>advertise</th>
+        <th>description</th>
+        <th></th>
         <th></th>
       </tr>
     </thead>
@@ -103,6 +103,7 @@ function getPublishedAdvertising() {
         <td>${result}</td>
         <th>
           <button type="submit" class="btn btn-ghost btn-xs" onclick="ExitAdvertising(${advertisingPublisher.id})">details</button>
+          <button type="submit" class="btn btn-ghost btn-xs" onclick="">ladder</button>
         </th>
       </tr>
 `
@@ -113,7 +114,7 @@ function getPublishedAdvertising() {
 
 function getExpAdvertising(){
 
-     const data = fetchWithAuth(`http://localhost:${domainPort}/advertising/api/adminpanel/advertising`, {
+     const data = fetchWithAuth(`http://localhost:${domainPort}/advertising/api/adminpanel/all/advertising`, {
         method: 'GET',
 
     })
@@ -141,9 +142,11 @@ function getExpAdvertising(){
           <div class="flex items-center gap-3">
             <div class="avatar">
               <div class="skeleton mask mask-squircle h-12 w-12">
-                <img
-                  src="${advertisingPublisher.image.file}"
-                  alt="${advertisingPublisher.image.alt}" />
+                 <a href="http://localhost:8000/advertising/view/add/advertise/${advertisingPublisher.id}">
+                        <img
+                        src="${advertisingPublisher.image.file}"
+                        alt="${advertisingPublisher.image.alt}" />
+                  </a>
               </div>
             </div>
             <div>

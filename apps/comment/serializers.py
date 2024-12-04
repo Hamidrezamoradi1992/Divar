@@ -2,8 +2,10 @@ from rest_framework import serializers
 from .models import Comment
 from django.db.models import Q
 
+from ..account.serializers import MainUserSerializer
 from ..advertising.models import Advertising
 from ..account.models import User
+
 from ..advertising.serializers import AdminAdvertisingViewSerializer
 
 
@@ -31,10 +33,12 @@ class CommentSerializer(serializers.ModelSerializer):
         to_user = validated_data['to_user']
         validate_advertise = Advertising.objects.filter(pk=advertised_id.id)
         if validate_advertise.exists():
+
             val = validate_advertise.first()
-            user_validate = val.user
-            if user_validate == user_id:
-                raise serializers.ValidationError('comment not found')
+            if val.is_active:
+                user_validate = val.user
+                if user_validate == user_id:
+                    raise serializers.ValidationError('comment not found')
         else:
             raise serializers.ValidationError('advertise')
 
@@ -66,7 +70,18 @@ class CommentSerializer(serializers.ModelSerializer):
                                       discussion_forum=discussion['discussion_forum'] + 1)
 
 
+class UserSerializer(MainUserSerializer):
+    class Meta:
+        model = User
+        fields = ('id',
+                  'first_name',
+                  'is_kyc',
+                  'image_Official_photo')
+
+
 class CommentListSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
     class Meta:
         model = Comment
         fields = ('id',
@@ -94,7 +109,7 @@ class ReplayCommentSerializer(serializers.ModelSerializer):
             validated_data['to_user'] = to_users.first().to_user
         else:
             to_users = Comment.objects.filter(to_user=self.context['request'].user,
-                                           discussion_forum=discussion_forum)
+                                              discussion_forum=discussion_forum)
             validated_data['to_user'] = to_users.first().user
         validated_data['parent'] = comment
         validated_data['user'] = self.context['request'].user

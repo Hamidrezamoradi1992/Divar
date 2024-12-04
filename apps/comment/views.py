@@ -30,13 +30,14 @@ class CommentSendView(APIView):
 
     '''
     serializer_class = CommentSerializer
-    permission_classes = []
 
     def post(self, request):
+        print(request.data)
         serializers = self.serializer_class(data=request.data, context={'request': request})
         if serializers.is_valid():
             serializers.save()
             return Response({'massage': 'create at'}, status=status.HTTP_200_OK)
+        print(serializers.errors)
         return Response({'error': serializers.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 

@@ -1,4 +1,5 @@
 function FormUserProfile() {
+    cntextCommentsEL.innerHTML=``
     contexAdminPanelEL.innerHTML = ''
     contexAdminPanelEL.innerHTML = `<form action="" id="formUpdateUserProfile" class="gap-3 mx-40">
         <label class="form-control w-full max-w-xs">

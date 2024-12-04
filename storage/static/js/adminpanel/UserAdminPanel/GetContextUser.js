@@ -1,4 +1,5 @@
 function get_user(user_id) {
+    cntextCommentsEL.innerHTML=``
     const data = fetchWithAuth(`http://localhost:${domainPort}/accounts/api/user/${user_id}`, {
         method: 'GET',
     })

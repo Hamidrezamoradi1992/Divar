@@ -22,6 +22,7 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           AllAdvertiseViewSerializer,
                                           AllRetrieveAdvertisingViewSerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
+from ..favorite.models import Favorite
 
 # Create your views here.
 """all advertising"""
@@ -142,7 +143,7 @@ class DetailAdvertiseView(RetrieveAPIView):
 
 
     """
-    queryset = Advertising.objects.all()
+    queryset = Advertising.objects.archive()
     serializer_class = AllRetrieveAdvertisingViewSerializer
     permission_classes = []
 
@@ -263,7 +264,7 @@ class AllAdvertisingView(ListAPIView):
 
 
     """
-    queryset = Advertising.objects.filter(is_active=True, diffusion=True)
+    queryset = Advertising.objects.filter(is_active=True, diffusion=True, payed=True)
     serializer_class = AllAdvertiseViewSerializer
     permission_classes = []
 
@@ -595,11 +596,9 @@ class AddFieldAdvertiseView(APIView):
 
 
     """
-
-    permission_classes = []
     parser_classes = [MultiPartParser, FormParser]
 
-    # get field catefory
+    # get field category
     def get(self, request, category_id=None):
         if category_id is not None:
             category = Category.objects.filter(pk=category_id)
@@ -736,6 +735,44 @@ class AdvertisingPublishedView(APIView):
         userid = request.user.id
         if userid:
             queryset = Advertising.objects.filter(user=userid, diffusion=True)
+            serializer = self.serializer_class(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdvertisingFavoriteView(APIView):
+    serializer_class = AdminAdvertisingViewSerializer
+
+    def get(self, request):
+        user = request.user.id
+        favorite = Favorite.objects.filter(user_id=user).values_list('advertising_id', flat=True)
+        if favorite.exists():
+            advertising = Advertising.objects.filter(pk__in=favorite)
+            serializer = self.serializer_class(advertising, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'massage': 'user not favorites '}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdvertisingAllView(APIView):
+    serializer_class = AdminAdvertisingViewSerializer
+    permission_classes = []
+
+    def get(self, request):
+        userid = request.user.id
+        if userid:
+            queryset = Advertising.objects.archive().filter(user=userid, payed=True)
+            serializer = self.serializer_class(queryset, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class AdvertisingAllForPaymentView(APIView):
+    serializer_class = AdminAdvertisingViewSerializer
+
+    def get(self, request):
+        userid = request.user.id
+        if userid:
+            queryset = Advertising.objects.archive().filter(user=userid, payed=False)
             serializer = self.serializer_class(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)

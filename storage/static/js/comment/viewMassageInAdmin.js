@@ -31,22 +31,21 @@ function getAllComments(discussionForum) {
     })
     let to_user1 = 0
     let to_user2 = 0
-    let to_user = 0
+    let to_users = 0
     let cntextCommentsEl = document.querySelector('#cntextComments')
     datas.then(data => {
         let el = ''
         data.forEach(comments => {
 
-
-            if (userId === comments.user) {
-                console.log(comments)
+            if (userId === comments.user.id) {
+                to_user1=comments.to_user
                 el += `
                     <div class="chat chat-end">
                         <div class="chat-image avatar">
-                            <div class="w-10 rounded-full">
+                            <div class="w-10 rounded-full skeleton">
                                 <img
-                                    alt="Tailwind CSS chat bubble component"
-                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+                                    alt="image_user"
+                                    src="${comments.user.image_Official_photo}"/>
                             </div>
                         </div>
                         <div class="chat-bubble">${comments.massage}</div>
@@ -54,14 +53,14 @@ function getAllComments(discussionForum) {
                     `
 
             } else {
-
+                    to_user2=comments.to_user
                 el += `
                     <div class="chat chat-start">
                         <div class="chat-image avatar">
-                            <div class="w-10 rounded-full">
+                            <div class="w-10 rounded-full skeleton">
                                 <img
-                                    alt="Tailwind CSS chat bubble component"
-                                    src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+                                    alt="image_user"
+                                    src="${comments.user.image_Official_photo}"/>
                             </div>
                         </div>
                         <div class="chat-bubble">${comments.massage}</div>
@@ -73,14 +72,14 @@ function getAllComments(discussionForum) {
 
         })
         if (to_user1 !== 0) {
-            to_user = to_user1
+            to_users = to_user1
         } else {
-            to_user = to_user2
+            to_users = to_user2
         }
 
         el += `<form action="" id="massageForm" class="m-auto mt-3">
             <input type="text" name="massage" placeholder="Type here" class="input input-bordered w-full max-w-xs"/>
-            <button type='button' onclick="sendMassageAdmin(${to_user},${discussionForum})" class="btn">send</button>
+            <button type='button' onclick="sendMassageAdmin(${to_users},${discussionForum})" class="btn">send</button>
         </form>`
 
         cntextCommentsEl.innerHTML = ''

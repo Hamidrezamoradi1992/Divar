@@ -31,4 +31,7 @@ function sendMassage() {
             button: "again",
         });
     })
+    location.reload()
+
+
 }
