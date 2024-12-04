@@ -31,10 +31,10 @@ urlpatterns = [
     path('api/add/advertise/all_category/', views.AllCategoryView.as_view(), name='my_view_default'),
 
     # admin panel
-    path('api/admin_panel/advertising', views.AdvertisingPublishedView.as_view()),
-    path('api/admin_panel/favorite/advertising', views.AdvertisingFavoriteView.as_view()),
-    path('api/admin_panel/forpayment/advertising', views.AdvertisingAllForPaymentView.as_view()),
-    path('api/admin_panel/all/advertising', views.AdvertisingAllView.as_view()),
+    path('api/adminpanel/advertising', views.AdvertisingPublishedView.as_view()),
+    path('api/adminpanel/favorite/advertising', views.AdvertisingFavoriteView.as_view()),
+    path('api/adminpanel/forpayment/advertising', views.AdvertisingAllForPaymentView.as_view()),
+    path('api/adminpanel/all/advertising', views.AdvertisingAllView.as_view()),
     # delete advertising
     path('api/destroy', views.DestroyAdvertising.as_view())
 ]
