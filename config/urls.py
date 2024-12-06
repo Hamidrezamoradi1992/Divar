@@ -28,6 +28,7 @@ urlpatterns = [
     path('advertising/', include('apps.advertising.urls')),
     path('favorite/', include('apps.favorite.urls')),
     path('comment/', include('apps.comment.urls')),
+    path('comment/', include('apps.payment.urls')),
 
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

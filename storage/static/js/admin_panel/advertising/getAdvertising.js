@@ -102,7 +102,7 @@ function getPublishedAdvertising() {
         </td>
         <td>${result}</td>
         <th>
-          <button type="submit" class="btn btn-ghost btn-xs" onclick="ExitAdvertising(${advertisingPublisher.id})">details</button>
+          <button type="submit" class="btn btn-ghost btn-xs" onclick="">deactive</button>
           <button type="submit" class="btn btn-ghost btn-xs" onclick="addToOrderForLadder(${advertisingPublisher.id})">ladder</button>
         </th>
       </tr>

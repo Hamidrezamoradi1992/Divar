@@ -1,8 +1,8 @@
 function addToOrderForLadder(advertising) {
     let form = new FormData()
     const csrfTokens = getCookie('csrftoken')
-    form.append('advertising', advertising)
-    const data = fetchWithAuth(``, {
+    form.append('advertiser', advertising)
+    const data = fetchWithAuth(`http://localhost:8000/comment/api/ladder/payment`, {
         method: 'POST',
         body: form,
         headers: {
@@ -11,4 +11,22 @@ function addToOrderForLadder(advertising) {
         },
     })
 
+    data.then(response => {
+
+        Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: response.message,
+            confirmButtonText: 'OK'
+        });
+    })
+        .catch(error => {
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message,
+                confirmButtonText: 'OK'
+            });
+        });
 }
