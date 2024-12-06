@@ -33,6 +33,7 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
     price = models.FloatField(default=0)
     diffusion = models.BooleanField(default=False)
     ladder = models.BooleanField(default=False)
+    payed=models.BooleanField(default=True)
     category = models.ForeignKey('Category',
                                  related_name='advertising',
                                  related_query_name='advertising',
@@ -67,7 +68,8 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
             self.expires_at = timezone.now() + timedelta(days=2)
         if self.expires_at and self.diffusion:
             self.expires_at = timezone.now() + timedelta(days=30)
-
+        if not self.category.free:
+            self.payed= False
     def save(self, *args, **kwargs):
 
         self.clean()

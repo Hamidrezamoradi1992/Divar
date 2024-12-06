@@ -17,14 +17,17 @@
     </div>
 
     <div class="max-w-[90vw] m-auto my-12">
-        <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto">
+        <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[60vw] m-auto">
             <button class="tab btn" onclick="getAdvertising()">Advertising</button>
             <button class=" w-auto tab btn btn-ghost" onclick="FormUserProfile()">Update Profile</button>
-            <button class=" tab btn">Favorite</button>
+            <button class=" tab btn" onclick="viewFavoriteAdmin()">Favorite</button>
+            <button class=" w-auto tab btn btn-ghost" onclick="viewMassageAdmin()">Massage</button>
         </div>
 
     </div>
-    <div class="m-auto min-h-[600px] w-[100vw]" id="contexAdminPanel">
+    <div class="m-auto min-h-[100px] w-[100vw]" id="contexAdminPanel">
+    </div>
+    <div class="m-auto min-h-[300px] w-[30vw] !hidden  " id="cntextComments">
 
     </div>
 
@@ -34,13 +37,21 @@
     <script src="{% static 'js/SetToken.js' %}"></script>
     <script src="{% static 'js/AddAdvertise/exitAddAdvertising.js' %}"></script>
 
-    <script src="{% static 'js/adminpanel/UserAdminPanel/GetContextUser.js' %}"></script>
-    <script src="{% static 'js/adminpanel/UserAdminPanel/advertising/getAdvertising.js' %}"></script>
-    <script src="{% static 'js/adminpanel/UserAdminPanel/updateUserProfile.js' %}"></script>
+    <script src="{% static 'js/admin_panel/UserAdminPanel/GetContextUser.js' %}"></script>
+    <script src="{% static 'js/admin_panel/advertising/getAdvertising.js' %}"></script>
+    <script src="{% static 'js/admin_panel/UserAdminPanel/updateUserProfile.js' %}"></script>
+    <script src="{% static 'js/admin_panel/comment/viewMassageInAdmin.js' %}"></script>
+    <script src="{% static 'js/admin_panel/comment/SendMassageAdmin.js' %}"></script>
+    <script src="{% static 'js/admin_panel/favorite/favoriteInAdminPanel.js' %}"></script>
+    <script src="{% static 'js/AddAdvertise/ViewAdvertising/favorite/FavoriteAddAndRemove.js' %}"></script>
+    <script src="{% static 'js/admin_panel/advertising/getReadyToPayment.js' %}"></script>
+    <script src="{% static 'js/admin_panel/payment/addToOrderForLadder.js' %}"></script>
+
 
     <script>
         let formContextEl = document.querySelector('#contextDateUser')
         let contexAdminPanelEL = document.querySelector('#contexAdminPanel')
+        let cntextCommentsEL = document.querySelector('#cntextComments')
         var domainPort = window.location.port;
         const userId =    {% if request.user.is_authenticated  %}
             {{ request.user.id }}

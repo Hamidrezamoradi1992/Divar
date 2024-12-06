@@ -17,7 +17,7 @@ async function fetchWithAuth(url, options = {}) {
             headers: authHeaders
         });
 
-        // بررسی وضعیت پاسخ
+
         if (!response.ok) {
             console.log(response)
             throw new Error(`Request failed: ${response.status} ${response.statusText}`);
@@ -27,13 +27,6 @@ async function fetchWithAuth(url, options = {}) {
         return response.json();
     } catch (error) {
         console.error(`Error in fetchWithAuth for ${url}:`, error);
-
-        Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: `Something went wrong: ${error.message}`,
-        });
-
         throw error;
     }
 }
