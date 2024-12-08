@@ -1,24 +1,17 @@
 from rest_framework import serializers
-from .models import Order
-from ..advertising.models import Advertising
+from .models import Order, OrderItem
 
 
 class AddLadderToOrderSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Order
-        fields = ['advertiser']
-
-    def validate(self, attrs):
-        user=self.context['request'].user
-        advertiser = attrs.get('advertiser')
-        order = Order.objects.filter(advertiser=advertiser,user=user)
-        if order.exists():
-            raise serializers.ValidationError("Order already exists")
-        return attrs
+        model = OrderItem
+        fields = ['advertise']
 
     def create(self, validated_data):
-        validated_data['user'] = self.context['request'].user
-        validated_data['price'] = 20
+        print(self)
+        order_id, _ = Order.objects.get_or_create(user=self.context['request'].user)
+        print(order_id)
+        validated_data['order'] = order_id
+        validated_data['price_at_order'] = 20
         validated_data['title'] = 'ladder'
-        validated_data['is_paid'] = True
         return self.Meta.model.objects.get_or_create(**validated_data)

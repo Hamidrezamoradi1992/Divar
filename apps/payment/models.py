@@ -8,29 +8,59 @@ from apps.advertising.models import Advertising
 User = get_user_model()
 
 
-# Create your models here.
+class OrderManager(BasicLogicalDeleteManager):
+    def completed(self):
+        return self.get_queryset().filter(is_completed=True)
+
+    def not_completed(self):
+        return self.get_queryset().filter(is_completed=False)
+
+    def paid(self):
+        return self.get_queryset().filter(is_paid=True)
+
+    def not_paid(self):
+        return self.get_queryset().filter(is_paid=False)
+
 
 class Order(LogicalDeleteMixin, TimeCreateMixin):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    is_completed = models.BooleanField(default=False)
+    is_paid = models.BooleanField(default=False)
     expires_at = None
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_order', related_query_name='user_order')
+    objects = OrderManager()
+
+    def __str__(self):
+        return str(self.id)
+
+    @property
+    def total_order_price(self):
+        return sum(item.price_at_order for item in self.items.all())
+
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['user']),
+            models.Index(fields=['is_completed']),
+            models.Index(fields=['is_paid']),
+        ]
+
+
+class OrderItem(LogicalDeleteMixin):
+    advertise = models.ForeignKey(Advertising, on_delete=models.CASCADE, related_name='advertise_order_items')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items', related_query_name='items')
+    price_at_order = models.FloatField()
     title = models.CharField(null=True,
                              blank=True,
                              choices=(('CATEGORY', 'category'),
                                       ('LADDER', 'ladder')),
                              max_length=10)
-    price = models.FloatField(default=0)
-    advertiser = models.ForeignKey(Advertising, on_delete=models.CASCADE, related_name='advertiser', related_query_name='advertiser')
-    is_completed = models.BooleanField(default=False)
-    is_paid = models.BooleanField(default=False)
-
-    def __str__(self):
-        return f'{self.title}-{self.price}-{self.user}'
+    objects = BasicLogicalDeleteManager()
 
     def save(self, *args, **kwargs):
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
+    def __str__(self):
+        return str(self.id)
 
-
-
-
-
+    class Meta:
+        unique_together = ('advertise', 'order')
