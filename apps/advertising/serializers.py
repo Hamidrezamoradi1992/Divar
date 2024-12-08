@@ -63,6 +63,7 @@ class MainCategorySerializer(serializers.ModelSerializer):
 
 
 class MainSaveValueFieldSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = SaveValueField
         fields = ('id',
@@ -70,6 +71,9 @@ class MainSaveValueFieldSerializer(serializers.ModelSerializer):
                   'category',
                   'field',
                   'value',)
+
+
+
 
 
 class AddAdvertisingImageSerializer(serializers.ModelSerializer):
@@ -185,7 +189,7 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
             userObject=obj.user
             user = User.objects.filter(pk=userObject.id)
             return AddressViewSerializer(user, many=True).data
-        return {'massage': 'is_user_not_authentication'}
+        return {'massage': 'is user not authentication'}
 
     def get_image(self, obj):
         image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id)
@@ -285,3 +289,13 @@ class AllRetrieveAdvertisingViewSerializer(AllAdvertisingViewSerializer):
         return DetailSaveValueFieldSerializer(field, many=True).data
 
 """retrieve advertising"""
+'''filter'''
+
+
+class filterCategorySerializer(AllAdvertiseViewSerializer):
+    class Meta:
+        model = Advertising
+        fields = ('id',
+                  'title',
+                  'price',
+                  'image',)

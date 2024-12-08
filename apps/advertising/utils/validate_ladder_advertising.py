@@ -48,9 +48,6 @@ class ValidateLadderAdvertising:
             for item in random_items:
                 if item.ladder_count > 3:
                     random_items.remove(item)
-                    advertise = Advertising.objects.get(id=item.queryset.id)
-                    advertise.ladder = False
-                    advertise.save()
                     ValidateLadderAdvertising._LADDER_INSTANCE.remove(item)
                     ValidateLadderAdvertising._LADDER_ADVERTISING_MODEL.pop(item.queryset.id)
             if len(random_items) < 3:

@@ -1,3 +1,5 @@
+from django.core.cache import cache
+
 from django.contrib.contenttypes.models import ContentType
 
 from django.utils.decorators import method_decorator
@@ -5,7 +7,7 @@ from django.views.decorators.cache import cache_page
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
+from django.db.models import Q
 from itertools import chain
 from rest_framework.generics import ListAPIView, RetrieveAPIView
 from rest_framework import status
@@ -20,7 +22,8 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           MainCitySerializer,
                                           AdminAdvertisingViewSerializer,
                                           AllAdvertiseViewSerializer,
-                                          AllRetrieveAdvertisingViewSerializer)
+                                          AllRetrieveAdvertisingViewSerializer,
+                                          filterCategorySerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 from ..favorite.models import Favorite
 
@@ -264,9 +267,20 @@ class AllAdvertisingView(ListAPIView):
 
 
     """
-    queryset = Advertising.objects.filter(is_active=True, diffusion=True, payed=True)
+    queryset = Advertising.objects.is_diffusion()
     serializer_class = AllAdvertiseViewSerializer
     permission_classes = []
+
+    def get(self, request,*args, **kwargs):
+        ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=None)
+        if ladder is not None:
+            advertising2 = list(chain(ladder, list(self.get_queryset())))
+        else:
+            advertising2 = self.get_queryset()
+
+        serializer = self.serializer_class(advertising2, many=True, context={'request': request})
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 
 # swagger
@@ -410,7 +424,7 @@ class ViewAdvertisingForCategory(APIView):
 
 # swagger
 
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(60 * 60 * 24), name='dispatch')
 class AddAdvertiseView(APIView):
     """
         - create new advertising
@@ -508,7 +522,7 @@ class UploadAdvertiseImageView(APIView):
 
     def post(self, request):
         content_type = ContentType.objects.get(model='advertising')
-        advertising = Advertising.objects.filter(pk=request.data['advertising']).exists()
+        advertising = Advertising.objects.archive().filter(pk=request.data['advertising']).exists()
         if advertising:
             for image in request.FILES.getlist('image'):
                 data_type = {
@@ -779,6 +793,62 @@ class AdvertisingAllForPaymentView(APIView):
 
 
 """"end admin panel advertising"""
+"""filter advertising"""
+
+"""end filter advertising"""
+
+
+class FilterAdvertising(APIView):
+    permission_classes = []
+
+    def get(self, request, category_id=None):
+        if category_id:
+            if not (serializer := cache.get(f'category:{category_id}')):
+                print('apps.advertise.view.FilterAdvertising,get', cache.get(f'category:{category_id}'))
+                category = Category.objects.get(pk=category_id)
+                categories = category.get_descendants(include_self=True)
+                advertising_category = Advertising.objects.is_diffusion().filter(category_id=category_id)
+                ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=categories)
+                if ladder is not None:
+                    advertising2 = list(chain(ladder, list(advertising_category)))
+                else:
+                    advertising2 = advertising_category
+
+                serializer = filterCategorySerializer(advertising2, many=True, context=request).data
+                cache.set(f'category:{category_id}', serializer, 1)
+            return Response(serializer, status=status.HTTP_200_OK)
+        return Response({'massage': "NOT FOUND"}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        titles = None if (c := request.data['title']) in ['None', ''] else c
+        category = None if (c := request.data['category']) in ['None', ''] else int(c)
+        province = None if (c := request.data['province']) in ['None', ''] else int(c)
+        city = None if (c := request.data['city']) in ['None', ''] else int(c)
+        filters = Q()
+
+        cache_key = f'{titles},{category},{province},{city}'
+        if not (serializer_data := cache.get(cache_key)):
+            print('apps.advertise.view.FilterAdvertising,post:', cache.get(cache_key))
+            if category:
+                categories = Category.objects.get(pk=int(category))
+                cat = categories.get_descendants(include_self=False)
+                filters &= Q(category__in=cat) if len(cat) > 0 else Q(category_id=category)
+
+            if titles:
+                filters &= Q(title__icontains=titles)
+            if city:
+                filters &= Q(city_id=city)
+            if province:
+                filters &= Q(state_id=province)
+
+            advertising = Advertising.objects.is_diffusion().filter(filters)
+            serializer = filterCategorySerializer(advertising, many=True, context=request)
+            serializer_data = serializer.data
+            cache.set(cache_key, serializer_data, 600)
+
+        return Response(serializer_data, status=status.HTTP_200_OK)
+
+
 """remove Advertising"""
 
 

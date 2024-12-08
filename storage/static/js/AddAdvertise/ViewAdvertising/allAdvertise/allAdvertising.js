@@ -5,12 +5,10 @@ function AllAdvertising() {
             method: 'GET',
         })
         datas.then(response => {
-            console.log(response);
             let El = '';
 
             response.forEach(data => {
-                console.log(data.favorite === true)
-                console.log(data);
+
                 const el = `  
                 <div class="card card-side bg-base-100 shadow-xl max-w-[450px] max-h-[230px]">  
                     <figure class="max-w-[160px] max-h-[230px]">  

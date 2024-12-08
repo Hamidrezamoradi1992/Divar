@@ -11,43 +11,21 @@
 
 {#main#}
 {% block content %}
-    <div class="flex justify-center my-5">
-        <form action="" class="join">
-            <div>
-                <div>
-                    <input class="input input-bordered join-item" placeholder="Search"/>
-                </div>
-            </div>
-            <select class="select select-bordered join-item">
-                <option disabled selected>Filter</option>
-                <option>Sci-fi</option>
-                <option>Drama</option>
-                <option>Action</option>
-            </select>
-            <select class="select select-bordered join-item">
-                <option disabled selected>Filter</option>
-                <option>Sci-fi</option>
-                <option>Drama</option>
-                <option>Action</option>
-            </select>
-            <select class="select select-bordered join-item">
-                <option disabled selected>Filter</option>
-                <option>Sci-fi</option>
-                <option>Drama</option>
-                <option>Action</option>
-            </select>
-            <div class="indicator">
-
-                <button class="btn join-item">Search</button>
-            </div>
-        </form>
+    <div class="w-[100vw] mb-[60px]">
+        <h1 class="m-auto ">Category</h1>
     </div>
+
+    <div id="categoryView" class="mx-5 my-5 flex items-center ">
+
+    </div>
+
+
 
     {#    maine view#}
 
-        <div class="max-w-[80vw] m-auto  grid grid-cols-3 gap-3 " id="maineView">
+    <div class="max-w-[80vw] m-auto  grid grid-cols-3 gap-3 " id="maineView">
 
-       
+
         {#side bare view#}
 
     </div>
@@ -57,8 +35,11 @@
 
 {% block script %}
     <script src="{% static 'js/SetToken.js' %}"></script>
+    <script src="{% static 'js/filter/getCategoryFetch.js' %}"></script>
     <script src="{% static 'js/AddAdvertise/ViewAdvertising/allAdvertise/allAdvertising.js' %}"></script>
     <script src="{% static 'js/AddAdvertise/ViewAdvertising/favorite/FavoriteAddAndRemove.js' %}"></script>
+    {#    <script src="{% static 'js/filter/getCategory.js' %}"></script>#}
+
 
     <script>
         const userId =    {% if request.user.is_authenticated  %}
@@ -69,9 +50,12 @@
         var domainPort = window.location.port;
         let maineViewEl = document.querySelector('#maineView')
         let sidebarViewEl = document.querySelector('#sideBaer')
+        let categoryViewEL = document.querySelector('#categoryView')
         document.addEventListener("DOMContentLoaded", (ev) => {
             ev.preventDefault()
             AllAdvertising()
+            {#getCategory()#}
+            getCategoryFetch()
         })
 
     </script>

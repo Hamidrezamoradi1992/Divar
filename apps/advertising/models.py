@@ -16,11 +16,12 @@ from django.core.cache import cache
 # Create your models here.
 
 class AdvertisingManager(BasicLogicalDeleteManager):
+
     def is_diffusion(self):
-        super().get_queryset().filter(is_active=True, diffusion=True)
+        return super().get_queryset().filter(is_active=True, diffusion=True)
 
     def is_ladder(self):
-        super().get_queryset().filter(ladder=True)
+        return super().get_queryset().filter(ladder=True)
 
 
 class CategoryManager(BasicLogicalDeleteManager):
@@ -33,7 +34,7 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
     price = models.FloatField(default=0)
     diffusion = models.BooleanField(default=False)
     ladder = models.BooleanField(default=False)
-    payed=models.BooleanField(default=True)
+    payed = models.BooleanField(default=True)
     category = models.ForeignKey('Category',
                                  related_name='advertising',
                                  related_query_name='advertising',
@@ -69,7 +70,8 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
         if self.expires_at and self.diffusion:
             self.expires_at = timezone.now() + timedelta(days=30)
         if not self.category.free:
-            self.payed= False
+            self.payed = False
+
     def save(self, *args, **kwargs):
 
         self.clean()
@@ -270,7 +272,6 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
         else:
             raise ValidationError('Field no match of category')
 
-
         validation_methods = {
             'int': self._validate_int,
             'str': self._validate_str,
@@ -297,9 +298,9 @@ class SaveValueField(LogicalDeleteMixin, TimeCreateMixin):
         self.value = float(self.value)
 
     def _validate_bool(self):
-        if self.value.lower() not in ['on','off']:
+        if self.value.lower() not in ['on', 'off']:
             raise ValidationError("Value must be a boolean represented as  '1', or '0'.")
-        self.value = 1 if self.value.lower()=='on' else 0
+        self.value = 1 if self.value.lower() == 'on' else 0
 
     def save(self, *args, **kwargs):
         self.clean()
