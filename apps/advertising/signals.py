@@ -8,7 +8,7 @@ from apps.payment.models import Order, OrderItem
 @receiver(post_save, sender=Advertising)
 def set_instance_ladder(sender, instance, created, **kwargs):
     if not created:
-        print('set_instance_ladder', instance.ladder)
+        print('signal,set_instance_ladder', instance.ladder)
         if instance.ladder:
             ValidateLadderAdvertising(instance, category=instance.category)
 

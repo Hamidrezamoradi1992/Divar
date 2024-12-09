@@ -63,15 +63,15 @@ class User(AbstractUser):
     image_idcard = models.ImageField(upload_to=f'kyc/_kyc_images/',
                                      verbose_name='ID Card',
                                      validators=[CustomValidators.file_validator],
-                                     null=True, blank=True)
+                                     null=True, blank=True,default=None)
     image_Official_photo = models.ImageField(upload_to=f'kyc/_kyc_images/',
                                              verbose_name='Official photo',
                                              validators=[CustomValidators.file_validator],
-                                             null=True, blank=True)
+                                             null=True, blank=True,default=None)
     image_letter_of_commitment = models.ImageField(upload_to=f'kyc/_kyc_images/',
                                                    verbose_name=' letter of commitment',
                                                    validators=[CustomValidators.file_validator],
-                                                   null=True, blank=True)
+                                                   null=True, blank=True,default=None)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

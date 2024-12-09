@@ -6,7 +6,7 @@ from apps.advertising import views
 urlpatterns = [
 
     path('api/all/advertising', views.AllAdvertisingView.as_view(), name='advertising-list'),
-    path('api/view/advertise/cartegory/<int:category_id>', views.ViewAdvertisingForCategory.as_view()),
+    # path('api/view/advertise/cartegory/<int:category_id>', views.ViewAdvertisingForCategory.as_view()),
 
     # add advertise
     path('view/add/advertise', TemplateView.as_view(template_name='AddAdvertise/AddAdvertise.html'), name='home'),

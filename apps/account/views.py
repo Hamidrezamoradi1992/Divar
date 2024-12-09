@@ -8,10 +8,10 @@ from validate_email import validate_email
 from .models import User
 from django.core.cache import cache
 from django.contrib.auth import login, logout
-from apps.account.serializers import UpdateUserSerializer, MainUserSerializer
+from apps.account.serializers import UpdateUserSerializer, MainUserSerializer, KycUserSerializer
 from apps.account.utils.utils import Utils
 from service.email import EmailService
-
+from django.db.models import Q
 from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
 from django.contrib.contenttypes.models import ContentType
 
@@ -177,6 +177,37 @@ class LogoutView(APIView):
     def get(self, request):
         logout(request)
         return Response({'message': 'logged out'})
+
+
+class KycAcceptedView(APIView):
+    permission_classes = []
+    def get(self, request):
+        users_with_images = User.objects.filter(
+            is_kyc=False
+        ).filter(
+            Q(image_idcard__isnull=False) & ~Q(image_idcard='') |
+            Q(image_letter_of_commitment__isnull=False) & ~Q(image_letter_of_commitment='')
+        )
+        if users_with_images.exists():
+            serializers=KycUserSerializer(users_with_images,many=True)
+            return Response(serializers.data)
+        return Response({'message': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+
+    def post(self, request):
+        id = request.data['id']
+        user = User.objects.filter(id=id)
+        if user.exists():
+            user.update(image_idcard='', image_letter_of_commitment='')
+            return Response({'message': 'user image deleted'}, status=status.HTTP_200_OK)
+        return Response({'message': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
+    def put(self,request):
+        id = request.data['id']
+        user=User.objects.filter(id=id)
+        if user.exists():
+            user.update(is_kyc=True)
+            return Response(status=status.HTTP_201_CREATED)
+        return Response( status=status.HTTP_400_BAD_REQUEST)
+
 
 # swagger
 # class UserImageView(APIView):

@@ -49,7 +49,8 @@ function getAdvertising() {
     </tfoot>
   </table>
 </div>
-        </divid>
+ </divid>
+ <div id="button_view"></div>
 `
 }
 
@@ -58,7 +59,8 @@ function getPublishedAdvertising() {
         method: 'GET',
 
     })
-
+    let button_viewEL = document.querySelector('#button_view')
+    button_viewEL.innerHTML=""
     let advertiseEl = document.querySelector('#advertise')
     advertiseEl.classList.remove('!hidden')
     let advertiseItemEl = document.querySelector('#itemAdvertise')
@@ -118,7 +120,9 @@ function getExpAdvertising(){
         method: 'GET',
 
     })
-
+        cntextCommentsEL.innerHTML=``
+        let button_viewEL = document.querySelector('#button_view')
+    button_viewEL.innerHTML=``
     let advertiseEl = document.querySelector('#advertise')
     advertiseEl.classList.remove('!hidden')
     let advertiseItemEl = document.querySelector('#itemAdvertise')
