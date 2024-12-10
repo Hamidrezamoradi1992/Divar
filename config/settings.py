@@ -192,9 +192,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # put on your settings.py file below INSTALLED_APPS
 REST_FRAMEWORK = {
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # swager
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -223,9 +223,9 @@ SIMPLE_JWT = {
 #     'apps.account.model_backends.CustomUserBackend'
 # ]
 # ZARINPALL
-SANDBOX  =  True
-CALL_BACK_URL = 'http://localhost:8000/comment/verify/'
-MERCHANT = "00000000-0000-0000-0000-000000000000"
-ZP_API_REQUEST = f"https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentRequest.json"
-ZP_API_VERIFY = f"https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentVerification.json"
-ZP_API_STARTPAY = f"https://sandbox.zarinpal.com/pg/StartPay/"
+# SANDBOX  =  True
+# CALL_BACK_URL = 'http://localhost:8000/comment/verify/'
+# MERCHANT = "00000000-0000-0000-0000-000000000000"
+# ZP_API_REQUEST = f"https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentRequest.json"
+# ZP_API_VERIFY = f"https://sandbox.zarinpal.com/pg/rest/WebGate/PaymentVerification.json"
+# ZP_API_STARTPAY = f"https://sandbox.zarinpal.com/pg/StartPay/"

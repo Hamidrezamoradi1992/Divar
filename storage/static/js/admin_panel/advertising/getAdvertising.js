@@ -121,8 +121,7 @@ function getExpAdvertising(){
 
     })
         cntextCommentsEL.innerHTML=``
-        let button_viewEL = document.querySelector('#button_view')
-    button_viewEL.innerHTML=``
+
     let advertiseEl = document.querySelector('#advertise')
     advertiseEl.classList.remove('!hidden')
     let advertiseItemEl = document.querySelector('#itemAdvertise')

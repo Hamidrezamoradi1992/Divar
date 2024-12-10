@@ -120,7 +120,7 @@ class ViewSaveValueFieldSerializer(MainSaveValueFieldSerializer):
                   'name_field')
 
     def get_name_field(self, obj):
-        name_field = get(id=obj.field.id)
+        name_field = FieldCategory.objects.get(id=obj.field.id)
         return name_field.title
 
 
@@ -138,7 +138,7 @@ class DetailSaveValueFieldSerializer(ViewSaveValueFieldSerializer):
                   'field_type')
 
     def get_field_type(self, obj):
-        name_field = get(id=obj.field.id)
+        name_field = FieldCategory.objects.get(id=obj.field.id)
         return name_field.type_field
 
 
@@ -189,7 +189,7 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
         return {'massage': 'is user not authentication'}
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=get(model='advertising'), instance_id=obj.id)
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id)
         return AddAdvertisingImageSerializer(image, many=True).data
 
 
@@ -220,7 +220,7 @@ class AdminAdvertisingViewSerializer(AllAdvertisingViewSerializer):
                   )
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=get(model='advertising'),
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
                                      instance_id=obj.id).first()
 
         return AddAdvertisingImageSerializer(image).data
@@ -240,7 +240,7 @@ class AllAdvertiseViewSerializer(MainAdvertisingSerializer):
                   )
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=get(model='advertising'),
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
                                      instance_id=obj.id).order_by('created_at').first()
         return AddAdvertisingImageSerializer(image).data
 
@@ -280,7 +280,7 @@ class AllRetrieveAdvertisingViewSerializer(AllAdvertisingViewSerializer):
                   'address',)
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=get(model='advertising'), instance_id=obj.id)
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id)
         return AddAdvertisingImageSerializer(image, many=True).data
 
     def get_vlue_field(self, obj):

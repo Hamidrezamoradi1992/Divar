@@ -93,7 +93,10 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                related_query_name='children',
                                on_delete=models.SET_NULL)
     free = models.BooleanField(default=True)
-    fields = models.ManyToManyField('FieldCategory')
+    fields = models.ManyToManyField(
+        'FieldCategory',
+        related_name='categories',
+        related_query_name='categories',blank=True,default=None)
     image = models.ImageField(upload_to=f'kyc/_kyc_images/',
                               verbose_name='ID Card',
                               validators=[CustomValidators.file_validator],
@@ -199,7 +202,7 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
                                            ('float', 'FLOAT'),
                                            ('bool', 'BOOL'),))
     mandatory = models.BooleanField(default=False)
-    object = BasicLogicalDeleteManager()
+    objects = BasicLogicalDeleteManager()
 
     def save(self, *args, **kwargs):
         self.clean()

@@ -9,7 +9,7 @@ from apps.payment.models import Order, OrderItem
 from apps.payment.serializers import AddLadderToOrderSerializer
 from apps.advertising.models import Advertising
 import json
-import requests
+# import requests
 
 
 # Create your views here.
@@ -35,7 +35,7 @@ class PayOrderView(APIView):
     def post(self, request):
         order_id = int(request.data.get('order_id'))
         try:
-            order = get(pk=order_id)
+            order = Order.objects.get(pk=order_id)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 

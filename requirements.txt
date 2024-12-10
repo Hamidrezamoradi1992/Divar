@@ -13,6 +13,7 @@ mixer==7.2.2
 pillow==11.0.0
 PyJWT==2.9.0
 python-dateutil==2.9.0.post0
+python-decouple==3.8
 python-dotenv==1.0.1
 PyYAML==6.0.2
 redis==5.2.0

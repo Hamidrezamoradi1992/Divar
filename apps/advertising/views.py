@@ -417,7 +417,7 @@ class UploadAdvertiseImageView(APIView):
 
     def post(self, request):
         content_type = ContentType.objects.get(model='advertising')
-        advertising = Advertising.objects.archive().filter(pk=request.data['advertising']).exis
+        advertising = Advertising.objects.archive().filter(pk=request.data['advertising']).exists()
         if advertising:
             for image in request.FILES.getlist('image'):
                 data_type = {
@@ -782,11 +782,21 @@ class DestroyAdvertising(APIView):
 class AcceptSiteAdminAdvertising(APIView):
     permission_classes = [SiteAdmin, SuperUser]
 
+    def get(self, request):
+        advertise=Advertising.objects.archive().filter(diffusion=False,payed=True)
+        serializer = AcceptedAdvertisingSerializer(
+            advertise,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
     def put(self, request):
         advertise_id = int(request.data['advertise'])
         user_id = int(request.data['user'])
         try:
-            advertise= Advertising.objects.get(pk=user_id)
+            advertise= Advertising.objects.get(pk=advertise_id)
         except Exception as e:
             return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         advertise.diffusion = True

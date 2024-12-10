@@ -26,7 +26,7 @@ class EmailService:
                  to_email: list,
                  from_emil: str = settings.DEFAULT_FROM_EMAIL,
                  context: dict | None = None) -> None:
-        self.context = self
+        self.context = self._field_validation(dict, context, default_value={})
         self.template_name = self._field_validation(str, template_name, validator=get_template)
         self.from_emil = self._field_validation(str, from_emil,
                                                 validator=lambda v: validators.EmailValidator(v) or True)
