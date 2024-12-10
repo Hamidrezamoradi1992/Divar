@@ -44,8 +44,9 @@ function getCategoryFetch(id_category = null) {
 
         }).then(res => {
             const data = res.json()
-
+                console.log(data)
             data.then(dats => {
+                console.log(dats)
                 categoryViewEL.innerHTML = ""
                 let el = '';
                 dats.forEach(category => {

@@ -63,7 +63,6 @@ class MainCategorySerializer(serializers.ModelSerializer):
 
 
 class MainSaveValueFieldSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = SaveValueField
         fields = ('id',
@@ -71,9 +70,6 @@ class MainSaveValueFieldSerializer(serializers.ModelSerializer):
                   'category',
                   'field',
                   'value',)
-
-
-
 
 
 class AddAdvertisingImageSerializer(serializers.ModelSerializer):
@@ -124,7 +120,7 @@ class ViewSaveValueFieldSerializer(MainSaveValueFieldSerializer):
                   'name_field')
 
     def get_name_field(self, obj):
-        name_field = FieldCategory.object.get(id=obj.field.id)
+        name_field = get(id=obj.field.id)
         return name_field.title
 
 
@@ -133,7 +129,8 @@ class ViewSaveValueFieldSerializer(MainSaveValueFieldSerializer):
 
 class DetailSaveValueFieldSerializer(ViewSaveValueFieldSerializer):
     name_field = serializers.SerializerMethodField(read_only=True)
-    field_type= serializers.SerializerMethodField(read_only=True)
+    field_type = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = SaveValueField
         fields = ('value',
@@ -141,7 +138,7 @@ class DetailSaveValueFieldSerializer(ViewSaveValueFieldSerializer):
                   'field_type')
 
     def get_field_type(self, obj):
-        name_field = FieldCategory.object.get(id=obj.field.id)
+        name_field = get(id=obj.field.id)
         return name_field.type_field
 
 
@@ -186,13 +183,13 @@ class AllAdvertisingViewSerializer(MainAdvertisingSerializer):
 
     def get_address(self, obj):
         if self.context['request'].user.is_authenticated:
-            userObject=obj.user
+            userObject = obj.user
             user = User.objects.filter(pk=userObject.id)
             return AddressViewSerializer(user, many=True).data
         return {'massage': 'is user not authentication'}
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id)
+        image = Image.objects.filter(content_type=get(model='advertising'), instance_id=obj.id)
         return AddAdvertisingImageSerializer(image, many=True).data
 
 
@@ -223,7 +220,7 @@ class AdminAdvertisingViewSerializer(AllAdvertisingViewSerializer):
                   )
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
+        image = Image.objects.filter(content_type=get(model='advertising'),
                                      instance_id=obj.id).first()
 
         return AddAdvertisingImageSerializer(image).data
@@ -243,13 +240,15 @@ class AllAdvertiseViewSerializer(MainAdvertisingSerializer):
                   )
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
+        image = Image.objects.filter(content_type=get(model='advertising'),
                                      instance_id=obj.id).order_by('created_at').first()
         return AddAdvertisingImageSerializer(image).data
+
     def get_favorite(self, obj):
         if self.context['request'].user.is_authenticated:
             return Favorite.objects.filter(user_id=self.context['request'].user, advertising_id=obj.id).exists()
         return False
+
 
 """retrieve advertising"""
 
@@ -281,12 +280,13 @@ class AllRetrieveAdvertisingViewSerializer(AllAdvertisingViewSerializer):
                   'address',)
 
     def get_image(self, obj):
-        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id)
+        image = Image.objects.filter(content_type=get(model='advertising'), instance_id=obj.id)
         return AddAdvertisingImageSerializer(image, many=True).data
 
     def get_vlue_field(self, obj):
         field = SaveValueField.objects.filter(advertising=obj.id)
         return DetailSaveValueFieldSerializer(field, many=True).data
+
 
 """retrieve advertising"""
 '''filter'''
@@ -299,3 +299,31 @@ class filterCategorySerializer(AllAdvertiseViewSerializer):
                   'title',
                   'price',
                   'image',)
+
+
+"""accepted advertising"""
+
+
+class AcceptedAdvertisingSerializer(AllAdvertisingViewSerializer):
+    user = serializers.SerializerMethodField(read_only=True)
+    class Meta:
+        model = Advertising
+        fields = ('id',
+                  'title',
+                  'description',
+                  'price',
+                  'image',
+                  'category',
+                  'state',
+                  'city',
+                  'address',
+                  'user')
+
+    def get_address(self, obj):
+        userObject = obj.user
+        user = User.objects.filter(pk=userObject.id)
+        return AddressViewSerializer(user, many=True).data
+
+    def get_user(self, obj):
+        userObject = obj.user
+        return MainUserSerializer(userObject).data

@@ -17,6 +17,9 @@ urlpatterns = [
     # view detail
     path('view/add/advertise/<int:pk>', TemplateView.as_view(template_name='advertising/detayleAdvertisinng.html'),
          name='home'),
+# delete advertising test
+    path('view/add/advertise/test/<int:pk>', TemplateView.as_view(template_name='admin_panel/detayleAdvertisinng.html'),
+         name='home'),
 
     path('api/detail/advertise/<int:pk>', views.DetailAdvertiseView.as_view()),
 
@@ -37,6 +40,11 @@ urlpatterns = [
     path('api/adminpanel/all/advertising', views.AdvertisingAllView.as_view()),
     # delete advertising
     path('api/destroy', views.DestroyAdvertising.as_view()),
+
+
+
+    # accepted
+    path('api/accepted/', views.AcceptSiteAdminAdvertising.as_view()),
 
     # filter
 

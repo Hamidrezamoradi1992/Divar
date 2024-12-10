@@ -52,7 +52,8 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
     state = models.ForeignKey('State',
                               on_delete=models.CASCADE,
                               related_name='city_advertising',
-                              related_query_name='city_advertising')
+                              related_query_name='city_advertising'
+                              )
 
     objects = AdvertisingManager()
 
@@ -67,13 +68,11 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
             raise ValidationError('city is not in state')
         if not self.expires_at:
             self.expires_at = timezone.now() + timedelta(days=2)
-        if self.expires_at and self.diffusion:
-            self.expires_at = timezone.now() + timedelta(days=30)
+
         if not self.category.free:
             self.payed = False
 
     def save(self, *args, **kwargs):
-
         self.clean()
         super().save(*args, **kwargs)
 
@@ -94,10 +93,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                related_query_name='children',
                                on_delete=models.SET_NULL)
     free = models.BooleanField(default=True)
-    fields = models.ManyToManyField(
-        'FieldCategory',
-        related_name='categories',
-        related_query_name='categories')
+    fields = models.ManyToManyField('FieldCategory')
     image = models.ImageField(upload_to=f'kyc/_kyc_images/',
                               verbose_name='ID Card',
                               validators=[CustomValidators.file_validator],
@@ -110,10 +106,12 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
     def clean(self):
         if self.pk and self.fields:
             if self.parent_id:
+                print(1)
                 has_children = Category.objects.filter(parent_id=self.pk).exists()
                 if has_children:
                     raise ValidationError('Category with children cannot have fields.')
             if not self.parent_id:
+                print(2)
                 has_children = Category.objects.filter(parent_id=self.pk).exists()
                 if has_children:
                     raise ValidationError('Category with children cannot have fields.')

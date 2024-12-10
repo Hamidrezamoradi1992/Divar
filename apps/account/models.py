@@ -58,6 +58,7 @@ class User(AbstractUser):
                                        ('OTHER', 'other')),
                               max_length=6)
     is_kyc = models.BooleanField(default=False)
+    sait_admin = models.BooleanField(default=False)
     is_web_manager = models.BooleanField(default=False)
 
     image_idcard = models.ImageField(upload_to=f'kyc/_kyc_images/',

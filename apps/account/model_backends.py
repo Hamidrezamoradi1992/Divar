@@ -5,6 +5,6 @@ class CustomUserBackend(ModelBackend):
     def authenticate(self, username=None, password=None, **kwargs):
         email=kwargs.get('email')
         try:
-            user = User.objects.get(email=email)
+            user = get(email=email)
         except User.DoesNotExist:
             return None

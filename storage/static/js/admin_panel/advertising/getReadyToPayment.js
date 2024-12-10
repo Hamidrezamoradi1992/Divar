@@ -111,5 +111,7 @@ function postPayment(orderID) {
                 confirmButtonText: 'OK'
             });
         });
-    getReadyToPayment()
+    let itemAdvertiseEl = document.querySelector("#itemAdvertise").innerHTML=``
+    let advertiseEl = document.querySelector('#advertise').innerHTML=``
+    let button_viewEL = document.querySelector('#button_view').innerHTML=``
 }

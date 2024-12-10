@@ -1,9 +1,9 @@
-from pprint import pprint
-
 from django.core.cache import cache
-
 from django.contrib.contenttypes.models import ContentType
+from apps.core.permissions import SiteAdmin, SuperUser
 
+from datetime import timedelta
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
@@ -25,7 +25,7 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           AdminAdvertisingViewSerializer,
                                           AllAdvertiseViewSerializer,
                                           AllRetrieveAdvertisingViewSerializer,
-                                          filterCategorySerializer)
+                                          filterCategorySerializer, AcceptedAdvertisingSerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 from ..favorite.models import Favorite
 from ..payment.models import Order, OrderItem
@@ -365,6 +365,7 @@ class AddAdvertiseView(APIView):
         if serializer.is_valid():
             advertise = serializer.save()
             return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
+        print(serializer.data)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -416,7 +417,7 @@ class UploadAdvertiseImageView(APIView):
 
     def post(self, request):
         content_type = ContentType.objects.get(model='advertising')
-        advertising = Advertising.objects.archive().filter(pk=request.data['advertising']).exists()
+        advertising = Advertising.objects.archive().filter(pk=request.data['advertising']).exis
         if advertising:
             for image in request.FILES.getlist('image'):
                 data_type = {
@@ -535,21 +536,25 @@ class AddFieldAdvertiseView(APIView):
         return Response({'massage': 'compliant add field'}, status=status.HTTP_200_OK)
 
 
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(10), name='dispatch')
 class AllCategoryView(APIView):
     serializer_class = MainCategorySerializer
     queryset = Category.objects.all()
     permission_classes = []
 
     def get(self, request, category_id=None):
+        print('re',request)
         if category_id is not None:
             if Category.objects.filter(pk=category_id).exists():
+
                 category = Category.objects.filter(parent_id=category_id)
+                print(category)
                 serializers = self.serializer_class(category, many=True)
                 return Response(serializers.data, status=status.HTTP_200_OK)
 
         else:
             category = Category.objects.filter(parent_id=None)
+            print(category)
             category_id_parent = Category.objects.all().values_list('parent_id',
                                                                     flat=True)
             categories = [i for i in category if i.id in category_id_parent]
@@ -561,7 +566,7 @@ class AllCategoryView(APIView):
 
 
 # swagger
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(10), name='dispatch')
 class AllStateView(ListAPIView):
     """
     - all state in db
@@ -591,7 +596,7 @@ class AllStateView(ListAPIView):
 
 
 # swagger
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(10), name='dispatch')
 class AllCityView(APIView):
     """
     - all state in db
@@ -670,8 +675,8 @@ class AdvertisingAllForPaymentView(APIView):
 
     def get(self, request):
         userid = request.user
-        print(userid)
-        orders = Order.objects.not_paid().filter(user=userid)
+        print(type(userid))
+        orders = Order.objects.filter(user=userid,is_completed=False)
         print(orders)
         if orders.exists():
             order_item = OrderItem.objects.filter(order__in=orders).values_list('advertise_id', flat=True)
@@ -688,8 +693,6 @@ class AdvertisingAllForPaymentView(APIView):
 
 """"end admin panel advertising"""
 """filter advertising"""
-
-"""end filter advertising"""
 
 
 class FilterAdvertising(APIView):
@@ -743,6 +746,7 @@ class FilterAdvertising(APIView):
         return Response(serializer_data, status=status.HTTP_200_OK)
 
 
+"""end filter advertising"""
 """remove Advertising"""
 
 
@@ -767,3 +771,42 @@ class DestroyAdvertising(APIView):
             advertise.delete()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         return Response({'massage': 'delete advertising failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+"""advertise accepted"""
+
+
+
+
+
+class AcceptSiteAdminAdvertising(APIView):
+    permission_classes = [SiteAdmin, SuperUser]
+
+    def put(self, request):
+        advertise_id = int(request.data['advertise'])
+        user_id = int(request.data['user'])
+        try:
+            advertise= Advertising.objects.get(pk=user_id)
+        except Exception as e:
+            return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        advertise.diffusion = True
+        advertise.created_at= timezone.now()
+        advertise.expires_at = timezone.now() + timedelta(days=30)
+        advertise.save(update_fields=['diffusion','created_at','expires_at'])
+        return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
+    def post(self, request):
+        advertise_id = int(request.data['advertise'])
+        try:
+            advertise = Advertising.objects.get(pk=advertise_id)
+        except Exception as e:
+            return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        advertise.diffusion = False
+        advertise.is_active = False
+        advertise.payed = False
+        advertise.is_deleted = True
+        advertise.save(update_fields=['diffusion', 'is_active', 'payed', 'is_deleted'])
+        return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
+
+
+
+"""advertise accepted"""

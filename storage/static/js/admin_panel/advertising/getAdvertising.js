@@ -146,7 +146,7 @@ function getExpAdvertising(){
           <div class="flex items-center gap-3">
             <div class="avatar">
               <div class="skeleton mask mask-squircle h-12 w-12">
-                 <a href="http://localhost:8000/advertising/view/add/advertise/${advertisingPublisher.id}">
+                 <a href="http://localhost:8000/advertising/view/add/advertise/test/${advertisingPublisher.id}">
                         <img
                         src="${advertisingPublisher.image.file}"
                         alt="${advertisingPublisher.image.alt}" />

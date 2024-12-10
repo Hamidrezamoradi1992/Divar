@@ -22,7 +22,8 @@ urlpatterns = [
     path('test/', TemplateView.as_view(template_name='signin_signup/test.html'), name='test'),
 
     # view
-    path('adminuser/', TemplateView.as_view(template_name='admin_panel/mainAdminPanel.html'), name='adminuser'),
+    path('adminuser/', TemplateView.as_view(template_name='admin_panel/mainAdminPanel.html'), name='admin_user'),
+    path('adminuser/superUser', TemplateView.as_view(template_name='admin_panel/admin_super_user.html'), name='admin_super_user'),
     # admin panel Kyc
     path('api/get/image/user', KycAcceptedView.as_view()),
 ]
