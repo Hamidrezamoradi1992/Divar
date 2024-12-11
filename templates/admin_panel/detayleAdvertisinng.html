@@ -1,0 +1,94 @@
+{% extends '_base.html' %}
+{% load static %}
+{% block title %}All Advertise{% endblock %}
+{% block extra-head %}
+    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.14/dist/full.min.css" rel="stylesheet" type="text/css"/>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/1.1.3/sweetalert.min.js"></script>
+{% endblock %}
+
+
+{#main#}
+{% block content %}
+    <div class="min-h-[450px] max-w-[85vw] flex justify-aline m-auto  gap-5">
+        {#    slider image#}
+        <div class="w-[30vw]  h-[375px] rounded-xl ">
+            <div class="carousel w-full h-full" id="ImageFile">
+
+            </div>
+            <div class="flex w-full justify-center gap-2 py-2" id="keyImage">
+
+            </div>
+
+
+        </div>
+        {#    end slider image#}
+        <div class="artboard artboard-horizontal gap-3 w-[55vw] bg-gray-200 rounded-xl">
+            <div class="product-content p-6 ">
+                {#                 title   1#}
+                <h2 class=" font-serif my-2 text-3xl" id="product_title"></h2>
+                {#            category        2#}
+                <div id="category" class="my-1">
+                    <i class="fa-solid fa-play capitalize font-bold ">category</i> <a
+                        href="" class="product-link "></a>
+                </div>
+
+
+                <div class="product-price">
+                    {#                        4#}
+                    <p class="new-price font-bold ">Price: <span id="price_product"></span>$</p>
+                </div>
+
+                <div class="product-detail">
+                    <h1 class="capitalize font-sans font-bold">More specifications</h1>
+
+                    <ul id="specifications" class="grid grid-cols-2">
+
+                    </ul>
+                </div>
+                <p id="description_short " class="capitalize font-bold">description short</p>
+                <div><p id="description_short" class="text-base capitalize"></p></div>
+                <div class="purchase-info flex mt-5">
+                    <p class="capitalize font-bold">address</p>
+                    <div><p id="address" class="text-base mt-5 capitalize"></p></div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+    
+    <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[30vw] m-auto mt-10" id="buttonDetail">
+
+        </div>
+    
+
+
+{% endblock %}
+{#end main#}
+
+
+{% block script %}
+    <script src="{% static 'js/SetToken.js' %}"></script>
+    <script src="{% static 'js/AddAdvertise/ViewAdvertising/detailAdvertising/allAdvertiseView.js' %}"></script>
+    <script>
+        var idAdvertising = window.location.href.split('/');
+        let viewMassageEl = document.querySelector('#massage')
+        let buttonDetailEl = document.querySelector('#buttonDetail')
+        let idUserAdvertising=0
+        const userId =    {% if request.user.is_authenticated  %}
+            {{ request.user.id }}
+        {% else %}
+            NaN
+        {% endif %}
+        var domainPort = window.location.port;
+        let IdAdvertising=parseInt(idAdvertising[idAdvertising.length - 1])
+        document.addEventListener("DOMContentLoaded", (ev) => {
+            ev.preventDefault()
+            console.log(idAdvertising[idAdvertising.length - 1])
+            AllAdvertisingView(IdAdvertising)
+        })
+
+    </script>
+{% endblock %}

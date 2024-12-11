@@ -49,7 +49,8 @@ function getAdvertising() {
     </tfoot>
   </table>
 </div>
-        </divid>
+ </divid>
+ <div id="button_view"></div>
 `
 }
 
@@ -58,7 +59,8 @@ function getPublishedAdvertising() {
         method: 'GET',
 
     })
-
+    let button_viewEL = document.querySelector('#button_view')
+    button_viewEL.innerHTML=""
     let advertiseEl = document.querySelector('#advertise')
     advertiseEl.classList.remove('!hidden')
     let advertiseItemEl = document.querySelector('#itemAdvertise')
@@ -118,6 +120,7 @@ function getExpAdvertising(){
         method: 'GET',
 
     })
+        cntextCommentsEL.innerHTML=``
 
     let advertiseEl = document.querySelector('#advertise')
     advertiseEl.classList.remove('!hidden')
@@ -142,7 +145,7 @@ function getExpAdvertising(){
           <div class="flex items-center gap-3">
             <div class="avatar">
               <div class="skeleton mask mask-squircle h-12 w-12">
-                 <a href="http://localhost:8000/advertising/view/add/advertise/${advertisingPublisher.id}">
+                 <a href="http://localhost:8000/advertising/view/add/advertise/test/${advertisingPublisher.id}">
                         <img
                         src="${advertisingPublisher.image.file}"
                         alt="${advertisingPublisher.image.alt}" />

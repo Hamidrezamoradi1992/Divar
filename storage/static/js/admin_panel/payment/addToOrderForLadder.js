@@ -1,8 +1,8 @@
 function addToOrderForLadder(advertising) {
     let form = new FormData()
     const csrfTokens = getCookie('csrftoken')
-    form.append('advertiser', advertising)
-    const data = fetchWithAuth(`http://localhost:8000/comment/api/ladder/payment`, {
+    form.append('advertise', advertising)
+    const data = fetchWithAuth(`http://localhost:8000/payment/api/ladder/payment`, {
         method: 'POST',
         body: form,
         headers: {

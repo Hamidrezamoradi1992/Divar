@@ -140,8 +140,7 @@ function AllAdvertisingView(id_advertising) {
                 El = ''
                 buttonDetailEl.innerHTML=`        
                 <button class="tab btn" onclick="viewMassage()">massage</button>
-                <button class=" w-auto tab btn btn-ghost" onclick="">Update Profile</button>
-                <button class=" tab btn">Favorite</button>`
+               `
 
             }).catch()
 

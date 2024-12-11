@@ -58,20 +58,21 @@ class User(AbstractUser):
                                        ('OTHER', 'other')),
                               max_length=6)
     is_kyc = models.BooleanField(default=False)
+    sait_admin = models.BooleanField(default=False)
     is_web_manager = models.BooleanField(default=False)
 
     image_idcard = models.ImageField(upload_to=f'kyc/_kyc_images/',
                                      verbose_name='ID Card',
                                      validators=[CustomValidators.file_validator],
-                                     null=True, blank=True)
+                                     null=True, blank=True,default=None)
     image_Official_photo = models.ImageField(upload_to=f'kyc/_kyc_images/',
                                              verbose_name='Official photo',
                                              validators=[CustomValidators.file_validator],
-                                             null=True, blank=True)
+                                             null=True, blank=True,default=None)
     image_letter_of_commitment = models.ImageField(upload_to=f'kyc/_kyc_images/',
                                                    verbose_name=' letter of commitment',
                                                    validators=[CustomValidators.file_validator],
-                                                   null=True, blank=True)
+                                                   null=True, blank=True,default=None)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []

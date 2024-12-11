@@ -1,7 +1,9 @@
 from django.core.cache import cache
-
 from django.contrib.contenttypes.models import ContentType
+from apps.core.permissions import SiteAdmin, SuperUser
 
+from datetime import timedelta
+from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
@@ -23,9 +25,10 @@ from apps.advertising.serializers import (AllAdvertisingViewSerializer,
                                           AdminAdvertisingViewSerializer,
                                           AllAdvertiseViewSerializer,
                                           AllRetrieveAdvertisingViewSerializer,
-                                          filterCategorySerializer)
+                                          filterCategorySerializer, AcceptedAdvertisingSerializer)
 from .utils.validate_ladder_advertising import ValidateLadderAdvertising
 from ..favorite.models import Favorite
+from ..payment.models import Order, OrderItem
 
 # Create your views here.
 """all advertising"""
@@ -35,114 +38,115 @@ class DetailAdvertiseView(RetrieveAPIView):
     """
       - view all advertising
 
+            {
+                "id": 1,
+                "title": "hamid1",
+                "description": "hamid moradi 1992",
+                "price": 2000.0,
+                "image": [
+                    {
+                        "id": 1,
+                        "alt": "advertising_image",
+                        "content_type": 10,
+                        "instance_id": 1,
+                        "file": "/storage/media/file_field/images.png"
+                    },
+                    {
+                        "id": 2,
+                        "alt": "advertising_image",
+                        "content_type": 10,
+                        "instance_id": 1,
+                        "file": "/storage/media/file_field/images_1.jpeg"
+                    },
+                    {
+                        "id": 3,
+                        "alt": "advertising_image",
+                        "content_type": 10,
+                        "instance_id": 1,
+                        "file": "/storage/media/file_field/2.jpg"
+                    },
+                    {
+                        "id": 4,
+                        "alt": "advertising_image",
+                        "content_type": 10,
+                        "instance_id": 1,
+                        "file": "/storage/media/file_field/images.jpeg"
+                    },
+                    {
+                        "id": 5,
+                        "alt": "advertising_image",
+                        "content_type": 10,
+                        "instance_id": 1,
+                        "file": "/storage/media/file_field/1.jpeg"
+                    },
+                    {
+                        "id": 6,
+                        "alt": "advertising_image",
+                        "content_type": 10,
+                        "instance_id": 1,
+                        "file": "/storage/media/file_field/1_OCCx7FI.jpeg"
+                    }
+                ],
+                "category": {
+                    "id": 6,
+                    "title": "pearent 2.4",
+                    "parent": {
+                        "id": 5,
+                        "title": "parent 2.3",
+                        "parent": {
+                            "id": 4,
+                            "title": "p[arent 2.2",
+                            "parent": {
+                                "title": "",
+                                "free": false,
+                                "fields": [],
+                                "price": null,
+                                "image": null
+                            },
+                            "free": true,
+                            "fields": [],
+                            "price": 0.0,
+                            "image": null
+                        },
+                        "free": true,
+                        "fields": [],
+                        "price": 0.0,
+                        "image": null
+                    }
+                },
+                "state": {
+                    "id": 1,
+                    "title": "tehran",
+                    "area_code": "021"
+                },
+                "city": {
+                    "id": 1,
+                    "state": 1,
+                    "title": "tehran"
+                },
+                "vlue_field": [
+                    {
+                        "value": "123",
+                        "name_field": "field1 int",
+                        "field_type": "int"
+                    },
+                    {
+                        "value": "12.35",
+                        "name_field": "field 2     float",
+                        "field_type": "float"
+                    },
+                    {
+                        "value": "hamid1992",
+                        "name_field": "field3 str",
+                        "field_type": "str"
+                    }
+                ],
+                "address": {
+                    "massage": "is user not authentication"
+                }
+            }
 
-        {
 
-
-             {
-
-                      "id": 1,
-                      "title": "advertise1",
-                      "description": ";lkjhgfdgvbjhnkm",
-                      "price": 25000.0,
-                      "image": [],
-                      "diffusion": true,
-                      "category": {
-                          "title": "hamid1",
-                          "parent": null,
-                          "free": true,
-                          "fields":
-
-                          [
-
-                              {
-
-                                  "id": 6,
-                                  "title": "value1",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              },
-
-                              {
-
-                                  "id": 7,
-                                  "title": "value2",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              },
-
-                              {
-
-                                  "id": 8,
-                                  "title": "value3",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              }
-
-                          ],
-
-                          "price": 0.0
-
-                      },
-
-                      "state":
-
-                      {
-                          "id": 1,
-                          "title": "tehran",
-                          "area_code": "021"
-
-                      },
-
-                      "city":
-
-                      {
-
-                          "id": 1,
-                          "state": 1,
-                          "title": "tehran"
-
-                      },
-
-                      "vlue_field":
-
-                      [
-
-                          {
-
-                              "id": 4,
-                              "advertising": 1,
-                              "category": 11,
-                              "field": 8,
-                              "value": "123",
-                              "name_field": "value3"
-
-                          }
-
-                      ],
-
-
-                      "address":
-                      [
-
-                          {
-
-                              "id": 4,
-                              "email": "11@gmail.com",
-                              "phone": null,
-                              "is_kyc": false,
-                              "address": null
-
-                          }
-
-                      ]
-
-             }
-
-        }
 
 
     """
@@ -157,266 +161,162 @@ class AllAdvertisingView(ListAPIView):
       - view all advertising
 
 
-        {
-
-
-             {
-
-                      "id": 1,
-                      "title": "advertise1",
-                      "description": ";lkjhgfdgvbjhnkm",
-                      "price": 25000.0,
-                      "image": [],
-                      "diffusion": true,
-                      "category": {
-                          "title": "hamid1",
-                          "parent": null,
-                          "free": true,
-                          "fields":
-
-                          [
-
-                              {
-
-                                  "id": 6,
-                                  "title": "value1",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              },
-
-                              {
-
-                                  "id": 7,
-                                  "title": "value2",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              },
-
-                              {
-
-                                  "id": 8,
-                                  "title": "value3",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              }
-
-                          ],
-
-                          "price": 0.0
-
-                      },
-
-                      "state":
-
-                      {
-                          "id": 1,
-                          "title": "tehran",
-                          "area_code": "021"
-
-                      },
-
-                      "city":
-
-                      {
-
-                          "id": 1,
-                          "state": 1,
-                          "title": "tehran"
-
-                      },
-
-                      "vlue_field":
-
-                      [
-
-                          {
-
-                              "id": 4,
-                              "advertising": 1,
-                              "category": 11,
-                              "field": 8,
-                              "value": "123",
-                              "name_field": "value3"
-
-                          }
-
-                      ],
-
-
-                      "address":
-                      [
-
-                          {
-
-                              "id": 4,
-                              "email": "11@gmail.com",
-                              "phone": null,
-                              "is_kyc": false,
-                              "address": null
-
-                          }
-
-                      ]
-
-             }
-
-        }
-
+        [
+            {
+                "id": 23,
+                "title": "dfasf222",
+                "price": 222.0,
+                "image": {
+                    "alt": "",
+                    "content_type": null,
+                    "instance_id": null,
+                    "file": null
+                },
+                "favorite": false
+            },
+            ...
+        ]
 
     """
     queryset = Advertising.objects.is_diffusion()
     serializer_class = AllAdvertiseViewSerializer
     permission_classes = []
 
-    def get(self, request,*args, **kwargs):
+    def get(self, request, *args, **kwargs):
         ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=None)
         if ladder is not None:
             advertising2 = list(chain(ladder, list(self.get_queryset())))
         else:
             advertising2 = self.get_queryset()
 
+        advertising2 = list({ad.id: ad for ad in advertising2}.values())
+
         serializer = self.serializer_class(advertising2, many=True, context={'request': request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-
 # swagger
-class ViewAdvertisingForCategory(APIView):
-    """
-      - view all advertising
-
-
-        {
-
-
-             {
-
-                      "id": 1,
-                      "title": "advertise1",
-                      "description": ";lkjhgfdgvbjhnkm",
-                      "price": 25000.0,
-                      "image": [],
-                      "diffusion": true,
-                      "category": {
-                          "title": "hamid1",
-                          "parent": null,
-                          "free": true,
-                          "fields":
-
-                          [
-
-                              {
-
-                                  "id": 6,
-                                  "title": "value1",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              },
-
-                              {
-
-                                  "id": 7,
-                                  "title": "value2",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              },
-
-                              {
-
-                                  "id": 8,
-                                  "title": "value3",
-                                  "type_field": "int",
-                                  "mandatory": true
-
-                              }
-
-                          ],
-
-                          "price": 0.0
-
-                      },
-
-                      "state":
-
-                      {
-                          "id": 1,
-                          "title": "tehran",
-                          "area_code": "021"
-
-                      },
-
-                      "city":
-
-                      {
-
-                          "id": 1,
-                          "state": 1,
-                          "title": "tehran"
-
-                      },
-
-                      "vlue_field":
-
-                      [
-
-                          {
-
-                              "id": 4,
-                              "advertising": 1,
-                              "category": 11,
-                              "field": 8,
-                              "value": "123",
-                              "name_field": "value3"
-
-                          }
-
-                      ],
-
-
-                      "address":
-                      [
-
-                          {
-
-                              "id": 4,
-                              "email": "11@gmail.com",
-                              "phone": null,
-                              "is_kyc": false,
-                              "address": null
-
-                          }
-
-                      ]
-
-             }
-
-        }
-
-
-    """
-    serializer_class = AllAdvertisingViewSerializer
-    permission_classes = []
-
-    def get(self, request, category_id=None, *args, **kwargs):
-        if category_id is not None:
-            if Category.objects.filter(pk=category_id).exists():
-                category = Category.objects.get(pk=category_id)
-                categories = category.get_descendants(include_self=True)
-                advertising = Advertising.objects.filter(category__in=categories).order_by('-created_at')
-                ladder = ValidateLadderAdvertising.get_ladder_advertising(categories)
-                if ladder is not None:
-                    advertising2 = list(chain(ladder, advertising))
-                else:
-                    advertising2 = advertising
-                serializer = self.serializer_class(advertising2, many=True)
-                serializer.context['request'] = request
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(status=status.HTTP_404_NOT_FOUND)
+# class ViewAdvertisingForCategory(APIView):
+#     """
+#       - view all advertising
+#
+#
+#         {
+#
+#
+#              {
+#
+#                       "id": 1,
+#                       "title": "advertise1",
+#                       "description": "name",
+#                       "price": 25000.0,
+#                       "image": [],
+#                       "diffusion": true,
+#                       "category": {
+#                           "title": "hamid1",
+#                           "parent": null,
+#                           "free": true,
+#                           "fields":
+#
+#                           [
+#
+#                               {
+#
+#                                   "id": 6,
+#                                   "title": "value1",
+#                                   "type_field": "int",
+#                                   "mandatory": true
+#                               },
+#
+#                               {
+#
+#                                   "id": 7,
+#                                   "title": "value2",
+#                                   "type_field": "int",
+#                                   "mandatory": true
+#                               },
+#
+#                               {
+#
+#                                   "id": 8,
+#                                   "title": "value3",
+#                                   "type_field": "int",
+#                                   "mandatory": true
+#                               }
+#                           ],
+#
+#                           "price": 0.0
+#                       },
+#
+#                       "state":
+#
+#                       {
+#                           "id": 1,
+#                           "title": "tehran",
+#                           "area_code": "021"
+#                       },
+#
+#                       "city":
+#
+#                       {
+#
+#                           "id": 1,
+#                           "state": 1,
+#                           "title": "tehran"
+#                       },
+#
+#                       "vlue_field":
+#
+#                       [
+#
+#                           {
+#
+#                               "id": 4,
+#                               "advertising": 1,
+#                               "category": 11,
+#                               "field": 8,
+#                               "value": "123",
+#                               "name_field": "value3"
+#                           }
+#                       ],
+#
+#
+#                       "address":
+#                       [
+#
+#                           {
+#
+#                               "id": 4,
+#                               "email": "11@gmail.com",
+#                               "phone": null,
+#                               "is_kyc": false,
+#                               "address": null
+#                           }
+#                       ]
+#              }
+#         }
+#
+#
+#     """
+#     serializer_class = AllAdvertisingViewSerializer
+#     permission_classes = []
+#
+#     def get(self, request, category_id=None, *args, **kwargs):
+#         if category_id is not None:
+#             if Category.objects.filter(pk=category_id).exists():
+#                 category = Category.objects.get(pk=category_id)
+#                 categories = category.get_descendants(include_self=True)
+#                 advertising = Advertising.objects.filter(category__in=categories).order_by('-created_at')
+#                 ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=categories)
+#                 if ladder is not None:
+#                     advertising2 = list(chain(ladder, list(advertising)))
+#                 else:
+#                     advertising2 = advertising
+#
+#                 serializer = self.serializer_class(advertising2, many=True)
+#                 serializer.context['request'] = request
+#                 return Response(serializer.data, status=status.HTTP_200_OK)
+#             return Response(status=status.HTTP_404_NOT_FOUND)
 
 
 """all advertising"""
@@ -424,7 +324,6 @@ class ViewAdvertisingForCategory(APIView):
 
 # swagger
 
-# @method_decorator(cache_page(60 * 60 * 24), name='dispatch')
 class AddAdvertiseView(APIView):
     """
         - create new advertising
@@ -432,14 +331,13 @@ class AddAdvertiseView(APIView):
 
             {
 
-                'title': ['asdasd'],
+                'title': ['name'],
                 'price': '96555',
-                'description': 'sdasda',
+                'description': 'name',
                 'category': '5',
                 'state': '1',
                 'city': '1',
                 'user': '2'
-
              }
 
 
@@ -448,7 +346,6 @@ class AddAdvertiseView(APIView):
                 {
 
                     'advertise': '25'
-
                 }
 
             - reject
@@ -456,7 +353,6 @@ class AddAdvertiseView(APIView):
                 {
 
                     'error': {--------------------------}
-
                 }
 
 
@@ -469,6 +365,7 @@ class AddAdvertiseView(APIView):
         if serializer.is_valid():
             advertise = serializer.save()
             return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
+        print(serializer.data)
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -499,7 +396,6 @@ class UploadAdvertiseImageView(APIView):
                         {
 
                             'massage':'compliant add image'
-
                         }
 
 
@@ -512,7 +408,6 @@ class UploadAdvertiseImageView(APIView):
                     {
 
                     'error': {--------------------------}
-
                     }
     """
 
@@ -560,7 +455,6 @@ class AddFieldAdvertiseView(APIView):
                 .
                 {
                 }
-
             ]
 
             - reject
@@ -574,7 +468,6 @@ class AddFieldAdvertiseView(APIView):
                 {
 
                     'massage':'BAD REQUEST'
-
                 }
 
 
@@ -588,7 +481,6 @@ class AddFieldAdvertiseView(APIView):
                     'field 4 bool': 'on',
                     'category': '4',
                     'advertising': '91'
-
                 }
 
     - reject
@@ -596,7 +488,6 @@ class AddFieldAdvertiseView(APIView):
                 {
 
                     'error':[---------------------]
-
                 }
 
 
@@ -605,7 +496,6 @@ class AddFieldAdvertiseView(APIView):
                 {
 
                     'massage': 'compliant add field'
-
                 }
 
 
@@ -637,7 +527,7 @@ class AddFieldAdvertiseView(APIView):
             if serializer.is_valid():
                 try:
                     serializer.save()
-                except Exception:
+                except Exception as e:
                     field = SaveValueField.objects.filter(advertising=dict_query['advertising'],
                                                           category=dict_query['category'], ).delete()
                     return Response({'error': serializer.errors}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -646,21 +536,25 @@ class AddFieldAdvertiseView(APIView):
         return Response({'massage': 'compliant add field'}, status=status.HTTP_200_OK)
 
 
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(10), name='dispatch')
 class AllCategoryView(APIView):
     serializer_class = MainCategorySerializer
     queryset = Category.objects.all()
     permission_classes = []
 
     def get(self, request, category_id=None):
+        print('re',request)
         if category_id is not None:
             if Category.objects.filter(pk=category_id).exists():
+
                 category = Category.objects.filter(parent_id=category_id)
+                print(category)
                 serializers = self.serializer_class(category, many=True)
                 return Response(serializers.data, status=status.HTTP_200_OK)
 
         else:
             category = Category.objects.filter(parent_id=None)
+            print(category)
             category_id_parent = Category.objects.all().values_list('parent_id',
                                                                     flat=True)
             categories = [i for i in category if i.id in category_id_parent]
@@ -672,7 +566,7 @@ class AllCategoryView(APIView):
 
 
 # swagger
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(10), name='dispatch')
 class AllStateView(ListAPIView):
     """
     - all state in db
@@ -691,11 +585,9 @@ class AllStateView(ListAPIView):
             {
 
                 "id": 2,
-                "title": "karaj",
+                "title": "name",
                 "area_code": "068"
-
             }
-
         ]
 
     """
@@ -704,7 +596,7 @@ class AllStateView(ListAPIView):
 
 
 # swagger
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+# @method_decorator(cache_page(10), name='dispatch')
 class AllCityView(APIView):
     """
     - all state in db
@@ -717,10 +609,8 @@ class AllCityView(APIView):
 
                 "id": 2,
                 "state": 2,
-                "title": "karaj"
-
+                "title": "name"
             }
-
         ]
 
     """
@@ -774,7 +664,7 @@ class AdvertisingAllView(APIView):
     def get(self, request):
         userid = request.user.id
         if userid:
-            queryset = Advertising.objects.archive().filter(user=userid, payed=True)
+            queryset = Advertising.objects.archive().filter(user=userid)
             serializer = self.serializer_class(queryset, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
@@ -784,18 +674,25 @@ class AdvertisingAllForPaymentView(APIView):
     serializer_class = AdminAdvertisingViewSerializer
 
     def get(self, request):
-        userid = request.user.id
-        if userid:
-            queryset = Advertising.objects.archive().filter(user=userid, payed=False)
-            serializer = self.serializer_class(queryset, many=True)
-            return Response(serializer.data, status=status.HTTP_200_OK)
+        userid = request.user
+        print(type(userid))
+        orders = Order.objects.filter(user=userid,is_completed=False)
+        print(orders)
+        if orders.exists():
+            order_item = OrderItem.objects.filter(order__in=orders).values_list('advertise_id', flat=True)
+            advertise = Advertising.objects.archive().filter(pk__in=order_item)
+            # queryset = Advertising.objects.archive().filter(user=userid, payed=False)
+            serializer = self.serializer_class(advertise, many=True)
+            total_price = orders.first().total_order_price
+            return Response({"datas": serializer.data,
+                             "order": orders.values_list('id', flat=True).first(),
+                             "total": total_price
+                             }, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 """"end admin panel advertising"""
 """filter advertising"""
-
-"""end filter advertising"""
 
 
 class FilterAdvertising(APIView):
@@ -849,6 +746,7 @@ class FilterAdvertising(APIView):
         return Response(serializer_data, status=status.HTTP_200_OK)
 
 
+"""end filter advertising"""
 """remove Advertising"""
 
 
@@ -873,3 +771,52 @@ class DestroyAdvertising(APIView):
             advertise.delete()
             return Response({}, status=status.HTTP_204_NO_CONTENT)
         return Response({'massage': 'delete advertising failed'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+"""advertise accepted"""
+
+
+
+
+
+class AcceptSiteAdminAdvertising(APIView):
+    permission_classes = [SiteAdmin, SuperUser]
+
+    def get(self, request):
+        advertise=Advertising.objects.archive().filter(diffusion=False,payed=True)
+        serializer = AcceptedAdvertisingSerializer(
+            advertise,
+            many=True,
+            context={'request': request}
+        )
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+    def put(self, request):
+        advertise_id = int(request.data['advertise'])
+        user_id = int(request.data['user'])
+        try:
+            advertise= Advertising.objects.get(pk=advertise_id)
+        except Exception as e:
+            return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        advertise.diffusion = True
+        advertise.created_at= timezone.now()
+        advertise.expires_at = timezone.now() + timedelta(days=30)
+        advertise.save(update_fields=['diffusion','created_at','expires_at'])
+        return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
+    def post(self, request):
+        advertise_id = int(request.data['advertise'])
+        try:
+            advertise = Advertising.objects.get(pk=advertise_id)
+        except Exception as e:
+            return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        advertise.diffusion = False
+        advertise.is_active = False
+        advertise.payed = False
+        advertise.is_deleted = True
+        advertise.save(update_fields=['diffusion', 'is_active', 'payed', 'is_deleted'])
+        return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
+
+
+
+"""advertise accepted"""

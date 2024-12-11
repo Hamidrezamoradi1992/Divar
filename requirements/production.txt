@@ -9,4 +9,3 @@ gunicorn
 redis
 djangorestframework-simplejwt
 django-redis
-python-decouple

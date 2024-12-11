@@ -8,6 +8,7 @@ function getCategory(id_category = null) {
         })
 
         data.then(dats => {
+            console.log(data)
             categoryKey.innerHTML = ""
             let el = '';
             dats.forEach(category => {
@@ -35,6 +36,7 @@ function getCategory(id_category = null) {
         })
 
         data.then(dats => {
+            console.log(data)
             categoryKey.innerHTML = ""
             let el = '';
             dats.forEach(category => {
