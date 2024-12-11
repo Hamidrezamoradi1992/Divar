@@ -111,7 +111,7 @@ if DEBUG:
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': 'redis://0.0.0.0:5555/1',
+            'LOCATION': 'redis://0.0.0.0:6379/0',
             'KEY_PREFIX': 'REDIS1',
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
@@ -214,7 +214,8 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=10),
 }
-
+# Celery conf
+CELERY_BROKER_URL = 'redis://0.0.0.0:6379/15'
 # SIMPLE_JWT = {
 #     'TOKEN_OBTAIN_SERIALIZER': 'apps.core.custom_token.CustomTokenObtainPairSerializer',
 # }

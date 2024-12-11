@@ -1,0 +1,27 @@
+services:
+  redisCash:
+    image: redis:alpine
+    container_name: redisCash
+    ports:
+      - "6379:6379"
+    restart: always
+
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    environment:
+      POSTGRES_PASSWORD: "1"
+    ports:
+      - "5432:5432"
+    volumes:
+      - /home/hamid/Desktop/divar/postgres:/var/lib/postgresql/data
+    restart: always
+  smtp4dev:
+    image: rnwood/smtp4dev
+    container_name: smtp4dev
+    ports:
+      - "5000:80"
+      - "2525:25"
+    volumes:
+      - ./script/tmp/mail:/smtp4dev
+    restart: always

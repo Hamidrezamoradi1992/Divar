@@ -15,7 +15,7 @@
     <div class="max-w-[90vw] m-auto my-12">
         <div role="tablist" class="tabs tabs-lifted tabs-lg max-w-[60vw] m-auto">
             <button class="tab btn" onclick="getAdvertisingAccepted()"> ADVERTISING </button>
-            <button class=" w-auto tab btn btn-ghost" onclick="FormUserProfile()">KYC</button>
+            <button class=" w-auto tab btn btn-ghost" onclick="getUser()">KYC</button>
         </div>
 
     </div>
@@ -30,6 +30,7 @@
 {% block script %}
     <script src="{% static 'js/SetToken.js' %}"></script>
     <script src="{% static 'js/admin_panel/superUser/getAdvertiseForPublish.js' %}"></script>
+    <script src="{% static 'js/admin_panel/superUser/gerUserForKyc.js' %}"></script>
 
     <script>
         let contexAdminPanelEL = document.querySelector('#contexAdminPanel')
@@ -52,3 +53,6 @@
     </script>
 
 {% endblock %}
+
+
+ <h3>{{ code }}</h3>

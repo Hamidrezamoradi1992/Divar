@@ -73,6 +73,8 @@ class KycUserSerializer(MainUserSerializer):
     class Meta:
         model = User
         fields = ('id',
+                  'email',
+                  'image_Official_photo',
                   'image_idcard',
                   'image_letter_of_commitment',
                   'first_name',

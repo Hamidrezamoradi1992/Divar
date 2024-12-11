@@ -1,5 +1,4 @@
-from django.core.exceptions import ValidationError
-
+from apps.core.tasks import send_email
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -10,10 +9,8 @@ from django.core.cache import cache
 from django.contrib.auth import login, logout
 from apps.account.serializers import UpdateUserSerializer, MainUserSerializer, KycUserSerializer
 from apps.account.utils.utils import Utils
-from service.email import EmailService
 from django.db.models import Q
-from rest_framework.generics import ListAPIView, RetrieveAPIView, UpdateAPIView
-from django.contrib.contenttypes.models import ContentType
+from rest_framework.generics import RetrieveAPIView, UpdateAPIView
 
 
 # Create your views here.
@@ -49,11 +46,13 @@ class SignUpView(APIView):  # swagger
                             status=status.HTTP_400_BAD_REQUEST)
         if not (code := cache.get(email)):
             code = Utils.code_generator()
-
-        EmailService(subject='verify code',
-                     template_name='mail/welcome.html',
-                     to_email=[email],
-                     context={'code': code}).send()
+        email_data = {
+            'subject': 'verify code',
+            'template_name': 'mail/verification.html',
+            'to_email': [email],
+            'context': {'code': code},
+        }
+        send_email.delay(**email_data)
         cache.set(email, code, 120)
 
         return Response({'redirect': f'http://localhost:8000/accounts/verify/{email}'},
@@ -181,6 +180,7 @@ class LogoutView(APIView):
 
 class KycAcceptedView(APIView):
     permission_classes = []
+
     def get(self, request):
         users_with_images = User.objects.filter(
             is_kyc=False
@@ -189,25 +189,41 @@ class KycAcceptedView(APIView):
             Q(image_letter_of_commitment__isnull=False) & ~Q(image_letter_of_commitment='')
         )
         if users_with_images.exists():
-            serializers=KycUserSerializer(users_with_images,many=True)
+            serializers = KycUserSerializer(users_with_images, many=True)
             return Response(serializers.data)
         return Response({'message': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
-        id = request.data['id']
+        id = int(request.data['user'])
         user = User.objects.filter(id=id)
         if user.exists():
+            email = user.first().email
+            email_data = {
+                'subject': 'rejected Kyc',
+                'template_name': 'mail/rejected.html',
+                'to_email': [email],
+                'context': {'code': 'your image rejected for kyc website'},
+            }
+            send_email.delay(**email_data)
             user.update(image_idcard='', image_letter_of_commitment='')
             return Response({'message': 'user image deleted'}, status=status.HTTP_200_OK)
         return Response({'message': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
-    def put(self,request):
-        id = request.data['id']
-        user=User.objects.filter(id=id)
+
+    def put(self, request):
+        id = request.data['user']
+        user = User.objects.filter(id=id)
         if user.exists():
+            email=user.first().email
+            email_data = {
+                'subject': 'accepted Kyc',
+                'template_name': 'mail/accepted.html',
+                'to_email': [email],
+                'context': {'code': 'your image accepted for kyc website'},
+            }
+            send_email.delay(**email_data)
             user.update(is_kyc=True)
             return Response(status=status.HTTP_201_CREATED)
-        return Response( status=status.HTTP_400_BAD_REQUEST)
-
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 # swagger
 # class UserImageView(APIView):
