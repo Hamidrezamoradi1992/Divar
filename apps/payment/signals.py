@@ -5,19 +5,19 @@ from apps.advertising.utils.validate_ladder_advertising import ValidateLadderAdv
 from apps.payment.models import Order, OrderItem
 from time import sleep
 
+from ..advertising.models import Advertising
+
+
 @receiver(post_save, sender=Order)
 def set_instance_ladder(sender, instance, created, **kwargs):
     if not created:
         print('hamid')
         if instance.is_paid and instance.is_completed:
-            orderItems = OrderItem.objects.filter(order=instance)
-            for order_item in orderItems:
-                advertiser = order_item.advertise
-                if order_item.title == 'ladder':
-                    advertiser.ladder = True
-                else:
-                    advertiser.payed = True
-                advertiser.save()
-
+            order_items_ladder = OrderItem.objects.filter(order=instance, title='ladder')
+            advertise_ids = order_items_ladder.values_list('advertise_id', flat=True)
+            Advertising.objects.filter(id__in=advertise_ids).update(ladder=True)
+            orderItems_category = OrderItem.objects.filter(order=instance, title='CATEGORY')
+            advertise_ids = orderItems_category.values_list('advertise_id', flat=True)
+            Advertising.objects.filter(id__in=advertise_ids).update(payed=True)
 
 
