@@ -1,0 +1,9 @@
+Django==4.2
+pillow
+python-decouple
+djangorestframework
+django-cors-headers
+psycopg2-binary
+celery
+gunicorn
+redis
