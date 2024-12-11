@@ -10,10 +10,10 @@ class CustomValidators:
 
     @staticmethod
     def file_validator(file):
-        if file.name.endswith (('jpg', 'svg', 'png','jpeg')):
+        if file.name.endswith (('jpg', 'svg', 'png','jpeg','webp')):
             if file.size > 2 * 1024 * 1024:
                 raise ValidationError('File size is too big')
-        elif file.name.endswith(('.mkv', '.mp4', '.avi', '.wmv')):
+        elif file.name.endswith(('.mkv', '.mp4', '.avi', '.wmv','.webp')):
             if file.size > 300 * 1024 * 1024:
                 raise ValidationError('File size is too big')
         else:
