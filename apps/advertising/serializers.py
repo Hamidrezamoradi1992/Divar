@@ -327,3 +327,6 @@ class AcceptedAdvertisingSerializer(AllAdvertisingViewSerializer):
     def get_user(self, obj):
         userObject = obj.user
         return MainUserSerializer(userObject).data
+    def get_image(self, obj):
+        image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'), instance_id=obj.id).first()
+        return AddAdvertisingImageSerializer(image).data

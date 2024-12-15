@@ -1,14 +1,11 @@
-from django.shortcuts import redirect
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.generics import CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from django.conf import settings
-from apps.payment.models import Order, OrderItem
+from apps.payment.models import Order
 from apps.payment.serializers import AddLadderToOrderSerializer
-from apps.advertising.models import Advertising
-import json
+from django.db import transaction
+
 # import requests
 
 
@@ -16,7 +13,6 @@ import json
 class AddToOrderForLadderView(APIView):
     serializer_class = AddLadderToOrderSerializer
     permission_classes = [IsAuthenticated]
-
     def post(self, request):
         serializer = self.serializer_class(data=request.data, context={'request': request})
         if serializer.is_valid():
@@ -25,7 +21,7 @@ class AddToOrderForLadderView(APIView):
         return Response({'message': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-from django.db import transaction
+
 
 
 class PayOrderView(APIView):

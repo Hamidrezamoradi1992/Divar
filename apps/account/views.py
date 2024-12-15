@@ -8,9 +8,10 @@ from .models import User
 from django.core.cache import cache
 from django.contrib.auth import login, logout
 from apps.account.serializers import UpdateUserSerializer, MainUserSerializer, KycUserSerializer
-from apps.account.utils.utils import Utils
 from django.db.models import Q
 from rest_framework.generics import RetrieveAPIView, UpdateAPIView
+from apps.core.permissions import SiteAdmin
+from .utils.utils import Utils
 
 
 # Create your views here.
@@ -179,7 +180,12 @@ class LogoutView(APIView):
 
 
 class KycAcceptedView(APIView):
+    """
+        - request kyc accepted input
+        - if user is action Is SiteA
+    """
     permission_classes = []
+
 
     def get(self, request):
         users_with_images = User.objects.filter(

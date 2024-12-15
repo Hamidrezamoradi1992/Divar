@@ -96,7 +96,7 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
     fields = models.ManyToManyField(
         'FieldCategory',
         related_name='categories',
-        related_query_name='categories',blank=True,default=None)
+        related_query_name='categories', blank=True)
     image = models.ImageField(upload_to=f'kyc/_kyc_images/',
                               verbose_name='ID Card',
                               validators=[CustomValidators.file_validator],
@@ -107,18 +107,11 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         return f'title: {self.title}/free: {self.free}'
 
     def clean(self):
-        if self.pk and self.fields:
-            if self.parent_id:
-                print(1)
-                has_children = Category.objects.filter(parent_id=self.pk).exists()
-                if has_children:
+        if self.pk:
+            has_children = Category.objects.filter(parent=self.pk).exists()
+            if has_children:
+                if self.fields.exists():
                     raise ValidationError('Category with children cannot have fields.')
-            if not self.parent_id:
-                print(2)
-                has_children = Category.objects.filter(parent_id=self.pk).exists()
-                if has_children:
-                    raise ValidationError('Category with children cannot have fields.')
-
         if self.free and self.price > 0:
             raise ValidationError('Price cannot be greater than 0 for free categories.')
         elif not self.free and self.price <= 0:
@@ -203,10 +196,6 @@ class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
                                            ('bool', 'BOOL'),))
     mandatory = models.BooleanField(default=False)
     objects = BasicLogicalDeleteManager()
-
-    def save(self, *args, **kwargs):
-        self.clean()
-        super().save(*args, **kwargs)
 
     def __str__(self):
         return f'title: {self.title} /type: {self.type_field} /mandatory: {self.mandatory}'

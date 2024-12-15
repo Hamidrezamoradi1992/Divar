@@ -19,7 +19,7 @@ function getCategoryFetch(id_category = null) {
                                 onClick="getCategoryFetch(${category.id})">${category.title}</button>
                         <div class="avatar absolute top-[-30px] right-[-10px]">
                             <div class="mask mask-hexagon w-11">
-                                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+                                <img src="${category.image}"/>
                             </div>
                         </div>
                     </div>`
@@ -56,7 +56,7 @@ function getCategoryFetch(id_category = null) {
                                 onClick="getCategoryFetch(${category.id})">${category.title}</button>
                         <div class="avatar absolute top-[-30px] right-[-10px]">
                             <div class="mask mask-hexagon w-11">
-                                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"/>
+                                <img src="${category.image}"/>
                             </div>
                         </div>
                     </div>

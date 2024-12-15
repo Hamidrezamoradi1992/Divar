@@ -1,4 +1,3 @@
-
 import os
 import random
 from time import sleep
@@ -98,7 +97,7 @@ django.setup()
 #
 # print(ad_instance)  # Prints the generated Advertising instance
 # from apps.advertising.utils.validate_ladder_advertising import ValidateLadderAdvertising
-from apps.advertising.models import Advertising
+from apps.advertising.models import Advertising, Category
 # valid_ladder_advertising = ValidateLadderAdvertising(queryset=Advertising.objects.filter(id=1).first())
 # valid_ladder_advertising1 = ValidateLadderAdvertising(queryset=Advertising.objects.filter(id=3).first())
 # valid_ladder_advertising3 = ValidateLadderAdvertising(queryset=Advertising.objects.filter(id=2).first())
@@ -129,7 +128,6 @@ from apps.advertising.models import Advertising
 # print('hamid',(valid_ladder_advertising._LADDER_INSTANCE))
 
 
-
 # import random
 #
 # # دیکشنری نمونه
@@ -150,71 +148,341 @@ from apps.advertising.models import Advertising
 # random_items = random.sample(list(data.items()), 2)  # عدد 2 تعداد عناصر انتخابی است
 # print("Random items:", random_items)
 
-from django.conf import settings
-import requests
-import json
+# from django.conf import settings
+# import requests
+# import json
+#
+# # ? sandbox merchant
+# if settings.SANDBOX:
+#     sandbox = 'sandbox'
+# else:
+#     sandbox = 'www'
+#
+# ZP_API_REQUEST = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentRequest.json"
+# ZP_API_VERIFY = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentVerification.json"
+# ZP_API_STARTPAY = f"https://{sandbox}.zarinpal.com/pg/StartPay/"
+#
+# amount = 1000  # Rial / Required
+# description = "توضیحات مربوط به تراکنش را در این قسمت وارد کنید"  # Required
+# phone = 'YOUR_PHONE_NUMBER'  # Optional
+# # Important: need to edit for realy server.
+# CallbackURL = 'http://127.0.0.1:8080/verify/'
+#
+#
+# def send_request(request):
+#     data = {
+#         "MerchantID": settings.MERCHANT,
+#         "Amount": amount,
+#         "Description": description,
+#         "Phone": phone,
+#         "CallbackURL": CallbackURL,
+#     }
+#     data = json.dumps(data)
+#     # set content length by data
+#     headers = {'content-type': 'application/json', 'content-length': str(len(data))}
+#     try:
+#         response = requests.post(ZP_API_REQUEST, data=data, headers=headers, timeout=10)
+#
+#         if response.status_code == 200:
+#             response = response.json()
+#             if response['Status'] == 100:
+#                 return {'status': True, 'url': ZP_API_STARTPAY + str(response['Authority']),
+#                         'authority': response['Authority']}
+#             else:
+#                 return {'status': False, 'code': str(response['Status'])}
+#         return response
+#
+#     except requests.exceptions.Timeout:
+#         return {'status': False, 'code': 'timeout'}
+#     except requests.exceptions.ConnectionError:
+#         return {'status': False, 'code': 'connection error'}
+#
+#
+# def verify(authority):
+#     data = {
+#         "MerchantID": settings.MERCHANT,
+#         "Amount": amount,
+#         "Authority": authority,
+#     }
+#     data = json.dumps(data)
+#     # set content length by data
+#     headers = {'content-type': 'application/json', 'content-length': str(len(data))}
+#     response = requests.post(ZP_API_VERIFY, data=data, headers=headers)
+#
+#     if response.status_code == 200:
+#         response = response.json()
+#         if response['Status'] == 100:
+#             return {'status': True, 'RefID': response['RefID']}
+#         else:
+#             return {'status': False, 'code': str(response['Status'])}
+#     return response
 
-# ? sandbox merchant
-if settings.SANDBOX:
-    sandbox = 'sandbox'
-else:
-    sandbox = 'www'
+from mixer.backend.django import mixer
+from apps.advertising.models import State, City
+from faker import Faker
 
-ZP_API_REQUEST = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentRequest.json"
-ZP_API_VERIFY = f"https://{sandbox}.zarinpal.com/pg/rest/WebGate/PaymentVerification.json"
-ZP_API_STARTPAY = f"https://{sandbox}.zarinpal.com/pg/StartPay/"
+fake = Faker()
+states = [
+    'alborz',
+    'ardabil',
+    'isfahan',
+    'east_azerbaijan',
+    'west_azerbaijan',
+    'bushehr',
+    'chaharmahal_and_bakhtiari',
+    'fars',
+    'gilan',
+    'golestan',
+    'hamadan',
+    'hormozgan',
+    'kerman',
+    'kermanshah',
+    'khuzestan',
+    'lorestan',
+    'markazi',
+    'mazandaran',
+    'qazvin',
+    'qom',
+    'semnan',
+    'sistan_and_baluchestan',
+    'tehran',
+    'yazd',
+    'zanjan'
+]
+provinces_and_cities = {
+    'alborz': ['Karaj', 'Mohammadshahr', 'Hasanabad', 'Fardis', 'Golestan', 'Kahrizak', 'Taleqan', 'Nazarabad'],
+    'ardabil': ['Ardabil', 'Namin', 'Meshkinshahr', 'Ghazvin', 'Siahkal', 'Bileh Savar', 'Parsabad'],
+    'Isfahan': ['Isfahan', 'Kashan', 'Najafabad', 'Semirom', 'Khomain', 'Golpayegan', 'Fereydunkenar'],
+    'east_azerbaijan': ['Tabriz', 'Maragheh', 'Ahar', 'Bostanabad', 'Hashtrood', 'Osko', 'Sarab', 'Kaleybar'],
+    'west_azerbaijan': ['Urmia', 'Khoy', 'Salmas', 'Piranshahr', 'Bukan', 'Chaldoran', 'Naghadeh'],
+    'bushehr': ['Bushehr', 'Kangan', 'Deylam', 'Genaveh', 'Bassij', 'Borazjan'],
+    'chaharmahal_and_bakhtiari': ['Shahr-e Kord', 'Lordegan', 'Farsan', 'Kiar', 'Bojnurd', 'Bakhtegan'],
+    'fars': ['Shiraz', 'Marvdasht', 'Fasa', 'Jahrom', 'Kazerun', 'Lar', 'Mamasani'],
+    'gilan': ['Rasht', 'Siahkal', 'Astara', 'Fuman', 'Lahijan', 'Langarud', 'Talesh'],
+    'golestan': ['Gorgan', 'Aliabad', 'Minudasht', 'Kordkuy', 'Aghala', 'Galikesh'],
+    'hamadan': ['Hamadan', 'Bahar', 'Malayer', 'Nehavand', 'Asadabad', 'Toos', 'Lahijan'],
+    'hormozgan': ['Bandar Abbas', 'Minab', 'Jask', 'Qeshm', 'Hormuz', 'Haji Abad'],
+    'kerman': ['Kerman', 'Sirjan', 'Bam', 'Rostam', 'Jiroft', 'Zarand'],
+    'kermanshah': ['Kermanshah', 'Ghasr Shirin', 'Javanrud', 'Kangavar', 'Eslam Abad'],
+    'khuzestan': ['Ahvaz', 'Abadan', 'Khorramshahr', 'Shush', 'Andimeshk', 'Izeh'],
+    'morestan': ['Khorramabad', 'Dorood', 'Borujerd', 'Aligudarz', 'Selseleh'],
+    'markazi': ['Arak', 'Saveh', 'Khomein', 'Khondab', 'Delijan'],
+    'mazandaran': ['Sari', 'Babol', 'Noshahr', 'Amol', 'Chalus', 'Tonekabon'],
+    'qazvin': ['Qazvin', 'Alvand', 'Takestan', 'Bojnurd', 'Avaj'],
+    'qom': ['Qom', 'Koharshahr'],
+    'semnan': ['Semnan', 'Garmsar', 'Shahrud', 'Mehrafshan', 'Khoshkrud'],
+    'sistan and Baluchestan': ['Zahedan', 'Zabol', 'Iranshahr', 'Chabahar', 'Saravan'],
+    'tehran': ['Tehran', 'Shemiranat', 'Rey', 'Islamshahr', 'Pardis', 'Damavand', 'Varamin', 'Farahzad',
+               'Gonbad Qabus', 'Sarbandar', 'Nazariyeh', 'Eslamshahr', 'Rudaki', 'Tajrish',
+               'Baharistan', 'Shahrak-e Gharb', 'Narmak'],
+    'yazd': ['Yazd', 'Ashkezar', 'Taft', 'Mahdishahr', 'Bafq', 'Nain'],
+    'zanjan': ['Zanjan', 'Mahneshan', 'Tarom', 'Ain al-Huda', 'Eli', 'Ghazvin'],
+}
 
-amount = 1000  # Rial / Required
-description = "توضیحات مربوط به تراکنش را در این قسمت وارد کنید"  # Required
-phone = 'YOUR_PHONE_NUMBER'  # Optional
-# Important: need to edit for realy server.
-CallbackURL = 'http://127.0.0.1:8080/verify/'
+# Loop through each province and create cities
 
-
-def send_request(request):
-    data = {
-        "MerchantID": settings.MERCHANT,
-        "Amount": amount,
-        "Description": description,
-        "Phone": phone,
-        "CallbackURL": CallbackURL,
-    }
-    data = json.dumps(data)
-    # set content length by data
-    headers = {'content-type': 'application/json', 'content-length': str(len(data))}
+for state in states:
     try:
-        response = requests.post(ZP_API_REQUEST, data=data, headers=headers, timeout=10)
+        State.objects.create(title=state)
+    except Exception as e:
+        print('state: ', state, e)
+for province, cities in provinces_and_cities.items():
+    try:
+        state = State.objects.get(title=province)  # Retrieve the state using the exact title
+        for city in cities:
+            City.objects.create(title=city, state_id=state.pk)  # Create a city linked to its state
+    except Exception as e:
+        print(f'province :{province} City:{city} error:{e}')
 
-        if response.status_code == 200:
-            response = response.json()
-            if response['Status'] == 100:
-                return {'status': True, 'url': ZP_API_STARTPAY + str(response['Authority']),
-                        'authority': response['Authority']}
-            else:
-                return {'status': False, 'code': str(response['Status'])}
-        return response
-
-    except requests.exceptions.Timeout:
-        return {'status': False, 'code': 'timeout'}
-    except requests.exceptions.ConnectionError:
-        return {'status': False, 'code': 'connection error'}
-
-
-def verify(authority):
-    data = {
-        "MerchantID": settings.MERCHANT,
-        "Amount": amount,
-        "Authority": authority,
+# داده‌های نمونه برای برندها و مدل‌ها
+# داده‌های نمونه برای دسته‌بندی ماشین‌ها، لوازم خانگی، تجهیزات الکترونیکی و املاک
+category_data = {
+    'vehicles': {
+        'cars': {
+            'sedans': {
+                'compact': {},
+                'mid_size': {},
+                'full_size': {}
+            },
+            'suvs': {
+                'compact_suv': {},
+                'midsize_suv': {},
+                'full_size_suv': {}
+            },
+            'trucks': {
+                'light_trucks': {},
+                'heavy_trucks': {}
+            },
+            'vans': {
+                'minivans': {},
+                'cargo_vans': {}
+            }
+        },
+        'motorcycles': {
+            'sport_bikes': {},
+            'cruisers': {},
+            'touring_bikes': {}
+        },
+        'electric_vehicles': {
+            'sedans': {},
+            'suvs': {},
+            'trucks': {}
+        },
+        'bicycles': {
+            'mountain_bikes': {},
+            'road_bikes': {},
+            'hybrid_bikes': {}
+        }
+    },
+    'home_appliances': {
+        'kitchen_appliances': {
+            'refrigerators': {
+                'double_door': {},
+                'single_door': {},
+                'side_by_side': {},
+                'mini_fridge': {}
+            },
+            'microwaves': {
+                'convection': {},
+                'grill': {},
+                'solo': {}
+            },
+            'ovens': {
+                'built_in': {},
+                'countertop': {}
+            },
+            'blenders': {
+                'hand_blender': {},
+                'table_blender': {},
+                'juicer': {}
+            }
+        },
+        'washing_machines': {
+            'front_load': {},
+            'top_load': {},
+            'semi_auto': {}
+        },
+        'vacuum_cleaners': {
+            'robot_vacuum': {},
+            'upright_vacuum': {},
+            'canister_vacuum': {}
+        },
+        'air_conditioners': {
+            'window_ac': {},
+            'split_ac': {},
+            'portable_ac': {}
+        },
+        'heaters': {
+            'ceramic_heater': {},
+            'oil_heater': {},
+            'fan_heater': {}
+        }
+    },
+    'electronics': {
+        'televisions': {
+            'led_tv': {
+                '4k': {},
+                '1080p': {},
+                'smart_tv': {}
+            },
+            'lcd_tv': {},
+            'plasma_tv': {}
+        },
+        'audio_systems': {
+            'home_theater': {},
+            'soundbar': {},
+            'portable_speakers': {}
+        },
+        'computers': {
+            'laptops': {
+                'gaming': {},
+                'business': {},
+                'ultrabooks': {}
+            },
+            'desktops': {
+                'all_in_one': {},
+                'gaming_desktops': {}
+            }
+        },
+        'cameras': {
+            'dslr': {},
+            'mirrorless': {},
+            'action_cameras': {}
+        },
+        'mobile_devices': {
+            'smartphones': {
+                'android': {},
+                'ios': {}
+            },
+            'tablets': {
+                'android_tablets': {},
+                'ipad': {}
+            }
+        }
+    },
+    'real_estate': {
+        'residential': {
+            'houses': {
+                'single_family': {},
+                'multi_family': {},
+                'townhouses': {}
+            },
+            'apartments': {
+                'studio': {},
+                '1_bedroom': {},
+                '2_bedroom': {}
+            },
+            'villas': {}
+        },
+        'commercial': {
+            'offices': {
+                'small_offices': {},
+                'large_offices': {}
+            },
+            'retail_spaces': {
+                'shops': {},
+                'malls': {}
+            },
+            'warehouses': {}
+        },
+        'land': {
+            'residential_lots': {},
+            'commercial_lots': {},
+            'agricultural_land': {}
+        }
+    },
+    'other': {
+        'furniture': {
+            'living_room': {},
+            'bedroom': {},
+            'office': {},
+            'outdoor': {}
+        },
+        'garden_tools': {
+            'lawn_mowers': {},
+            'trimmers': {},
+            'shovels': {},
+            'gardening_kits': {}
+        },
+        'pets': {
+            'dogs': {},
+            'cats': {},
+            'fish': {},
+            'birds': {}
+        }
     }
-    data = json.dumps(data)
-    # set content length by data
-    headers = {'content-type': 'application/json', 'content-length': str(len(data))}
-    response = requests.post(ZP_API_VERIFY, data=data, headers=headers)
+}
 
-    if response.status_code == 200:
-        response = response.json()
-        if response['Status'] == 100:
-            return {'status': True, 'RefID': response['RefID']}
-        else:
-            return {'status': False, 'code': str(response['Status'])}
-    return response
+# تابع برای ایجاد دسته‌بندی‌ها
+def create_categories(category_data, parent=None):
+    for title, subcategories in category_data.items():
+        # ایجاد یک دسته‌بندی جدید
+        category = Category(title=title, parent=parent)
+        category.save()  # ذخیره دسته‌بندی در پایگاه داده
+
+        # بررسی وجود زیر دسته‌بندی‌ها و ایجاد آن‌ها
+        if subcategories:
+            create_categories(subcategories, parent=category)
+
+# ایجاد دسته‌بندی‌ها از داده‌های نمونه
+create_categories(category_data)

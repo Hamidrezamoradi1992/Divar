@@ -537,16 +537,64 @@ class AddFieldAdvertiseView(APIView):
 
 
 # @method_decorator(cache_page(10), name='dispatch')
+
+# swagger
 class AllCategoryView(APIView):
+    """
+    - get all categories
+        - method GET
+
+    [
+
+        {
+        "id": 63,
+        "title": "electronics",
+        "parent": {
+            "title": "",
+            "free": false,
+            "fields": [],
+            "price": null,
+            "image": null
+        },
+        "free": true,
+        "fields": [],
+        "price": 0.0,
+        "image": "/storage/media/kyc/_kyc_images/images_3.png"
+        },...
+
+    ]
+
+    - requesst : https//domain/advertising/api/add/advertise/all_category/{category_id}
+        - method GET
+        [
+
+        {
+        "id": 63,
+        "title": "electronics",
+        "parent": {
+            "title": "",
+            "free": false,
+            "fields": [],
+            "price": null,
+            "image": null
+        },
+        "free": true,
+        "fields": [],
+        "price": 0.0,
+        "image": "/storage/media/kyc/_kyc_images/images_3.png"
+        },...
+
+    ]
+
+    """
     serializer_class = MainCategorySerializer
     queryset = Category.objects.all()
     permission_classes = []
 
     def get(self, request, category_id=None):
-        print('re',request)
+        print('re', request)
         if category_id is not None:
             if Category.objects.filter(pk=category_id).exists():
-
                 category = Category.objects.filter(parent_id=category_id)
                 print(category)
                 serializers = self.serializer_class(category, many=True)
@@ -591,6 +639,7 @@ class AllStateView(ListAPIView):
         ]
 
     """
+    permission_classes = []
     serializer_class = MainStateSerializer
     queryset = State.objects.all()
 
@@ -632,7 +681,40 @@ class AllCityView(APIView):
 """ start admin panel advertising"""
 
 
+# swagger
 class AdvertisingPublishedView(APIView):
+    """
+        - all published advertising
+         - method GET  (is a)
+
+         [
+              {
+             "id": 16,
+             "title": "rgfg",
+             "description": "sdfasf",
+             "image": {
+                 "alt": "",
+                 "content_type": null,
+                 "instance_id": null,
+                 "file": null
+             },
+             "category": {
+                 "id": 12,
+                 "title": "light_trucks",
+                 "free": false,
+                 "price": 330.0,
+                 "image": null
+             },
+             "is_active": true,
+             "is_deleted": false,
+             "diffusion": true,
+             "expires_at": "2024-12-14T22:15:18.747253+03:30"
+            },
+            ...
+         ]
+
+    """
+
     serializer_class = AdminAdvertisingViewSerializer
 
     def get(self, request):
@@ -643,8 +725,39 @@ class AdvertisingPublishedView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+# swagger
 class AdvertisingFavoriteView(APIView):
+    """
+        - get all favorites
+            - method GET
+
+            [
+                {
+                    "id": 9,
+                    "title": "jafar46",
+                    "description": "Price cannot be greater than 0 for free categories.       jafar",
+                    "image": {
+                        "alt": "",
+                        "content_type": null,
+                        "instance_id": null,
+                        "file": null
+                    },
+                    "category": {
+                        "id": 116,
+                        "title": "agricultural_land",
+                        "free": true,
+                        "fields": [],
+                        "price": 0.0,
+                        "image": null
+                    },
+                    "is_active": true,
+                    "is_deleted": false,
+                    "diffusion": true,
+                    "expires_at": "2025-01-11T21:28:58.923525+03:30"
+                }
+            ]
+
+    """
     serializer_class = AdminAdvertisingViewSerializer
 
     def get(self, request):
@@ -656,11 +769,40 @@ class AdvertisingFavoriteView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not favorites '}, status=status.HTTP_400_BAD_REQUEST)
 
-
+# swagger
 class AdvertisingAllView(APIView):
-    serializer_class = AdminAdvertisingViewSerializer
-    permission_classes = []
+    """
+        - all state in db
+        - method GET
+        [
 
+            {
+            "id": 15,
+            "title": "office",
+            "description": "very good so good location",
+            "image": {
+                "id": 23,
+                "alt": "advertising_image",
+                "content_type": 10,
+                "instance_id": 15,
+                "file": "/storage/media/file_field/images_1.png"
+            },
+            "category": {
+                "id": 108,
+                "title": "large_offices",
+                "free": false,
+                "price": 360.0,
+                "image": null
+            },
+            "is_active": true,
+            "is_deleted": false,
+            "diffusion": true,
+            "expires_at": "2025-01-11T21:40:17.754721+03:30"
+            }
+        ]
+
+    """
+    serializer_class = AdminAdvertisingViewSerializer
     def get(self, request):
         userid = request.user.id
         if userid:
@@ -669,15 +811,49 @@ class AdvertisingAllView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
 
-
+# swagger
 class AdvertisingAllForPaymentView(APIView):
+
+    """
+        - all for payment in db
+            - method GET
+
+                    "datas": [
+                                {
+                                    "id": 7,
+                                    "title": "jafar",
+                                    "description": "Price cannot be greater than 0 for free categories.",
+                                    "image": {
+                                        "id": 15,
+                                        "alt": "advertising_image",
+                                        "content_type": 10,
+                                        "instance_id": 7,
+                                        "file": "/storage/media/file_field/mlp-img-perf-2024-camaro_Vzck5z1.webp"
+                                    },
+                                    "category": {
+                                        "id": 12,
+                                        "title": "light_trucks",
+                                        "free": false,
+                                        "price": 330.0,
+                                        "image": null
+                                    },
+                                    "is_active": true,
+                                    "is_deleted": false,
+                                    "diffusion": true,
+                                    "expires_at": "2025-01-11T21:32:55.802474+03:30"
+                                }
+                            ],
+                    "order": 20,
+                    "total": 40.0
+
+    """
     serializer_class = AdminAdvertisingViewSerializer
 
     def get(self, request):
         userid = request.user
-        print(type(userid))
-        orders = Order.objects.filter(user=userid,is_completed=False)
-        print(orders)
+
+        orders = Order.objects.filter(user=userid, is_completed=False)
+
         if orders.exists():
             order_item = OrderItem.objects.filter(order__in=orders).values_list('advertise_id', flat=True)
             advertise = Advertising.objects.archive().filter(pk__in=order_item)
@@ -696,12 +872,83 @@ class AdvertisingAllForPaymentView(APIView):
 
 
 class FilterAdvertising(APIView):
+
+    """
+    - all filter advertising
+        - request /advertising/api/add/advertise/filter/category/{category_id}
+        - method GET
+        [
+             {
+                 "id": 16,
+                 "title": "rgfg",
+                 "price": 62.0,
+                 "image": {
+                     "alt": "",
+                     "content_type": null,
+                     "instance_id": null,
+                     "file": null
+                 }
+             },
+             {
+                 "id": 7,
+                 "title": "jafar",
+                 "price": 360.0,
+                 "image": {
+                     "id": 15,
+                     "alt": "advertising_image",
+                     "content_type": 10,
+                     "instance_id": 7,
+                     "file": "/storage/media/file_field/mlp-img-perf-2024-camaro_Vzck5z1.webp"
+                 }
+             }
+        ]
+
+        - request /advertising/api/add/advertise/filter/category/
+        - method post
+
+        request{
+            {
+                'title': [''],
+                'city': ['None'],
+                'province': ['None'],
+                'category': ['']
+            }
+        }
+
+    -response
+
+          [
+             {
+                 "id": 16,
+                 "title": "rgfg",
+                 "price": 62.0,
+                 "image": {
+                     "alt": "",
+                     "content_type": null,
+                     "instance_id": null,
+                     "file": null
+                 }
+             },
+             {
+                 "id": 7,
+                 "title": "jafar",
+                 "price": 360.0,
+                 "image": {
+                     "id": 15,
+                     "alt": "advertising_image",
+                     "content_type": 10,
+                     "instance_id": 7,
+                     "file": "/storage/media/file_field/mlp-img-perf-2024-camaro_Vzck5z1.webp"
+                 }
+             }
+        ]
+
+    """
     permission_classes = []
 
     def get(self, request, category_id=None):
         if category_id:
             if not (serializer := cache.get(f'category:{category_id}')):
-                print('apps.advertise.view.FilterAdvertising,get', cache.get(f'category:{category_id}'))
                 category = Category.objects.get(pk=category_id)
                 categories = category.get_descendants(include_self=True)
                 advertising_category = Advertising.objects.is_diffusion().filter(category_id=category_id)
@@ -712,11 +959,12 @@ class FilterAdvertising(APIView):
                     advertising2 = advertising_category
 
                 serializer = filterCategorySerializer(advertising2, many=True, context=request).data
-                cache.set(f'category:{category_id}', serializer, 1)
+                cache.set(f'category:{category_id}', serializer, 30)
             return Response(serializer, status=status.HTTP_200_OK)
         return Response({'massage': "NOT FOUND"}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
+        print(request.data)
         titles = None if (c := request.data['title']) in ['None', ''] else c
         category = None if (c := request.data['category']) in ['None', ''] else int(c)
         province = None if (c := request.data['province']) in ['None', ''] else int(c)
@@ -741,7 +989,7 @@ class FilterAdvertising(APIView):
             advertising = Advertising.objects.is_diffusion().filter(filters)
             serializer = filterCategorySerializer(advertising, many=True, context=request)
             serializer_data = serializer.data
-            cache.set(cache_key, serializer_data, 600)
+            cache.set(cache_key, serializer_data, 30)
 
         return Response(serializer_data, status=status.HTTP_200_OK)
 
@@ -776,14 +1024,11 @@ class DestroyAdvertising(APIView):
 """advertise accepted"""
 
 
-
-
-
 class AcceptSiteAdminAdvertising(APIView):
-    permission_classes = [SiteAdmin, SuperUser]
+    permission_classes = [SiteAdmin]
 
     def get(self, request):
-        advertise=Advertising.objects.archive().filter(diffusion=False,payed=True)
+        advertise = Advertising.objects.archive().filter(diffusion=False, payed=True)
         serializer = AcceptedAdvertisingSerializer(
             advertise,
             many=True,
@@ -791,18 +1036,17 @@ class AcceptSiteAdminAdvertising(APIView):
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-
     def put(self, request):
         advertise_id = int(request.data['advertise'])
         user_id = int(request.data['user'])
         try:
-            advertise= Advertising.objects.get(pk=advertise_id)
+            advertise = Advertising.objects.get(pk=advertise_id)
         except Exception as e:
             return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         advertise.diffusion = True
-        advertise.created_at= timezone.now()
+        advertise.created_at = timezone.now()
         advertise.expires_at = timezone.now() + timedelta(days=30)
-        advertise.save(update_fields=['diffusion','created_at','expires_at'])
+        advertise.save(update_fields=['diffusion', 'created_at', 'expires_at'])
         emails = advertise.user.email
         email_data = {
             'subject': 'accepted advertise',
@@ -812,6 +1056,7 @@ class AcceptSiteAdminAdvertising(APIView):
         }
         send_email.delay(**email_data)
         return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
+
     def post(self, request):
         advertise_id = int(request.data['advertise'])
         try:
@@ -832,7 +1077,6 @@ class AcceptSiteAdminAdvertising(APIView):
         }
         send_email.delay(**email_data)
         return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
-
 
 
 """advertise accepted"""
