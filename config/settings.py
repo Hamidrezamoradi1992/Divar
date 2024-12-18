@@ -89,33 +89,47 @@ if DEBUG:
     ]
 
     # Email
-    EMAIL_HOST = "localhost"
-    EMAIL_PORT = 2525
-    EMAIL_HOST_USER = ""
-    EMAIL_HOST_PASSWORD = ""
-    EMAIL_USE_TLS = False
+    # EMAIL_HOST = "smtp4dev"
+    # EMAIL_PORT = 2525
+    # EMAIL_HOST_USER = ""
+    # EMAIL_HOST_PASSWORD = ""
+    # EMAIL_USE_TLS = False
+
+
+    EMAIL_HOST = 'smtp.gmail.com'  # e.g., 'smtp.gmail.com' for Gmail
+    EMAIL_PORT = 587  # Use 465 for SSL
+    EMAIL_USE_TLS = True  # Use True for TLS, False for SSL
+    EMAIL_HOST_USER = 'hamedreza1992@gmail.com'
+    EMAIL_HOST_PASSWORD = 'qmkj yfdk gmti bges'
+    DEFAULT_FROM_EMAIL = 'hamedreza1992@gmail.com'
 
     # Database
+
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': 'postgres',
-            'USER': 'postgres',
-            'PASSWORD': '1',
-            'HOST': '0.0.0.0',
-            'PORT': '5432',
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
+    # DATABASES = {
+    #     'default': {
+    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #         'NAME': config('POSTGRES_DB', default='postgres'),
+    #         'USER': config('POSTGRES_USER', default='postgres'),
+    #         'PASSWORD': config('POSTGRES_PASSWORD', default='<PASSWORD>'),
+    #         'HOST': config('DB_HOST', default='db'),
+    #         'PORT': config('POSTGRES_PORT', default='5432'),
+    #     }
+    # }
+    REDIS_HOST = config("REDIS_HOST")
+    REDIS_PORT = config("REDIS_PORT")
+    REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
 
     # Cache
     CACHES = {
-        'default': {
-            'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': 'redis://0.0.0.0:6379/0',
-            'KEY_PREFIX': 'REDIS1',
-            'OPTIONS': {
-                'CLIENT_CLASS': 'django_redis.client.DefaultClient',
-            }
+        "default": {
+            "BACKEND": "django.core.cache.backends.redis.RedisCache",
+            "LOCATION": REDIS_URL,
         }
     }
 
@@ -131,20 +145,23 @@ else:
     EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
     EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool)
 
+    REDIS_HOST = config("REDIS_HOST")
+    REDIS_PORT = config("REDIS_PORT")
+    REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
+
     # Database
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': config("DB_NAME"),
-            'USER': config("DB_USER"),
-            'PASSWORD': config("DB_PASSWORD"),
-            'PORT': config("DB_PORT"),
-            'HOST': config("DB_HOST"),
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config('POSTGRES_DB', default='postgres'),
+            'USER': config('POSTGRES_USER', default='postgres'),
+            'PASSWORD': config('POSTGRES_PASSWORD', default='<PASSWORD>'),
+            'HOST': config('DB_HOST', default='db'),
+            'PORT': config('POSTGRES_PORT', default='5432'),
         }
     }
 
     # Cache
-    REDIS_URL = config("REDIS_URL")
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.redis.RedisCache",
@@ -214,8 +231,20 @@ SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=10),
 }
+
+REDIS_HOST = config("REDIS_HOST")
+REDIS_PORT = config("REDIS_PORT")
 # Celery conf
-CELERY_BROKER_URL = 'redis://0.0.0.0:6379/15'
+CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/15"
+
+# CELERY_RESULT_BACKEND = f"redis://{REDIS_HOST}:{REDIS_PORT}/15"
+# CELERY_ACCEPT_CONTENT =config('CELERY_ACCEPT_CONTENT', default=True, cast=lambda contents:contents.split(',') )
+# CELERY_TASK_SERIALIZER = config('CELERY_TASK_SERIALIZER', default='json')
+# CELERY_RESULT_SERIALIZER = config('CELERY_RESULT_SERIALIZER', default='json')
+# CELERY_TIMEZONE = config('CELERY_TIMEZONE', default='UTC')
+
+
+
 # SIMPLE_JWT = {
 #     'TOKEN_OBTAIN_SERIALIZER': 'apps.core.custom_token.CustomTokenObtainPairSerializer',
 # }
