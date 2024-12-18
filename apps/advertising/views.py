@@ -1048,13 +1048,7 @@ class AcceptSiteAdminAdvertising(APIView):
         advertise.expires_at = timezone.now() + timedelta(days=30)
         advertise.save(update_fields=['diffusion', 'created_at', 'expires_at'])
         emails = advertise.user.email
-        email_data = {
-            'subject': 'accepted advertise',
-            'template_name': 'mail/accepted.html',
-            'to_email': [emails],
-            'context': {'code': 'Your ad is advertise displayed on our website for 30 days.'},
-        }
-        send_email.delay(**email_data)
+        send_email.delay(subject='Advertise Accepted', to_email=[emails], context='Your ad is advertise displayed on our website for 30 days.')
         return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -1069,13 +1063,9 @@ class AcceptSiteAdminAdvertising(APIView):
         advertise.is_deleted = True
         advertise.save(update_fields=['diffusion', 'is_active', 'payed', 'is_deleted'])
         emails = advertise.user.email
-        email_data = {
-            'subject': 'rejected advertise',
-            'template_name': 'mail/rejected.html',
-            'to_email': [emails],
-            'context': {'code': 'Your ad is advertise rejected '},
-        }
-        send_email.delay(**email_data)
+
+        send_email.delay(subject='Advertise rejected', to_email=[emails], context='Your ad is advertise rejected ')
+
         return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
 
 

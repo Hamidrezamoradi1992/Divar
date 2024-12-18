@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.db.models import Q
-from apps.advertising.models import Category, FieldCategory, Advertising, SaveValueField, City,State,Image
+from apps.advertising.models import Category, FieldCategory, Advertising, SaveValueField, City,State,Image,CategoryField
 
 # Register your models here.
 
@@ -32,6 +32,7 @@ admin.site.register(SaveValueField, SaveValueFieldAdmin)
 admin.site.register(City, CityAdmin)
 admin.site.register(State, StateAdmin)
 admin.site.register(Image, ImageAdmin)
+admin.site.register(CategoryField)
 
 
 

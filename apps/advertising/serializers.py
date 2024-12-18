@@ -59,6 +59,7 @@ class MainCategorySerializer(serializers.ModelSerializer):
                   'image')
 
     def get_parent(self, obj):
+
         return MainCategorySerializer(obj.parent).data
 
 
