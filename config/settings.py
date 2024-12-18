@@ -95,7 +95,6 @@ if DEBUG:
     # EMAIL_HOST_PASSWORD = ""
     # EMAIL_USE_TLS = False
 
-
     EMAIL_HOST = 'smtp.gmail.com'  # e.g., 'smtp.gmail.com' for Gmail
     EMAIL_PORT = 587  # Use 465 for SSL
     EMAIL_USE_TLS = True  # Use True for TLS, False for SSL
@@ -208,7 +207,9 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # put on your settings.py file below INSTALLED_APPS
 REST_FRAMEWORK = {
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # swager
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 4,
+
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
@@ -216,16 +217,17 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # swager
 
 }
 # swager
-SPECTACULAR_SETTINGS = {
-    'TITLE': 'DIVAR',
-    'DESCRIPTION': ' it is divar project',
-    'VERSION': '1.0.0',
-    'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
-}
+# SPECTACULAR_SETTINGS = {
+#     'TITLE': 'DIVAR',
+#     'DESCRIPTION': ' it is divar project',
+#     'VERSION': '1.0.0',
+#     'SERVE_INCLUDE_SCHEMA': False,
+#     # OTHER SETTINGS
+# }
 # end swager
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=120),
@@ -242,7 +244,6 @@ CELERY_BROKER_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/15"
 # CELERY_TASK_SERIALIZER = config('CELERY_TASK_SERIALIZER', default='json')
 # CELERY_RESULT_SERIALIZER = config('CELERY_RESULT_SERIALIZER', default='json')
 # CELERY_TIMEZONE = config('CELERY_TIMEZONE', default='UTC')
-
 
 
 # SIMPLE_JWT = {

@@ -29,6 +29,16 @@
         {#side bare view#}
 
     </div>
+    <div class="w-[80vw] m-auto flex justify-center mt-10">
+
+        <div class=" join">
+            <button class="join-item btn" id="previous" value="" onclick="AllAdvertising(this.value)">«</button>
+            <button class="join-item btn" id="next" value="" onclick="AllAdvertising(this.value)">»</button>
+        </div>
+
+
+    </div>
+
 {% endblock %}
 {#end main#}
 
@@ -51,6 +61,8 @@
         let maineViewEl = document.querySelector('#maineView')
         let sidebarViewEl = document.querySelector('#sideBaer')
         let categoryViewEL = document.querySelector('#categoryView')
+        {#let nextEL = document.querySelector('#next')#}
+        {#let previousEL = document.querySelector('#previous')#}
         document.addEventListener("DOMContentLoaded", (ev) => {
             ev.preventDefault()
             AllAdvertising()

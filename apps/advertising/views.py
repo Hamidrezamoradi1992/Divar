@@ -154,8 +154,14 @@ class DetailAdvertiseView(RetrieveAPIView):
     serializer_class = AllRetrieveAdvertisingViewSerializer
     permission_classes = []
 
+from rest_framework.pagination import PageNumberPagination
 
-# swagger
+
+# class StandardResultsSetPagination(PageNumberPagination):
+#     page_size = 2
+#     page_size_query_param = 'page_size'
+#     max_page_size = 4
+# # swagger
 class AllAdvertisingView(ListAPIView):
     """
       - view all advertising
@@ -180,19 +186,17 @@ class AllAdvertisingView(ListAPIView):
     """
     queryset = Advertising.objects.is_diffusion()
     serializer_class = AllAdvertiseViewSerializer
+    pagination_class = PageNumberPagination
     permission_classes = []
 
-    def get(self, request, *args, **kwargs):
+    def get_queryset(self):
         ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=None)
         if ladder is not None:
-            advertising2 = list(chain(ladder, list(self.get_queryset())))
+            advertising2 = list(chain(ladder, list(Advertising.objects.is_diffusion())))
         else:
-            advertising2 = self.get_queryset()
-
+            advertising2 = Advertising.objects.is_diffusion()
         advertising2 = list({ad.id: ad for ad in advertising2}.values())
-
-        serializer = self.serializer_class(advertising2, many=True, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return advertising2
 
 
 # swagger
