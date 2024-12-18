@@ -20,7 +20,7 @@ kombu
 mixer
 pillow
 prompt_toolkit
-psycopg2
+psycopg2-binary
 PyJWT
 python-dateutil
 python-decouple

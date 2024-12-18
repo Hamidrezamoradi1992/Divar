@@ -27,6 +27,10 @@
 {% block extera-footer %}{% endblock %}
 </body>
 <script src="{% static 'js/authentication/logout.js' %}"></script>
+<script>
+    var url_id = window.location.hostname
+    console.log(url_id)
+</script>
 {% block script %}{% endblock %}
 
 </html>
