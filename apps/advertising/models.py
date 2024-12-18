@@ -83,6 +83,26 @@ class Advertising(LogicalDeleteMixin, TimeCreateMixin):
         indexes = [models.Index(fields=['title'])]
 
 
+class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
+    expires_at = None
+    title = models.CharField(max_length=120, unique=True)
+    type_field = models.CharField(max_length=6,
+                                  choices=(('int', 'Int'),
+                                           ('str', 'STRING'),
+                                           ('float', 'FLOAT'),
+                                           ('bool', 'BOOL'),))
+    mandatory = models.BooleanField(default=False)
+    objects = BasicLogicalDeleteManager()
+
+    def __str__(self):
+        return f'title: {self.title} /type: {self.type_field} /mandatory: {self.mandatory}'
+
+    class Meta:
+        verbose_name = 'FieldCategory'
+        verbose_name_plural = 'FieldCategories'
+        indexes = [models.Index(fields=['title'])]
+
+
 class Category(LogicalDeleteMixin, TimeCreateMixin):
     expires_at = None
     title = models.CharField(max_length=120)
@@ -94,33 +114,26 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
                                on_delete=models.SET_NULL)
     free = models.BooleanField(default=True)
     fields = models.ManyToManyField(
-        'FieldCategory',
-        related_name='categories',
-        related_query_name='categories', blank=True)
+        FieldCategory, blank=True, through='CategoryField')
     image = models.ImageField(upload_to=f'kyc/_kyc_images/',
                               verbose_name='ID Card',
                               validators=[CustomValidators.file_validator],
                               null=True, blank=True)
     price = models.FloatField(default=0)
+    _invalid_state = False
 
     def __str__(self):
         return f'title: {self.title}/free: {self.free}'
 
     def clean(self):
-        if self.pk:
-            has_children = Category.objects.filter(parent=self.pk).exists()
-            if has_children:
-                if self.fields.exists():
-                    raise ValidationError('Category with children cannot have fields.')
+        if self.children.exists() and self.fields.exists():
+            raise ValidationError("A category with children cannot have fields.")
         if self.free and self.price > 0:
             raise ValidationError('Price cannot be greater than 0 for free categories.')
         elif not self.free and self.price <= 0:
             raise ValidationError('Price must be greater than 0 for non-free categories.')
 
     def save(self, *args, **kwargs):
-        if self.pk is None:
-            super().save(*args, **kwargs)
-        self.clean()
         super().save(*args, **kwargs)
 
     @staticmethod
@@ -186,24 +199,13 @@ class Category(LogicalDeleteMixin, TimeCreateMixin):
         indexes = [models.Index(fields=['title'])]
 
 
-class FieldCategory(LogicalDeleteMixin, TimeCreateMixin):
-    expires_at = None
-    title = models.CharField(max_length=120, unique=True)
-    type_field = models.CharField(max_length=6,
-                                  choices=(('int', 'Int'),
-                                           ('str', 'STRING'),
-                                           ('float', 'FLOAT'),
-                                           ('bool', 'BOOL'),))
-    mandatory = models.BooleanField(default=False)
-    objects = BasicLogicalDeleteManager()
+class CategoryField(models.Model):
+    category_id = models.ForeignKey('Category', on_delete=models.CASCADE)
+    fieldcategory_id = models.ForeignKey('FieldCategory', on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f'title: {self.title} /type: {self.type_field} /mandatory: {self.mandatory}'
-
-    class Meta:
-        verbose_name = 'FieldCategory'
-        verbose_name_plural = 'FieldCategories'
-        indexes = [models.Index(fields=['title'])]
+    def clean(self):
+        if self.category_id.children.exists() and self.fieldcategory_id:
+            raise ValidationError('Categories cannot have fields.')
 
 
 class State(LogicalDeleteMixin, TimeCreateMixin):
