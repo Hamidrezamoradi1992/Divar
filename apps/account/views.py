@@ -47,13 +47,8 @@ class SignUpView(APIView):  # swagger
                             status=status.HTTP_400_BAD_REQUEST)
         if not (code := cache.get(email)):
             code = Utils.code_generator()
-        email_data = {
-            'subject': 'verify code',
-            'template_name': 'mail/verification.html',
-            'to_email': [email],
-            'context': {'code': code},
-        }
-        send_email.delay(**email_data)
+            print(code)
+        send_email.delay(subject= 'verify code',to_email= [email],context= f"code referral {code}")
         cache.set(email, code, 120)
 
         return Response({'redirect': f'http://localhost:8000/accounts/verify/{email}'},
@@ -204,13 +199,8 @@ class KycAcceptedView(APIView):
         user = User.objects.filter(id=id)
         if user.exists():
             email = user.first().email
-            email_data = {
-                'subject': 'rejected Kyc',
-                'template_name': 'mail/rejected.html',
-                'to_email': [email],
-                'context': {'code': 'your image rejected for kyc website'},
-            }
-            send_email.delay(**email_data)
+            send_email.delay(subject='rejected Kyc', to_email=[email],
+                             context='your image rejected for kyc website')
             user.update(image_idcard='', image_letter_of_commitment='')
             return Response({'message': 'user image deleted'}, status=status.HTTP_200_OK)
         return Response({'message': 'user not found'}, status=status.HTTP_404_NOT_FOUND)
@@ -220,13 +210,8 @@ class KycAcceptedView(APIView):
         user = User.objects.filter(id=id)
         if user.exists():
             email=user.first().email
-            email_data = {
-                'subject': 'accepted Kyc',
-                'template_name': 'mail/accepted.html',
-                'to_email': [email],
-                'context': {'code': 'your image accepted for kyc website'},
-            }
-            send_email.delay(**email_data)
+            send_email.delay(subject='accepted Kyc', to_email=[email],
+                             context='your image accepted for kyc website')
             user.update(is_kyc=True)
             return Response(status=status.HTTP_201_CREATED)
         return Response(status=status.HTTP_400_BAD_REQUEST)
