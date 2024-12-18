@@ -50,10 +50,11 @@ class ValidateLadderAdvertising:
                     random_items.remove(item)
                     ValidateLadderAdvertising._LADDER_INSTANCE.remove(item)
                     ValidateLadderAdvertising._LADDER_ADVERTISING_MODEL.pop(item.queryset.id)
-            if len(random_items) < 3:
-                if len(ValidateLadderAdvertising._LADDER_INSTANCE) >= 3:
-                    print('ValidateLadderAdvertising._LADDER_INSTANCE',ValidateLadderAdvertising._LADDER_INSTANCE)
-                    random_items= ValidateLadderAdvertising.get_ladder_advertising()
+            if categories_id:
+                if len(random_items) < 3:
+                    if len(ValidateLadderAdvertising._LADDER_INSTANCE) >= 3:
+                        print('ValidateLadderAdvertising._LADDER_INSTANCE',ValidateLadderAdvertising._LADDER_INSTANCE)
+                        random_items= ValidateLadderAdvertising.get_ladder_advertising()
 
             for item in random_items:
                 item.ladder_count += 1
