@@ -179,7 +179,7 @@ class KycAcceptedView(APIView):
         - request kyc accepted input
         - if user is action Is SiteA
     """
-    permission_classes = []
+    permission_classes = [SiteAdmin]
 
 
     def get(self, request):

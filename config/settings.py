@@ -104,22 +104,22 @@ if DEBUG:
 
     # Database
 
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
-    }
     # DATABASES = {
     #     'default': {
-    #         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-    #         'NAME': config('POSTGRES_DB', default='postgres'),
-    #         'USER': config('POSTGRES_USER', default='postgres'),
-    #         'PASSWORD': config('POSTGRES_PASSWORD', default='<PASSWORD>'),
-    #         'HOST': config('DB_HOST', default='db'),
-    #         'PORT': config('POSTGRES_PORT', default='5432'),
+    #         'ENGINE': 'django.db.backends.sqlite3',
+    #         'NAME': BASE_DIR / 'db.sqlite3',
     #     }
     # }
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': config('POSTGRES_DB', default='postgres'),
+            'USER': config('POSTGRES_USER', default='postgres'),
+            'PASSWORD': config('POSTGRES_PASSWORD', default='<PASSWORD>'),
+            'HOST': config('DB_HOST', default='db'),
+            'PORT': config('POSTGRES_PORT', default='5432'),
+        }
+    }
     REDIS_HOST = config("REDIS_HOST")
     REDIS_PORT = config("REDIS_PORT")
     REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}/0"
@@ -208,7 +208,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # put on your settings.py file below INSTALLED_APPS
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 4,
+    'PAGE_SIZE': 9,
 
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',

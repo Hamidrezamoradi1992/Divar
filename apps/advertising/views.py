@@ -154,13 +154,11 @@ class DetailAdvertiseView(RetrieveAPIView):
     serializer_class = AllRetrieveAdvertisingViewSerializer
     permission_classes = []
 
+
 from rest_framework.pagination import PageNumberPagination
 
 
-# class StandardResultsSetPagination(PageNumberPagination):
-#     page_size = 2
-#     page_size_query_param = 'page_size'
-#     max_page_size = 4
+
 # # swagger
 class AllAdvertisingView(ListAPIView):
     """
@@ -646,6 +644,7 @@ class AllStateView(ListAPIView):
     permission_classes = []
     serializer_class = MainStateSerializer
     queryset = State.objects.all()
+    pagination_class = None
 
 
 # swagger
@@ -729,6 +728,7 @@ class AdvertisingPublishedView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # swagger
 class AdvertisingFavoriteView(APIView):
     """
@@ -773,6 +773,7 @@ class AdvertisingFavoriteView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not favorites '}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # swagger
 class AdvertisingAllView(APIView):
     """
@@ -807,6 +808,7 @@ class AdvertisingAllView(APIView):
 
     """
     serializer_class = AdminAdvertisingViewSerializer
+
     def get(self, request):
         userid = request.user.id
         if userid:
@@ -815,9 +817,9 @@ class AdvertisingAllView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response({'massage': 'user not define'}, status=status.HTTP_400_BAD_REQUEST)
 
+
 # swagger
 class AdvertisingAllForPaymentView(APIView):
-
     """
         - all for payment in db
             - method GET
@@ -876,7 +878,6 @@ class AdvertisingAllForPaymentView(APIView):
 
 
 class FilterAdvertising(APIView):
-
     """
     - all filter advertising
         - request /advertising/api/add/advertise/filter/category/{category_id}
@@ -961,14 +962,14 @@ class FilterAdvertising(APIView):
                     advertising2 = list(chain(ladder, list(advertising_category)))
                 else:
                     advertising2 = advertising_category
-
+                advertising2 = list({ad.id: ad for ad in advertising2}.values())
                 serializer = filterCategorySerializer(advertising2, many=True, context=request).data
-                cache.set(f'category:{category_id}', serializer, 30)
+                cache.set(f'category:{category_id}', serializer, 5)
             return Response(serializer, status=status.HTTP_200_OK)
         return Response({'massage': "NOT FOUND"}, status=status.HTTP_404_NOT_FOUND)
 
     def post(self, request):
-        print(request.data)
+
         titles = None if (c := request.data['title']) in ['None', ''] else c
         category = None if (c := request.data['category']) in ['None', ''] else int(c)
         province = None if (c := request.data['province']) in ['None', ''] else int(c)
@@ -1052,7 +1053,8 @@ class AcceptSiteAdminAdvertising(APIView):
         advertise.expires_at = timezone.now() + timedelta(days=30)
         advertise.save(update_fields=['diffusion', 'created_at', 'expires_at'])
         emails = advertise.user.email
-        send_email.delay(subject='Advertise Accepted', to_email=[emails], context='Your ad is advertise displayed on our website for 30 days.')
+        send_email.delay(subject='Advertise Accepted', to_email=[emails],
+                         context='Your ad is advertise displayed on our website for 30 days.')
         return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
 
     def post(self, request):
@@ -1071,6 +1073,3 @@ class AcceptSiteAdminAdvertising(APIView):
         send_email.delay(subject='Advertise rejected', to_email=[emails], context='Your ad is advertise rejected ')
 
         return Response({'massage': 'Accepted'}, status=status.HTTP_200_OK)
-
-
-"""advertise accepted"""

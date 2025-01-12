@@ -218,271 +218,296 @@ from apps.advertising.models import Advertising, Category
 #     return response
 
 from mixer.backend.django import mixer
+from apps.advertising.models import FieldCategory, CategoryField, Category
 from apps.advertising.models import State, City
 from faker import Faker
 
-fake = Faker()
-states = [
-    'alborz',
-    'ardabil',
-    'isfahan',
-    'east_azerbaijan',
-    'west_azerbaijan',
-    'bushehr',
-    'chaharmahal_and_bakhtiari',
-    'fars',
-    'gilan',
-    'golestan',
-    'hamadan',
-    'hormozgan',
-    'kerman',
-    'kermanshah',
-    'khuzestan',
-    'lorestan',
-    'markazi',
-    'mazandaran',
-    'qazvin',
-    'qom',
-    'semnan',
-    'sistan_and_baluchestan',
-    'tehran',
-    'yazd',
-    'zanjan'
-]
-provinces_and_cities = {
-    'alborz': ['Karaj', 'Mohammadshahr', 'Hasanabad', 'Fardis', 'Golestan', 'Kahrizak', 'Taleqan', 'Nazarabad'],
-    'ardabil': ['Ardabil', 'Namin', 'Meshkinshahr', 'Ghazvin', 'Siahkal', 'Bileh Savar', 'Parsabad'],
-    'Isfahan': ['Isfahan', 'Kashan', 'Najafabad', 'Semirom', 'Khomain', 'Golpayegan', 'Fereydunkenar'],
-    'east_azerbaijan': ['Tabriz', 'Maragheh', 'Ahar', 'Bostanabad', 'Hashtrood', 'Osko', 'Sarab', 'Kaleybar'],
-    'west_azerbaijan': ['Urmia', 'Khoy', 'Salmas', 'Piranshahr', 'Bukan', 'Chaldoran', 'Naghadeh'],
-    'bushehr': ['Bushehr', 'Kangan', 'Deylam', 'Genaveh', 'Bassij', 'Borazjan'],
-    'chaharmahal_and_bakhtiari': ['Shahr-e Kord', 'Lordegan', 'Farsan', 'Kiar', 'Bojnurd', 'Bakhtegan'],
-    'fars': ['Shiraz', 'Marvdasht', 'Fasa', 'Jahrom', 'Kazerun', 'Lar', 'Mamasani'],
-    'gilan': ['Rasht', 'Siahkal', 'Astara', 'Fuman', 'Lahijan', 'Langarud', 'Talesh'],
-    'golestan': ['Gorgan', 'Aliabad', 'Minudasht', 'Kordkuy', 'Aghala', 'Galikesh'],
-    'hamadan': ['Hamadan', 'Bahar', 'Malayer', 'Nehavand', 'Asadabad', 'Toos', 'Lahijan'],
-    'hormozgan': ['Bandar Abbas', 'Minab', 'Jask', 'Qeshm', 'Hormuz', 'Haji Abad'],
-    'kerman': ['Kerman', 'Sirjan', 'Bam', 'Rostam', 'Jiroft', 'Zarand'],
-    'kermanshah': ['Kermanshah', 'Ghasr Shirin', 'Javanrud', 'Kangavar', 'Eslam Abad'],
-    'khuzestan': ['Ahvaz', 'Abadan', 'Khorramshahr', 'Shush', 'Andimeshk', 'Izeh'],
-    'morestan': ['Khorramabad', 'Dorood', 'Borujerd', 'Aligudarz', 'Selseleh'],
-    'markazi': ['Arak', 'Saveh', 'Khomein', 'Khondab', 'Delijan'],
-    'mazandaran': ['Sari', 'Babol', 'Noshahr', 'Amol', 'Chalus', 'Tonekabon'],
-    'qazvin': ['Qazvin', 'Alvand', 'Takestan', 'Bojnurd', 'Avaj'],
-    'qom': ['Qom', 'Koharshahr'],
-    'semnan': ['Semnan', 'Garmsar', 'Shahrud', 'Mehrafshan', 'Khoshkrud'],
-    'sistan and Baluchestan': ['Zahedan', 'Zabol', 'Iranshahr', 'Chabahar', 'Saravan'],
-    'tehran': ['Tehran', 'Shemiranat', 'Rey', 'Islamshahr', 'Pardis', 'Damavand', 'Varamin', 'Farahzad',
-               'Gonbad Qabus', 'Sarbandar', 'Nazariyeh', 'Eslamshahr', 'Rudaki', 'Tajrish',
-               'Baharistan', 'Shahrak-e Gharb', 'Narmak'],
-    'yazd': ['Yazd', 'Ashkezar', 'Taft', 'Mahdishahr', 'Bafq', 'Nain'],
-    'zanjan': ['Zanjan', 'Mahneshan', 'Tarom', 'Ain al-Huda', 'Eli', 'Ghazvin'],
-}
+# fake = Faker()
+# states = [
+#     'alborz',
+#     'ardabil',
+#     'isfahan',
+#     'east_azerbaijan',
+#     'west_azerbaijan',
+#     'bushehr',
+#     'chaharmahal_and_bakhtiari',
+#     'fars',
+#     'gilan',
+#     'golestan',
+#     'hamadan',
+#     'hormozgan',
+#     'kerman',
+#     'kermanshah',
+#     'khuzestan',
+#     'lorestan',
+#     'markazi',
+#     'mazandaran',
+#     'qazvin',
+#     'qom',
+#     'semnan',
+#     'sistan_and_baluchestan',
+#     'tehran',
+#     'yazd',
+#     'zanjan'
+# ]
+# provinces_and_cities = {
+#     'alborz': ['Karaj', 'Mohammadshahr', 'Hasanabad', 'Fardis', 'Golestan', 'Kahrizak', 'Taleqan', 'Nazarabad'],
+#     'ardabil': ['Ardabil', 'Namin', 'Meshkinshahr', 'Ghazvin', 'Siahkal', 'Bileh Savar', 'Parsabad'],
+#     'Isfahan': ['Isfahan', 'Kashan', 'Najafabad', 'Semirom', 'Khomain', 'Golpayegan', 'Fereydunkenar'],
+#     'east_azerbaijan': ['Tabriz', 'Maragheh', 'Ahar', 'Bostanabad', 'Hashtrood', 'Osko', 'Sarab', 'Kaleybar'],
+#     'west_azerbaijan': ['Urmia', 'Khoy', 'Salmas', 'Piranshahr', 'Bukan', 'Chaldoran', 'Naghadeh'],
+#     'bushehr': ['Bushehr', 'Kangan', 'Deylam', 'Genaveh', 'Bassij', 'Borazjan'],
+#     'chaharmahal_and_bakhtiari': ['Shahr-e Kord', 'Lordegan', 'Farsan', 'Kiar', 'Bojnurd', 'Bakhtegan'],
+#     'fars': ['Shiraz', 'Marvdasht', 'Fasa', 'Jahrom', 'Kazerun', 'Lar', 'Mamasani'],
+#     'gilan': ['Rasht', 'Siahkal', 'Astara', 'Fuman', 'Lahijan', 'Langarud', 'Talesh'],
+#     'golestan': ['Gorgan', 'Aliabad', 'Minudasht', 'Kordkuy', 'Aghala', 'Galikesh'],
+#     'hamadan': ['Hamadan', 'Bahar', 'Malayer', 'Nehavand', 'Asadabad', 'Toos', 'Lahijan'],
+#     'hormozgan': ['Bandar Abbas', 'Minab', 'Jask', 'Qeshm', 'Hormuz', 'Haji Abad'],
+#     'kerman': ['Kerman', 'Sirjan', 'Bam', 'Rostam', 'Jiroft', 'Zarand'],
+#     'kermanshah': ['Kermanshah', 'Ghasr Shirin', 'Javanrud', 'Kangavar', 'Eslam Abad'],
+#     'khuzestan': ['Ahvaz', 'Abadan', 'Khorramshahr', 'Shush', 'Andimeshk', 'Izeh'],
+#     'morestan': ['Khorramabad', 'Dorood', 'Borujerd', 'Aligudarz', 'Selseleh'],
+#     'markazi': ['Arak', 'Saveh', 'Khomein', 'Khondab', 'Delijan'],
+#     'mazandaran': ['Sari', 'Babol', 'Noshahr', 'Amol', 'Chalus', 'Tonekabon'],
+#     'qazvin': ['Qazvin', 'Alvand', 'Takestan', 'Bojnurd', 'Avaj'],
+#     'qom': ['Qom', 'Koharshahr'],
+#     'semnan': ['Semnan', 'Garmsar', 'Shahrud', 'Mehrafshan', 'Khoshkrud'],
+#     'sistan and Baluchestan': ['Zahedan', 'Zabol', 'Iranshahr', 'Chabahar', 'Saravan'],
+#     'tehran': ['Tehran', 'Shemiranat', 'Rey', 'Islamshahr', 'Pardis', 'Damavand', 'Varamin', 'Farahzad',
+#                'Gonbad Qabus', 'Sarbandar', 'Nazariyeh', 'Eslamshahr', 'Rudaki', 'Tajrish',
+#                'Baharistan', 'Shahrak-e Gharb', 'Narmak'],
+#     'yazd': ['Yazd', 'Ashkezar', 'Taft', 'Mahdishahr', 'Bafq', 'Nain'],
+#     'zanjan': ['Zanjan', 'Mahneshan', 'Tarom', 'Ain al-Huda', 'Eli', 'Ghazvin'],
+# }
+#
+# # Loop through each province and create cities
+#
+# for state in states:
+#     try:
+#         State.objects.create(title=state)
+#     except Exception as e:
+#         print('state: ', state, e)
+# for province, cities in provinces_and_cities.items():
+#     try:
+#         state = State.objects.get(title=province)  # Retrieve the state using the exact title
+#         for city in cities:
+#             City.objects.create(title=city, state_id=state.pk)  # Create a city linked to its state
+#     except Exception as e:
+#         print(f'province :{province} City:{city} error:{e}')
+#
+# # داده‌های نمونه برای برندها و مدل‌ها
+# # داده‌های نمونه برای دسته‌بندی ماشین‌ها، لوازم خانگی، تجهیزات الکترونیکی و املاک
+# category_data = {
+#     'vehicles': {
+#         'cars': {
+#             'sedans': {
+#                 'compact': {},
+#                 'mid_size': {},
+#                 'full_size': {}
+#             },
+#             'suvs': {
+#                 'compact_suv': {},
+#                 'midsize_suv': {},
+#                 'full_size_suv': {}
+#             },
+#             'trucks': {
+#                 'light_trucks': {},
+#                 'heavy_trucks': {}
+#             },
+#             'vans': {
+#                 'minivans': {},
+#                 'cargo_vans': {}
+#             }
+#         },
+#         'motorcycles': {
+#             'sport_bikes': {},
+#             'cruisers': {},
+#             'touring_bikes': {}
+#         },
+#         'electric_vehicles': {
+#             'sedans': {},
+#             'suvs': {},
+#             'trucks': {}
+#         },
+#         'bicycles': {
+#             'mountain_bikes': {},
+#             'road_bikes': {},
+#             'hybrid_bikes': {}
+#         }
+#     },
+#     'home_appliances': {
+#         'kitchen_appliances': {
+#             'refrigerators': {
+#                 'double_door': {},
+#                 'single_door': {},
+#                 'side_by_side': {},
+#                 'mini_fridge': {}
+#             },
+#             'microwaves': {
+#                 'convection': {},
+#                 'grill': {},
+#                 'solo': {}
+#             },
+#             'ovens': {
+#                 'built_in': {},
+#                 'countertop': {}
+#             },
+#             'blenders': {
+#                 'hand_blender': {},
+#                 'table_blender': {},
+#                 'juicer': {}
+#             }
+#         },
+#         'washing_machines': {
+#             'front_load': {},
+#             'top_load': {},
+#             'semi_auto': {}
+#         },
+#         'vacuum_cleaners': {
+#             'robot_vacuum': {},
+#             'upright_vacuum': {},
+#             'canister_vacuum': {}
+#         },
+#         'air_conditioners': {
+#             'window_ac': {},
+#             'split_ac': {},
+#             'portable_ac': {}
+#         },
+#         'heaters': {
+#             'ceramic_heater': {},
+#             'oil_heater': {},
+#             'fan_heater': {}
+#         }
+#     },
+#     'electronics': {
+#         'televisions': {
+#             'led_tv': {
+#                 '4k': {},
+#                 '1080p': {},
+#                 'smart_tv': {}
+#             },
+#             'lcd_tv': {},
+#             'plasma_tv': {}
+#         },
+#         'audio_systems': {
+#             'home_theater': {},
+#             'soundbar': {},
+#             'portable_speakers': {}
+#         },
+#         'computers': {
+#             'laptops': {
+#                 'gaming': {},
+#                 'business': {},
+#                 'ultrabooks': {}
+#             },
+#             'desktops': {
+#                 'all_in_one': {},
+#                 'gaming_desktops': {}
+#             }
+#         },
+#         'cameras': {
+#             'dslr': {},
+#             'mirrorless': {},
+#             'action_cameras': {}
+#         },
+#         'mobile_devices': {
+#             'smartphones': {
+#                 'android': {},
+#                 'ios': {}
+#             },
+#             'tablets': {
+#                 'android_tablets': {},
+#                 'ipad': {}
+#             }
+#         }
+#     },
+#     'real_estate': {
+#         'residential': {
+#             'houses': {
+#                 'single_family': {},
+#                 'multi_family': {},
+#                 'townhouses': {}
+#             },
+#             'apartments': {
+#                 'studio': {},
+#                 '1_bedroom': {},
+#                 '2_bedroom': {}
+#             },
+#             'villas': {}
+#         },
+#         'commercial': {
+#             'offices': {
+#                 'small_offices': {},
+#                 'large_offices': {}
+#             },
+#             'retail_spaces': {
+#                 'shops': {},
+#                 'malls': {}
+#             },
+#             'warehouses': {}
+#         },
+#         'land': {
+#             'residential_lots': {},
+#             'commercial_lots': {},
+#             'agricultural_land': {}
+#         }
+#     },
+#     'other': {
+#         'furniture': {
+#             'living_room': {},
+#             'bedroom': {},
+#             'office': {},
+#             'outdoor': {}
+#         },
+#         'garden_tools': {
+#             'lawn_mowers': {},
+#             'trimmers': {},
+#             'shovels': {},
+#             'gardening_kits': {}
+#         },
+#         'pets': {
+#             'dogs': {},
+#             'cats': {},
+#             'fish': {},
+#             'birds': {}
+#         }
+#     }
+# }
+#
+#
+# # تابع برای ایجاد دسته‌بندی‌ها
+# def create_categories(category_data, parent=None):
+#     for title, subcategories in category_data.items():
+#         # ایجاد یک دسته‌بندی جدید
+#         category = Category(title=title, parent=parent)
+#         category.save()  # ذخیره دسته‌بندی در پایگاه داده
+#
+#         # بررسی وجود زیر دسته‌بندی‌ها و ایجاد آن‌ها
+#         if subcategories:
+#             create_categories(subcategories, parent=category)
+#
+#
+# create_categories(category_data)
 
-# Loop through each province and create cities
 
-for state in states:
-    try:
-        State.objects.create(title=state)
-    except Exception as e:
-        print('state: ', state, e)
-for province, cities in provinces_and_cities.items():
-    try:
-        state = State.objects.get(title=province)  # Retrieve the state using the exact title
-        for city in cities:
-            City.objects.create(title=city, state_id=state.pk)  # Create a city linked to its state
-    except Exception as e:
-        print(f'province :{province} City:{city} error:{e}')
+fields = FieldCategory.objects.all()
+categories = ['compact', 'mid_size', 'full_size', 'compact_suv', 'midsize_suv', 'full_size_suv', 'light_trucks',
+            'heavy_trucks', 'minivans', 'cargo_vans', 'sport_bikes', 'cruisers', 'touring_bikes', 'sedans', 'suvs',
+            'trucks', 'mountain_bikes', 'road_bikes', 'hybrid_bikes', 'double_door', 'single_door', 'side_by_side',
+            'mini_fridge', 'convection', 'grill', 'solo', 'built_in', 'countertop', 'hand_blender', 'table_blender',
+            'juicer', 'front_load', 'top_load', 'semi_auto', 'robot_vacuum', 'upright_vacuum', 'canister_vacuum',
+            'window_ac', 'split_ac', 'portable_ac', 'ceramic_heater', 'oil_heater', 'fan_heater', '4k', '1080p',
+            'smart_tv', 'lcd_tv', 'plasma_tv', 'home_theater', 'soundbar', 'portable_speakers', 'gaming', 'business',
+            'ultrabooks', 'all_in_one', 'gaming_desktops', 'dslr', 'mirrorless', 'action_cameras', 'android', 'ios',
+            'android_tablets', 'ipad', 'single_family', 'multi_family', 'townhouses', 'studio', '1_bedroom',
+            '2_bedroom', 'villas', 'small_offices', 'large_offices', 'shops', 'malls', 'warehouses', 'residential_lots',
+            'commercial_lots', 'agricultural_land', 'living_room', 'bedroom', 'office', 'outdoor', 'lawn_mowers',
+            'trimmers', 'shovels', 'gardening_kits', 'dogs', 'cats', 'fish', 'birds']
 
-# داده‌های نمونه برای برندها و مدل‌ها
-# داده‌های نمونه برای دسته‌بندی ماشین‌ها، لوازم خانگی، تجهیزات الکترونیکی و املاک
-category_data = {
-    'vehicles': {
-        'cars': {
-            'sedans': {
-                'compact': {},
-                'mid_size': {},
-                'full_size': {}
-            },
-            'suvs': {
-                'compact_suv': {},
-                'midsize_suv': {},
-                'full_size_suv': {}
-            },
-            'trucks': {
-                'light_trucks': {},
-                'heavy_trucks': {}
-            },
-            'vans': {
-                'minivans': {},
-                'cargo_vans': {}
-            }
-        },
-        'motorcycles': {
-            'sport_bikes': {},
-            'cruisers': {},
-            'touring_bikes': {}
-        },
-        'electric_vehicles': {
-            'sedans': {},
-            'suvs': {},
-            'trucks': {}
-        },
-        'bicycles': {
-            'mountain_bikes': {},
-            'road_bikes': {},
-            'hybrid_bikes': {}
-        }
-    },
-    'home_appliances': {
-        'kitchen_appliances': {
-            'refrigerators': {
-                'double_door': {},
-                'single_door': {},
-                'side_by_side': {},
-                'mini_fridge': {}
-            },
-            'microwaves': {
-                'convection': {},
-                'grill': {},
-                'solo': {}
-            },
-            'ovens': {
-                'built_in': {},
-                'countertop': {}
-            },
-            'blenders': {
-                'hand_blender': {},
-                'table_blender': {},
-                'juicer': {}
-            }
-        },
-        'washing_machines': {
-            'front_load': {},
-            'top_load': {},
-            'semi_auto': {}
-        },
-        'vacuum_cleaners': {
-            'robot_vacuum': {},
-            'upright_vacuum': {},
-            'canister_vacuum': {}
-        },
-        'air_conditioners': {
-            'window_ac': {},
-            'split_ac': {},
-            'portable_ac': {}
-        },
-        'heaters': {
-            'ceramic_heater': {},
-            'oil_heater': {},
-            'fan_heater': {}
-        }
-    },
-    'electronics': {
-        'televisions': {
-            'led_tv': {
-                '4k': {},
-                '1080p': {},
-                'smart_tv': {}
-            },
-            'lcd_tv': {},
-            'plasma_tv': {}
-        },
-        'audio_systems': {
-            'home_theater': {},
-            'soundbar': {},
-            'portable_speakers': {}
-        },
-        'computers': {
-            'laptops': {
-                'gaming': {},
-                'business': {},
-                'ultrabooks': {}
-            },
-            'desktops': {
-                'all_in_one': {},
-                'gaming_desktops': {}
-            }
-        },
-        'cameras': {
-            'dslr': {},
-            'mirrorless': {},
-            'action_cameras': {}
-        },
-        'mobile_devices': {
-            'smartphones': {
-                'android': {},
-                'ios': {}
-            },
-            'tablets': {
-                'android_tablets': {},
-                'ipad': {}
-            }
-        }
-    },
-    'real_estate': {
-        'residential': {
-            'houses': {
-                'single_family': {},
-                'multi_family': {},
-                'townhouses': {}
-            },
-            'apartments': {
-                'studio': {},
-                '1_bedroom': {},
-                '2_bedroom': {}
-            },
-            'villas': {}
-        },
-        'commercial': {
-            'offices': {
-                'small_offices': {},
-                'large_offices': {}
-            },
-            'retail_spaces': {
-                'shops': {},
-                'malls': {}
-            },
-            'warehouses': {}
-        },
-        'land': {
-            'residential_lots': {},
-            'commercial_lots': {},
-            'agricultural_land': {}
-        }
-    },
-    'other': {
-        'furniture': {
-            'living_room': {},
-            'bedroom': {},
-            'office': {},
-            'outdoor': {}
-        },
-        'garden_tools': {
-            'lawn_mowers': {},
-            'trimmers': {},
-            'shovels': {},
-            'gardening_kits': {}
-        },
-        'pets': {
-            'dogs': {},
-            'cats': {},
-            'fish': {},
-            'birds': {}
-        }
-    }
-}
-
-# تابع برای ایجاد دسته‌بندی‌ها
-def create_categories(category_data, parent=None):
-    for title, subcategories in category_data.items():
-        # ایجاد یک دسته‌بندی جدید
-        category = Category(title=title, parent=parent)
-        category.save()  # ذخیره دسته‌بندی در پایگاه داده
-
-        # بررسی وجود زیر دسته‌بندی‌ها و ایجاد آن‌ها
-        if subcategories:
-            create_categories(subcategories, parent=category)
-
-# ایجاد دسته‌بندی‌ها از داده‌های نمونه
-create_categories(category_data)
+for category in categories:
+    cat = Category.objects.filter(title=category).first()
+    if cat:
+        for field in fields:
+            CategoryField.objects.create(category_id=cat, fieldcategory_id=field)
+    else:
+        print(f"Category '{category}' does not exist.")

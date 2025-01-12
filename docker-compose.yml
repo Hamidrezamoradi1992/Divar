@@ -10,7 +10,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - /home/hamid/Desktop/divar/postgres:/var/lib/postgresql/data
+      - /home/hamid/Desktop/divar/postgres2:/var/lib/postgresql/data
 
   redis:
     image: redis:alpine
@@ -19,29 +19,29 @@ services:
       - "6379:6379"
 
 
-#
-#  celery:
-#    build: .
-#    command: celery -A config worker --loglevel=info
-#    depends_on:
-#    - redis
-#
-#
-#  web:
-#    build: .
-#    command: /bin/sh -c "
-#      python manage.py wait_for_db &&
-#      python manage.py wait_for_redis &&
-#      python manage.py makemigrations  &&
-#      python manage.py migrate  &&
-#      python manage.py runserver 0.0.0.0:8000"
-#    volumes:
-#      - ./app/:/usr/src/app/
-#    ports:
-#      - 8000:8000
-#    depends_on:
-#      - db
-#      - redis
+
+  celery:
+    build: .
+    command: celery -A config worker --loglevel=info
+    depends_on:
+    - redis
+
+
+  web:
+    build: .
+    command: /bin/sh -c "
+      python manage.py wait_for_db &&
+      python manage.py wait_for_redis &&
+      python manage.py makemigrations  &&
+      python manage.py migrate  &&
+      python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - /home/hamid/Desktop/test/app/:/usr/src/app/
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+      - redis
 
 #  smtp4dev:
 #    image: rnwood/smtp4dev
