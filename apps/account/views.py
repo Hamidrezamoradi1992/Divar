@@ -10,10 +10,10 @@ from django.contrib.auth import login, logout
 from apps.account.serializers import UpdateUserSerializer, MainUserSerializer, KycUserSerializer
 from django.db.models import Q
 from rest_framework.generics import RetrieveAPIView, UpdateAPIView
-from apps.core.permissions import SiteAdmin
+from apps.core.permissions import SiteAdmin,SuperUser
 from .utils.utils import Utils
-
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import MultiPartParser
 # Create your views here.
 
 
@@ -132,9 +132,10 @@ class UserProfileView(RetrieveAPIView):
 
         }
     """
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
     serializer_class = MainUserSerializer
     queryset = User.objects.all()
+
 
 
 # swagger
@@ -163,10 +164,10 @@ class UpdateUserView(UpdateAPIView):
         - HTTP 200 OK
     """
 
-    permission_classes = []
+    permission_classes = [IsAuthenticated]
     serializer_class = UpdateUserSerializer
     queryset = User.objects.all()
-
+    parser_classes = [MultiPartParser]
 
 class LogoutView(APIView):
     def get(self, request):
@@ -179,7 +180,7 @@ class KycAcceptedView(APIView):
         - request kyc accepted input
         - if user is action Is SiteA
     """
-    permission_classes = [SiteAdmin]
+    permission_classes = [SuperUser]
 
 
     def get(self, request):

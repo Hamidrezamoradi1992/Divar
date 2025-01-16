@@ -93,7 +93,7 @@ function FormUserProfile() {
 
         </label>
 
-        <button type="button" onclick="sendUserProfile(userId)" class="btn btn-ghost">Accepted</button>
+        <button type="button" onclick="sendUserProfile(${userId})" class="btn btn-ghost">Accepted</button>
     </form>`
 }
 
@@ -102,7 +102,7 @@ function sendUserProfile(user_id) {
     const csrfTokens = getCookie('csrftoken')
     let forms = new FormData(form)
     forms.append('id', user_id)
-
+    console.log(user_id)
 
     const data = fetchWithAuth(`http://localhost:${domainPort}/accounts/api/update/user/${user_id}`, {
         method: 'PUT',
@@ -132,5 +132,5 @@ function sendUserProfile(user_id) {
         });
 
     })
-    location.reload()
+
 }
