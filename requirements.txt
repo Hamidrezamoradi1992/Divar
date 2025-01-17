@@ -1,7 +1,4 @@
 Django==5.1.4
-djangorestframework
-djangorestframework-simplejwt
-django-redis
 amqp
 asgiref
 attrs
@@ -11,6 +8,12 @@ click
 click-didyoumean
 click-plugins
 click-repl
+cron-descriptor
+django-celery-beat
+django-redis
+django-timezone-field
+djangorestframework
+djangorestframework-simplejwt
 drf-spectacular
 Faker
 inflection
@@ -22,6 +25,7 @@ pillow
 prompt_toolkit
 psycopg2-binary
 PyJWT
+python-crontab
 python-dateutil
 python-decouple
 PyYAML

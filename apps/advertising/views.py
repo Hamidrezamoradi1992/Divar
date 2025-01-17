@@ -498,7 +498,7 @@ class AddFieldAdvertiseView(APIView):
 
 
     """
-    parser_classes = [MultiPartParser, FormParser]
+    parser_classes = [MultiPartParser]
     permission_classes = []
 
     def get(self, request, category_id=None):  # get field category
@@ -511,31 +511,6 @@ class AddFieldAdvertiseView(APIView):
                     return Response(serializers.data, status=status.HTTP_200_OK)
                 return Response({'massage': 'category not found'}, status=status.HTTP_404_NOT_FOUND)
         return Response({'massage': 'BAD REQUEST'}, status=status.HTTP_400_BAD_REQUEST)
-
-    # def post(self, request):
-    #     category = Category.objects.get(pk=request.data['category']).fields.all().values_list('title', 'id')
-    #     dict_query=[]
-    #     for field in category:
-    #         dict_query.append({
-    #             'advertising': request.data['advertising'],
-    #             'category': request.data['category'],
-    #             'field': field[1],
-    #             'value': request.data[field[0]],
-    #         })
-    #
-    #     print(dict_query)
-    #     serializer = MainSaveValueFieldSerializer(data=dict_query, partial=True,many=True)
-    #     if serializer.is_valid():
-    #         try:
-    #             serializer.save()
-    #         except Exception as e:
-    #                 field = SaveValueField.objects.filter(advertising=dict_query['advertising'],
-    #                                                       category=dict_query['category'], ).delete()
-    #                 return Response({'error': serializer.errors}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    #         else:
-    #             return Response({'error': serializer.errors}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-    #     return Response({'massage': 'compliant add field'}, status=status.HTTP_200_OK)
-    @staticmethod
     def post(self, request):
         category = Category.objects.get(pk=request.data['category']).fields.all().values_list('title', 'id')
         dict_query = []

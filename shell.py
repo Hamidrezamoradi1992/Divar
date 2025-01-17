@@ -70,19 +70,19 @@ provinces_and_cities = {
     'zanjan': ['Zanjan', 'Mahneshan', 'Tarom', 'Ain al-Huda', 'Eli'],
 }
 
-state_objects = [State(title=state) for state in states]
-State.objects.bulk_create(state_objects)
-
-city_objects = []
-for province, cities in provinces_and_cities.items():
-    try:
-        state = State.objects.get(title=province)
-        for city in cities:
-            city_objects.append(City(title=city, state_id=state.pk))
-    except Exception as e:
-        print(f'province :{province} error:{e}')
-
-City.objects.bulk_create(city_objects)
+# state_objects = [State(title=state) for state in states]
+# State.objects.bulk_create(state_objects)
+#
+# city_objects = []
+# for province, cities in provinces_and_cities.items():
+#     try:
+#         state = State.objects.get(title=province)
+#         for city in cities:
+#             city_objects.append(City(title=city, state_id=state.pk))
+#     except Exception as e:
+#         print(f'province :{province} error:{e}')
+#
+# City.objects.bulk_create(city_objects)
 
 category_data = {
     'vehicles': {
@@ -261,17 +261,17 @@ category_data = {
     }
 }
 
-def create_categories(category_data, parent=None):
-    for title, subcategories in category_data.items():
-
-        category = Category(title=title, parent=parent)
-        category.save()
-
-        if subcategories:
-            create_categories(subcategories, parent=category)
-
-
-create_categories(category_data)
+# def create_categories(category_data, parent=None):
+#     for title, subcategories in category_data.items():
+#
+#         category = Category(title=title, parent=parent)
+#         category.save()
+#
+#         if subcategories:
+#             create_categories(subcategories, parent=category)
+#
+#
+# create_categories(category_data)
 
 from apps.advertising.models import FieldCategory
 
@@ -320,11 +320,8 @@ unique_fields = {
     "health_status": "str"
 }
 
-# #ء FieldCategory
-# field_categories = [
-#     FieldCategory(title=key,  type_field=value)
-#     for key, value in unique_ fields.items()
-# ]
+# # ء FieldCategory
+# field_categories = [FieldCategory(title=key,  type_field=value)for key, value in unique_fields.items()]
 #
 #
 # try:
@@ -436,15 +433,19 @@ category_data = {
         'birds': {"breed", "age", "health_status"}
     }
 }
-field_objeect = []
-for parent in category_data.values():
-    print(parent)
-    for chail in parent.keys():
-        print(chail)
-        cat_id = Category.objects.filter(title=chail).first()
-        field = list(parent[chail])
-        print(field)
-        fields = FieldCategory.objects.filter(title__in=field)
-        for fieldies in fields:
-            field_objeect.append(CategoryField(category_id=cat_id, fieldcategory_id=fieldies))
-CategoryField.objects.bulk_create(field_objeect)
+# field_objeect = []
+# for parent in category_data.values():
+#     print(parent)
+#     for chail in parent.keys():
+#         print(chail)
+#         cat_id = Category.objects.filter(title=chail).first()
+#         field = list(parent[chail])
+#         print(field)
+#         fields = FieldCategory.objects.filter(title__in=field)
+#         for fieldies in fields:
+#             field_objeect.append(CategoryField(category_id=cat_id, fieldcategory_id=fieldies))
+# CategoryField.objects.bulk_create(field_objeect)
+from apps.advertising.models import Advertising
+from django.utils import timezone
+from datetime import timedelta
+advertise=Advertising.objects.all().update(expires_at=timezone.now()+timedelta(minutes=1))

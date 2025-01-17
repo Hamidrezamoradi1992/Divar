@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'drf_spectacular',
+    'django_celery_beat',
     # my_apps
     *list(map(lambda app: f'apps.{app}', MY_APPS))
 
