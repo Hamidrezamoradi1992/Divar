@@ -20,7 +20,7 @@ def send_email(subject, to_email, context, template_name=None):
 def expire_at_advertise():
     advertise = Advertising.objects.filter(diffusion=True, expires_at__lt=timezone.now())
     advertise_email = list(advertise.values_list('user__email', 'title'))
-    advertise.update(is_active=False, is_deleted=True,diffusion=False)
+    advertise.update(is_active=False, is_deleted=True,diffusion=False ,payed=False)
     for email, title in advertise_email:
         send_email.delay(subject='expire at advertise', to_email=[email],
                          context=f'your advertise by name {title} in out one monte expire at in wall')
