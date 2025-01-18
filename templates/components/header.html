@@ -1,78 +1,81 @@
-<div class="navbar bg-red-600">
-    <div class="navbar-start">
-        {#        search#}
+<div class="max-w-full">
+    <div class="navbar  bg-red-600">
+        <div class="navbar-start">
+            {#        search#}
 
-        <div class="join">
+            <div class="join">
 
+            </div>
+
+            {#        search#}
         </div>
-
-        {#        search#}
-    </div>
-    <div class="navbar-center">
-        <a class="btn btn-ghost text-xl " href="http://localhost:8000">WALL</a>
-    </div>
-    <div class="navbar-end">
-        <div class="flex gap-3">
+        <div class="navbar-center">
+            <a class="btn btn-ghost text-xl " href="http://localhost:8000">WALL</a>
+        </div>
+        <div class="navbar-end">
+            <div class="flex gap-3">
 
 
-            {#         frofiel#}
-            {% if request.user.is_authenticated %}
+                {#         frofiel#}
+                {% if request.user.is_authenticated %}
 
 
-                <div class="dropdown dropdown-end">
-                    <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                        {#                        #}
+                    <div class="dropdown dropdown-end">
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                            {#                        #}
 
-                        {% if request.user.is_kyc %}
-                            <div class="avatar online">
-                                <div class="w-10 rounded-full">
-                                    <img src="{{ request.user.image_Official_photo.url }}"/>
+                            {% if request.user.is_kyc %}
+                                <div class="avatar online">
+                                    <div class="w-10 rounded-full">
+                                        <img src="{{ request.user.image_Official_photo.url }}"/>
+                                    </div>
                                 </div>
-                            </div>
 
-                        {% else %}
-                            <div class="avatar offline">
-                                <div class="w-10 rounded-full">
-                                    <img src="{% if request.user.image_Official_photo %}
+                            {% else %}
+                                <div class="avatar offline">
+                                    <div class="w-10 rounded-full">
+                                        <img src="{% if request.user.image_Official_photo %}
                                     	{{ request.user.image_Official_photo.url }}
                                     {% else %}
                                     	https://via.placeholder.com/150
                                     {% endif %} 
                                     "/>
+                                    </div>
                                 </div>
-                            </div>
-                        {% endif %}
+                            {% endif %}
 
 
 
-                        {#                        #}
+                            {#                        #}
 
+                        </div>
+                        <ul
+                                tabindex="0"
+                                class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
+                            <li>
+                                <a class="justify-between" href="http://localhost:8000/accounts/adminuser/">
+                                    Profile
+                                    <span class="badge">New</span>
+                                </a>
+                            </li>
+                            {% if request.user.sait_admin or request.user.is_superuser %}
+                                <li><a href="http://localhost:8000/accounts/adminuser/superUser">Site Admin</a></li>
+                            {% endif %}
+
+                            {% if request.user.address and  request.user.email and request.user.phone %}
+                                <li><a href="http://localhost:8000/advertising/view/add/advertise">add advertise</a>
+                                </li>
+                            {% else %}
+                                <li>Please set address in profile</li>
+                            {% endif %}
+
+                            <li onclick="logout_user()"><a>Logout</a></li>
+                        </ul>
                     </div>
-                    <ul
-                            tabindex="0"
-                            class="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow">
-                        <li>
-                            <a class="justify-between" href="http://localhost:8000/accounts/adminuser/">
-                                Profile
-                                <span class="badge">New</span>
-                            </a>
-                        </li>
-                    {% if request.user.sait_admin or request.user.is_superuser %}
-                    	<li><a href="http://localhost:8000/accounts/adminuser/superUser">Site Admin</a></li>
-                    {% endif %} 
-                        
-                        {% if request.user.address and  request.user.email and request.user.phone %}
-                            <li><a href="http://localhost:8000/advertising/view/add/advertise">add advertise</a></li>
-                        {% else %}
-                            <li>Please set address in profile</li>
-                        {% endif %}
-
-                        <li onclick="logout_user()"><a>Logout</a></li>
-                    </ul>
-                </div>
-            {% else %}
-                <a class="btn btn-ghost text-xl" href="http://localhost:8000/accounts/signup/">SIGNIN/SIGNUP</a>
-            {% endif %}
+                {% else %}
+                    <a class="btn btn-ghost text-xl" href="http://localhost:8000/accounts/signup/">SIGNIN/SIGNUP</a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
