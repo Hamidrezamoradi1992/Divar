@@ -364,7 +364,7 @@ class AddAdvertiseView(APIView):
         if serializer.is_valid():
             advertise = serializer.save()
             return Response({'advertise': advertise.id}, status=status.HTTP_200_OK)
-        print(serializer.data)
+
         return Response({'error': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -583,11 +583,11 @@ class AllCategoryView(APIView):
     permission_classes = []
 
     def get(self, request, category_id=None):
-        print('re', request)
+
         if category_id is not None:
             if Category.objects.filter(pk=category_id).exists():
                 category = Category.objects.filter(parent_id=category_id)
-                print(category)
+
                 serializers = self.serializer_class(category, many=True)
                 return Response(serializers.data, status=status.HTTP_200_OK)
 
@@ -996,7 +996,7 @@ class DestroyAdvertising(APIView):
 
     def post(self, request):
         advertising = int(request.data['advertising'])
-        print(advertising)
+
         advertise = Advertising.objects.filter(pk=advertising)
         if advertise.exists():
             image = Image.objects.filter(content_type=ContentType.objects.get(model='advertising'),
@@ -1038,7 +1038,6 @@ class AcceptSiteAdminAdvertising(APIView):
         except Exception as e:
             return Response({'massage': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         advertise.diffusion = True
-        advertise.created_at = timezone.now()
         advertise.expires_at = timezone.now() + timedelta(days=30)
         advertise.save(update_fields=['diffusion', 'created_at', 'expires_at'])
         emails = advertise.user.email

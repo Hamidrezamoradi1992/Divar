@@ -6,5 +6,4 @@ class AdvertisingConfig(AppConfig):
     name = 'apps.advertising'
 
     def ready(self):
-        print('ready')
         import apps.advertising.signals
