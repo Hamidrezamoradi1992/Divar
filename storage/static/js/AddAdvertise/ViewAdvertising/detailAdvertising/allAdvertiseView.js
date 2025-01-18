@@ -23,9 +23,13 @@ function AllAdvertisingView(id_advertising) {
                 //     start
 
                 console.log(data)
+                console.log(data.category.title)
                 product_title.innerHTML = `${data.title}`
                 price_product.innerHTML = `${data.price}`
                 description_short.innerHTML = `${data.description}`
+                 category.innerHTML=`<a
+                        href="http://localhost:8000//advertising/view/filter/${data.category.id}" class="product-link " >${data.category.title}</a>`
+
 
 
                 let El = ''
@@ -92,6 +96,9 @@ function AllAdvertisingView(id_advertising) {
                 description_short.innerHTML = `${data.description}`
                 addressEl.innerHTML = `${data.address[0].address}`
                 idUserAdvertising = `${data.address[0].id}`
+                   category.innerHTML=`<a
+                        href="http://localhost:8000//advertising/view/filter/${data.category.id}" class="product-link " >${data.category.title}</a>`
+
 
 
                 let El = ''
