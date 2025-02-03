@@ -1,5 +1,4 @@
-
-# 📌 Website Simulator Project (Similar to Divar) with Django and DRF
+# 🚀 Website Simulator Project with Django & DRF
 
 ![Django](https://img.shields.io/badge/Django-092E20?style=for-the-badge&logo=django&logoColor=white)
 ![DRF](https://img.shields.io/badge/DRF-ff1709?style=for-the-badge&logo=django&logoColor=white)
@@ -8,105 +7,88 @@
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Celery](https://img.shields.io/badge/Celery-37814A?style=for-the-badge&logo=celery&logoColor=white)
 
-🚀 This project is 100% API-driven and utilizes Django REST Framework (DRF) for development.
+---
+
+## 🏗 Technologies Used
+
+- **Backend**: Django 4.x + DRF
+- **Database**: PostgreSQL
+- **Caching & Queue**: Redis + Celery
+- **Containerization**: Docker & Docker Compose
+- **Authentication**: JWT + OTP
+- **Email Service**: SMTP + Celery Tasks
+- **File Handling**: Generic Relations for ads' images
 
 ---
 
-## 🚀 Technologies Used
+## 🎯 Features
 
-- **Backend**: Django 4.x + Django REST Framework (DRF)
-- **Database**: PostgreSQL (Main database)
-- **Caching & Message Broker**: Redis (Caching system and message broker for Celery)
-- **Task Queue**: Celery (Background task management)
-- **Containerization**: Docker + Docker Compose (Service management)
-- **Authentication**: JWT + OTP (Two-factor authentication)
-- **Email Service**: SMTP + Celery Tasks (Asynchronous email sending)
-- **Generic Relations**: Using Generic Relation to manage advertisement images
+### 🔐 Authentication & Security
+- ✅ Two-factor authentication (OTP)
+- 🔑 JWT authentication
+- ⚡ Data caching with Redis
 
----
+### 👤 User Panel
+- ✉️ Messaging between users
+- 📢 Post ads (free & paid)
+- 🔍 Advanced search filters
+- 📧 Email notifications
 
-## 🌟 Main Features
-
-### 🔹 Authentication & Security
-- 🔐 Two-factor authentication with OTP
-- 🔑 JWT-based authentication
-- ⚡ Data caching and messaging with Redis
-
-### 🔹 User Features
-- 📩 Send and receive messages between users
-- 📢 Post advertisements with either free or paid categories
-- 🔍 Advanced search (Filter by price, location, category, etc.)
-- 📧 Send notification emails for important activities
-
-### 🔹 Admin Features
-- 👤 Advanced admin panel
-- 📊 Manage users, advertisements, and categories
-- 📈 Analytics and reporting
-- ⚙️ Advanced system settings
+### 🔧 Admin Panel
+- 🎛 User & Ad management
+- 📊 Analytics & Reports
+- ⚙️ Advanced settings
 
 ---
 
-## 🛠️ Setup Guide
+## 🚀 Setup Guide
 
 ### Prerequisites
-- **Docker & Docker Compose**
-- **Python 3.10+**
+- 🐍 Python 3.10+
+- 🐳 Docker & Docker Compose
 
-### 🚀 Installation Steps
+### 🏁 Installation Steps
 
-1️⃣ **Clone the repository:**
 ```bash
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
-```
-
-2️⃣ **Create the environment variables file:**
-```bash
 cp .env.example .env
 ```
-🔹 Set values for the database, Redis, and SMTP in the `.env` file.
 
-3️⃣ **Run the project with Docker Compose:**
+🔧 Update `.env` with database, Redis, and SMTP settings.
+
 ```bash
 docker-compose up --build
 ```
 
-4️⃣ **Run database migrations:**
 ```bash
 docker-compose exec web python manage.py migrate
 ```
 
-5️⃣ **Create a superuser account:**
 ```bash
 docker-compose exec web python manage.py createsuperuser
 ```
 
-🔹 **Access the project:**
-Once the setup is complete, the server will be available at `http://localhost:8000`.
+🌍 Access the project at `http://localhost:8000`
 
 ---
 
-## 📚 API Documentation
+## 📜 API Documentation
 
-📌 Complete API documentation is automatically generated using **Swagger** and **ReDoc**.
-🔗 After running the project, visit `/swagger/` or `/redoc/` paths.
+📌 Auto-generated with **Swagger** & **ReDoc**.
+🌐 Visit `/api/swagger/` or `/api/schema/redoc/` after running the project.
 
 ---
 
-## 🔧 Sample Environment Variables (`.env`)
+## ⚙️ Environment Variables (`.env`)
 ```ini
-# General settings
 DEBUG=True
 TIME_ZONE=Asia/Tehran
-
-# PostgreSQL database settings
 POSTGRES_DB=postgres
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=1
 POSTGRES_PORT=5432
 DB_HOST=0.0.0.0
-
-# Redis settings
 REDIS_HOST=0.0.0.0
 REDIS_PORT=6379
 ```
@@ -115,31 +97,15 @@ REDIS_PORT=6379
 
 ## 🤝 Contributing
 
-1️⃣ **Fork the repository**
-
-2️⃣ **Create a new branch:**
-```bash
-git checkout -b feature/feature-name
-```
-
-3️⃣ **Commit your changes:**
-```bash
-git commit -m "Add new feature"
-```
-
-4️⃣ **Push your code to your fork:**
-```bash
-git push origin feature/feature-name
-```
-
-5️⃣ **Create a Pull Request**
+1️⃣ Fork the repo
+2️⃣ Create a feature branch
+3️⃣ Commit & push changes
+4️⃣ Submit a PR 🚀
 
 ---
 
-## 📄 License
+## 📜 License
 
-🔹 This project is licensed under the **MIT License**.
+📌 This project is under the **MIT License**.
 
----
-
-🎯 **Help improve this project by submitting your feedback and suggestions!** 🚀
+💡 **Your feedback helps improve this project!** 🚀
