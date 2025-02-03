@@ -26,10 +26,10 @@ function addFieldImageInput() {
         `;
     } else {
         swal({
-            title: "خطا!",
-            text: "حداکثر 6 فیلد ورودی تصویر مجاز است.",
+            title: "error!",
+            text: "maximum six field set",
             icon: "warning",
-            button: "باشه",
+            button: "OK",
         });
     }
 }

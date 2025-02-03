@@ -943,10 +943,9 @@ class FilterAdvertising(APIView):
     def get(self, request, category_id=None):
         if category_id:
             if not (serializer := cache.get(f'category:{category_id}')):
-                category = Category.objects.get(pk=category_id)
-                categories = category.get_descendants(include_self=True)
-                advertising_category = Advertising.objects.is_diffusion().filter(category_id=category_id)
-                ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=categories)
+                category = Category.objects.get(pk=category_id).get_descendants(include_self=True)
+                advertising_category = Advertising.objects.is_diffusion().filter(category_id__in=category)
+                ladder = ValidateLadderAdvertising.get_ladder_advertising(categories_id=category)
                 if ladder is not None:
                     advertising2 = list(chain(ladder, list(advertising_category)))
                 else:
@@ -969,9 +968,8 @@ class FilterAdvertising(APIView):
         if not (serializer_data := cache.get(cache_key)):
             print('apps.advertise.view.FilterAdvertising,post:', cache.get(cache_key))
             if category:
-                categories = Category.objects.get(pk=int(category))
-                cat = categories.get_descendants(include_self=False)
-                filters &= Q(category__in=cat) if len(cat) > 0 else Q(category_id=category)
+                categories = Category.objects.get(pk=int(category)).get_descendants(include_self=False)
+                filters &= Q(category__in=categories) if len(categories) > 0 else Q(category_id=category)
 
             if titles:
                 filters &= Q(title__icontains=titles)
